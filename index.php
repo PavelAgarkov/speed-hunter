@@ -50,4 +50,3 @@ foreach ($output as $key => $value) {
     $sum += $value[0];
 }
 echo $sum . PHP_EOL;
-//1
