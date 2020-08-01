@@ -12,7 +12,7 @@ class SharedMemory
      * @var array - закрытый массив для записи ресурсов, представляющих собой информацию
      * о созданных участках разделяемой памяти.
      */
-    private array $resoucePool = [];
+    private array $resourcePool = [];
 
     /**
      * @var int - количество ресурсов разделяемой памяти для создания.
@@ -37,7 +37,7 @@ class SharedMemory
     {
         $this->countResources = $countResources;
 
-        while (count($this->resoucePool) < $this->countResources) {
+        while (count($this->resourcePool) < $this->countResources) {
             //  ключ разделяемой памяти
             $sharedMemoryKey = rand(100, 9000000);
             //флаг "n" говорит, что создается новый участок общей памяти и возвращает false если участок с таким ключом уже есть
@@ -75,7 +75,7 @@ class SharedMemory
         } else {
             $memory = (string)$sharedMemoryResource;
             $memoryNumber = preg_replace('/[^0-9]/', '', explode(' ', $memory)[2]);
-            $this->resoucePool[][$memoryNumber] = [
+            $this->resourcePool[][$memoryNumber] = [
                 $sharedMemoryResource,
                 $sharedMemoryKey
             ];
@@ -103,7 +103,7 @@ class SharedMemory
     public function readAllDataFromResourcePool(): array
     {
         foreach (range(0, $this->countResources - 1) as $key => $item) {
-            $memoryResource = current($this->resoucePool[$key])[0];
+            $memoryResource = current($this->resourcePool[$key])[0];
             $read = $this->read($memoryResource, 0, shmop_size($memoryResource));
             $data = unserialize($read);
             $this->output[] = $data;
@@ -125,6 +125,7 @@ class SharedMemory
             $write = shmop_write($memoryResource, "{$serialize}", $offset);
             return $write;
         }
+        return 0;
     }
 
     public function delete($memoryResource): bool
@@ -133,6 +134,7 @@ class SharedMemory
             $delete = shmop_delete($memoryResource);
             return $delete;
         }
+        return false;
     }
 
     /** Метод освобождает все ресурсы разделяемой памяти занятые во время выполнения
@@ -142,15 +144,15 @@ class SharedMemory
     public function deleteAllDataFromResourcePool(): bool
     {
         foreach (range(0, $this->countResources - 1) as $key => $item) {
-            $memoryResource = current($this->resoucePool[$key])[0];
-            $memoryNumber = current($this->resoucePool[$key])[1];
+            $memoryResource = current($this->resourcePool[$key])[0];
+            $memoryNumber = current($this->resourcePool[$key])[1];
             $delete = $this->delete($memoryResource);
             if ($delete === true) {
-                unset($this->resoucePool[$key]);
+                unset($this->resourcePool[$key]);
             }
         }
 
-        return !empty($this->resoucePool);
+        return !empty($this->resourcePool);
     }
 
     /** Метод проверяет является ли аргумент ресурсом.
@@ -175,6 +177,6 @@ class SharedMemory
      */
     public function getResourcePool(): array
     {
-        return $this->resoucePool;
+        return $this->resourcePool;
     }
 }
