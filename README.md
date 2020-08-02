@@ -23,9 +23,9 @@ $Processes = new ProcessesManager();
 $Processes
     ->configureProcessesLoop(
         [
-            [0 => 'workers/worker_1.php', 1 => 6, 2 => 100000],
-            [0 => 'workers/worker_2.php', 1 => 2, 2 => 600],
-            [0 => 'worker_3.php', 1 => 1, 2 => 400000]
+            [0 => 'workers/worker_1.php',   1 => 6, 2 => 100000],
+            [0 => 'workers/worker_2.php',   1 => 2, 2 => 600],
+            [0 => 'worker_3.php',           1 => 1, 2 => 400000]
         ]
     )
     ->startProcessLoop()
