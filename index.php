@@ -4,50 +4,24 @@ declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use src\SharedMemory;
 use src\ProcessesManager;
-
-// необходимое количество воркеров и участков разделяемой памяти
-$countResourcesAndWorkers = 7;
-
-// объем разделяемой памяти для записи информации из каждого воркера. Нужно подбирать сколько памяти необходимо
-// для записи информации из воркера в kB
-$memorySizeForOneWorker = 100000;
-
-// инициализация разделяемой памяти
-$SharedMemory = new SharedMemory();
-
-// создание набора ресурсов в разделяемой памяти
-$SharedMemory->createResourcePool(
-    $countResourcesAndWorkers,
-    $memorySizeForOneWorker
-);
 
 // инициализация менеджера процессов
 $Processes = new ProcessesManager();
 
-// запуск цикла, создающего процесс для каждого воркера
-$Processes->startProcessLoop(
-    $countResourcesAndWorkers,
-    $SharedMemory->getResourcePool(),
-    'subprocess.php',
-    $memorySizeForOneWorker
-);
+$Processes
+    ->configureProcessesLoop(
+        [
+            [0 => 'workers/worker_1.php', 1 => 6, 2 => 100000],
+            [0 => 'workers/worker_2.php', 1 => 2, 2 => 600],
+            [0 => 'worker_3.php', 1 => 1, 2 => 400000]
+        ]
+    )
+    ->startProcessLoop()
+    ->closePipesAndProcesses()
+    ->deleteAllDataFromResourcePool();
 
-// отключение всех процессов воркеров и каналов для связи
-$Processes->closePipesAndProcesses($countResourcesAndWorkers);
+$output = $Processes->getOutputData();
 
-// чтение записанных данных воркерами из разделяемой памяти, обход пула ресурсов и чтение из каждого ресурса
-// с дальнейшей записью из всех ресурсов в один массив
-$output = $SharedMemory->readAllDataFromResourcePool();
-
-// удаление участка разделяемой памяти и информации об этом учатке из массива ресурсов
-$delete = $SharedMemory->deleteAllDataFromResourcePool();
 
 print_r($output);
-$sum = 0;
-foreach ($output as $key => $value) {
-    $sum += $value[0];
-}
-echo $sum . PHP_EOL;
-//echo 2;
