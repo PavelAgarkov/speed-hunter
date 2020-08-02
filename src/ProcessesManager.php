@@ -14,17 +14,17 @@ class ProcessesManager
     /**
      * @var array - записи о каналах связи.
      */
-    private $pipes = [];
+    private array $pipes = [];
 
     /**
      * @var array - запущенные процессы.
      */
-    public $processes = [];
+    public array $processes = [];
 
     /**
      * @var array - указатели на каналы связи между процессами.
      */
-    private $processPipes = [];
+    private array $processPipes = [];
 
     private array $poolOfWorkers;
 
@@ -48,9 +48,6 @@ class ProcessesManager
         int $memorySize
     ): void
     {
-        if (!is_file($workerName)) {
-            throw new \Exception("Такого файла нет {$workerName}");
-        }
         $proc = proc_open(
             "php {$workerName} {$processNumber} {$numberMemoryKey} {$memorySize}",
             $descriptors,
@@ -61,18 +58,14 @@ class ProcessesManager
 
     /** Метод открывает цикл процессов, который передает управление воркерам.
      *  По окончанию выполнения последнего воркера цикл возвращает управление основному процессу.
-     * @param int $countWorkers - количество воркеров.
-     * @param array $resourcePool - набор ресурсов разделяемой памяти для данных из воркеров воркеров.
-     * @param string $workerName - файл воркера.
-     * @param int $memorySizeForOneWorker - размер разделяемой памяти для записи данных одного воркера.
+     * @return ProcessesManager
      */
 //    public function startProcessLoop(int $countWorkers, array $resourcePool, string $workerName, int $memorySizeForOneWorker): void
     public function startProcessLoop(): ProcessesManager
     {
-
 //       $resourcePool =  $this->SharedMemory->getCongirationsForResourcePool();
-        foreach ($this->SharedMemory->getResourcePool() as $workerName => $configations) {
-            foreach ($configations as $resourceKey => $value) {
+        foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
+            foreach ($configurations as $resourceKey => $value) {
                 $numberMemoryKey = $value[1];
 
                 $this->openProcess(
@@ -125,12 +118,12 @@ class ProcessesManager
     }
 
     /** Метод закрывающий каналы и процессы, открытые для работы.
-     * @param int $countResources - количество открытых процессов(=ресурсов управляемой памяти)
+     * @return ProcessesManager
      */
     public function closePipesAndProcesses(): ProcessesManager
     {
-        foreach ($this->SharedMemory->getResourcePool() as $workerName => $configations) {
-            foreach ($configations as $resourceKey => $value) {
+        foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
+            foreach ($configurations as $resourceKey => $value) {
                 fclose($this->pipes[$resourceKey][1]);
                 proc_close($this->processes[$resourceKey]);
             }
