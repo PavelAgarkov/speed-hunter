@@ -106,20 +106,20 @@ class ProcessesManager
 
         // демонстрация каналов для отладки
 
-        while (array_filter($this->processes, function ($proc) {
-            return proc_get_status($proc)['running'];
-        })) {
-            foreach (range(0, 4) as $i) {
-//        usleep(10 * 1000); // 100ms
-                // Read all available output (unread output is buffered).
-
-                $str = fread($this->pipes[$i][1], 8192);
-
-                if ($str) {
-                    printf($str);
-                }
-            }
-        }
+//        while (array_filter($this->processes, function ($proc) {
+//            return proc_get_status($proc)['running'];
+//        })) {
+//            foreach (range(0, 4) as $i) {
+////        usleep(10 * 1000); // 100ms
+//                // Read all available output (unread output is buffered).
+//
+//                $str = fread($this->pipes[$i][1], 8192);
+//
+//                if ($str) {
+//                    printf($str);
+//                }
+//            }
+//        }
 
         return $this;
     }
