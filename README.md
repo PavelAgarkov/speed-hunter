@@ -19,6 +19,10 @@
 Код для запуска.
 
 ```php
+require __DIR__ . '/vendor/autoload.php';
+
+use src\ProcessesManager;
+
 $Processes = new ProcessesManager();
 
 $Processes
