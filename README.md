@@ -18,7 +18,7 @@
 
 Код для запуска.
 
-code block
+```php
 $Processes = new ProcessesManager();
 
 $Processes
@@ -34,3 +34,4 @@ $Processes
     ->deleteAllDataFromResourcePool();
 
 $output = $Processes->getOutputData();
+```
