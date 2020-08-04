@@ -10,18 +10,40 @@ use src\ProcessesManager;
 $Processes = new ProcessesManager();
 
 $Processes
+    //конфигурирование цикла процессов
     ->configureProcessesLoop(
+        // перечисление воркеров для конфигурирования цикла процессов
         [
-            [0 => 'workers/worker_1.php',   1 => 6, 2 => 100000],
-            [0 => 'workers/worker_2.php',   1 => 2, 2 => 600],
-            [0 => 'worker_3.php',           1 => 1, 2 => 400000]
+            // принимает массив конфигураций, который содержит
+            // 0 - путь до файла воркера, 1 - количество воркеров,
+            // 2 - память в килобайтах выделенная на один воркер,
+            // 3 - массив данных необходимых для параллельной обработки
+            // если не указан 3 элемент, то в воркер не передаются данные
+            [
+                0 => 'workers/worker_1.php',
+                1 => 4,
+                2 => 30,
+//                3 => [1, 2, 3, 4]
+            ],
+            [
+                0 => 'workers/worker_2.php',
+                1 => 2,
+                2 => 30,
+                3 => [10, 20, 30],
+            ],
+            [
+                0 => 'worker_3.php',
+                1 => 1,
+                2 => 30,
+                3 => ['a'],
+            ]
         ]
     )
     ->startProcessLoop()
-    ->closePipesAndProcesses()
-    ->deleteAllDataFromResourcePool();
+    ->closeProcessLoop()
+    ->clearResourcePool();
 
+// результат работы параллельных воркеров
 $output = $Processes->getOutputData();
-
 
 print_r($output);

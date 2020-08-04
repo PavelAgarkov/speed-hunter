@@ -130,13 +130,6 @@ class SharedMemory
             }
         }
 
-//        foreach (range(0, $this->countResources - 1) as $key => $item) {
-//            $memoryResource = current($this->resourcePool[$key])[0];
-//            $read = $this->read($memoryResource, 0, shmop_size($memoryResource));
-//            $data = unserialize($read);
-//            $this->output[] = $data;
-//        }
-
         return $this->output;
     }
 
@@ -181,14 +174,6 @@ class SharedMemory
                 }
             }
         }
-//        foreach (range(0, $this->countResources - 1) as $key => $item) {
-//            $memoryResource = current($this->resourcePool[$key])[0];
-//            $memoryNumber = current($this->resourcePool[$key])[1];
-//            $delete = $this->delete($memoryResource);
-//            if ($delete === true) {
-//                unset($this->resourcePool[$key]);
-//            }
-//        }
 
         return !empty($this->resourcePool);
     }

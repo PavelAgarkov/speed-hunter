@@ -4,6 +4,7 @@ namespace src;
 
 use src\SharedMemory;
 use src\WorkerProcess;
+use src\DataManagerForWorkers;
 
 /** Класс для управления параллельными php процессами взаимодействующими через разделяемую память unix.
  * Class ProcessesManager
@@ -27,6 +28,8 @@ class ProcessesManager
     private array $processPipes = [];
 
     private array $poolOfWorkers;
+
+    private array $dataManagerForWorkers;
 
     private SharedMemory $SharedMemory;
 
@@ -63,7 +66,6 @@ class ProcessesManager
 //    public function startProcessLoop(int $countWorkers, array $resourcePool, string $workerName, int $memorySizeForOneWorker): void
     public function startProcessLoop(): ProcessesManager
     {
-//       $resourcePool =  $this->SharedMemory->getCongirationsForResourcePool();
         foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
                 $numberMemoryKey = $value[1];
@@ -80,23 +82,6 @@ class ProcessesManager
                 );
             }
         }
-
-//        foreach (range(0, $countWorkers - 1) as $processKey => $item) {
-//
-//            $numberMemoryKey = current($resourcePool[$processKey])[1];
-//
-//            $this->openProcess(
-//                $workerName,
-//                $processKey,
-//                $numberMemoryKey,
-//                [
-//                    0 => ['pipe', 'r'],
-//                    1 => ['pipe', 'w'],
-//                ],
-//                $memorySizeForOneWorker
-//            );
-//        }
-
         // демонстрация каналов для отладки
 
 //        while (array_filter($this->processes, function ($proc) {
@@ -120,7 +105,7 @@ class ProcessesManager
     /** Метод закрывающий каналы и процессы, открытые для работы.
      * @return ProcessesManager
      */
-    public function closePipesAndProcesses(): ProcessesManager
+    public function closeProcessLoop(): ProcessesManager
     {
         foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
@@ -128,11 +113,6 @@ class ProcessesManager
                 proc_close($this->processes[$resourceKey]);
             }
         }
-
-//        foreach (range(0, $countResources - 1) as $processKey => $item) {
-//            fclose($this->pipes[$processKey][1]);
-//            proc_close($this->processes[$processKey]);
-//        }
 
         $this->SharedMemory->readAllDataFromResourcePool();
 
@@ -144,25 +124,40 @@ class ProcessesManager
         $SharedMemory = new SharedMemory();
         $this->SharedMemory = $SharedMemory;
 
+
         $pool = [];
         foreach ($workerConfigurations as $key => $configuration) {
             $pool[$configuration[0]] = new WorkerProcess($configuration);
+
+            if (isset($configuration[3])) {
+                $this->dataManagerForWorkers[$configuration[0]] = (new DataManagerForWorkers(
+                    $pool[$configuration[0]],
+                    $configuration[3]
+                ))
+                    ->splitDataForWorkers();
+            }
         }
 
-        $this->poolOfWorkers = $pool;
+        $this->poolOfWorkers = &$pool;
 
         $this->SharedMemory->createResourcePool($this->poolOfWorkers);
-//        var_dump($this->SharedMemory->resourcePool);
+
+        foreach ($workerConfigurations as $key => $configuration) {
+            if (isset($configuration[3])) {
+                $this->dataManagerForWorkers[$configuration[0]]
+                    ->putDataIntoWorkerSharedMemory($this->SharedMemory);
+            }
+        }
 
         return $this;
     }
 
-    public function deleteAllDataFromResourcePool()
+    public function clearResourcePool()
     {
         return $this->SharedMemory->deleteAllDataFromResourcePool();
     }
 
-    public function getOutputData() : array
+    public function getOutputData(): array
     {
         return $this->SharedMemory->getData();
     }
