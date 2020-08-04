@@ -157,9 +157,9 @@ class ProcessesManager
         return $this->SharedMemory->deleteAllDataFromResourcePool();
     }
 
-    public function getOutputData(): array
+    public function getOutputData(string $workerName = null): array
     {
-        return $this->SharedMemory->getData();
+        return $this->SharedMemory->getData($workerName);
     }
 
 }

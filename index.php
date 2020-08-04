@@ -44,6 +44,6 @@ $Processes
     ->clearResourcePool();
 
 // результат работы параллельных воркеров
-$output = $Processes->getOutputData();
+$output = $Processes->getOutputData('worker_3.php');
 
 print_r($output);
