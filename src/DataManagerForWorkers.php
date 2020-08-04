@@ -4,12 +4,26 @@ namespace src;
 
 use src\SharedMemory;
 
+/** Класс реализует запись передаваемых в воркер данных в разделяемую
+ *  память предназначенную для набора воркров.
+ * Class DataManagerForWorkers
+ * @package src
+ */
 class DataManagerForWorkers
 {
+    /**
+     * @var WorkerProcess - набор однотипных процессов
+     */
     private WorkerProcess $workersSet;
 
+    /**
+     * @var array - неподготовленный набор данных для записи в воркеры
+     */
     private array $dataForSet;
 
+    /**
+     * @var array - подготовленные наборы данных для воркеров
+     */
     private array $readyChunksOfDataForWorkers;
 
     public function __construct(WorkerProcess &$workerSet, array $dataForWorkersSet)
@@ -18,6 +32,11 @@ class DataManagerForWorkers
         $this->dataForSet = $dataForWorkersSet;
     }
 
+    /** Метод разбивает на "куски" неподготовленные данные для всех воркеров,
+     *  в зависимости от их количества
+     * @return $this
+     * @throws \Exception
+     */
     public function splitDataForWorkers(): DataManagerForWorkers
     {
         if (($countWorkers = $this->workersSet->getCountWorkers()) == 1) {
@@ -50,6 +69,10 @@ class DataManagerForWorkers
         return $this;
     }
 
+    /** Метод записывает подготовленные "куски" данных в подготовленную
+     *  разделяемую память по ключам
+     * @param \src\SharedMemory $sharedMemory - инъекция объектом SharedMemory
+     */
     public function putDataIntoWorkerSharedMemory(SharedMemory $sharedMemory) : void
     {
         $resourcePool = $sharedMemory->getResourcePool()[$this->workersSet->getWorkerName()];

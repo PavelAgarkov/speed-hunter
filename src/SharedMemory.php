@@ -14,8 +14,14 @@ class SharedMemory
      */
     private array $resourcePool = [];
 
+    /**
+     * @var array - набор ресурсов для записи дополнительных настроек
+     */
     private array $resourcePoolСonfirations = [];
 
+    /**
+     * @var array - набор воркеров
+     */
     private array $poolOfWorkers;
 
     /**
@@ -149,6 +155,10 @@ class SharedMemory
         return 0;
     }
 
+    /** Метод удаляет участок разделяемой памяти по ресурсу
+     * @param resource $memoryResource - ресурс разделяемой памяти
+     * @return bool
+     */
     public function delete($memoryResource): bool
     {
         if (SharedMemory::isResource($memoryResource)) {
@@ -203,11 +213,18 @@ class SharedMemory
         return $this->resourcePool;
     }
 
+    /** Метод возвращает набор конфигурация для набора ресурсов
+     * @return array
+     */
     public function getCongirationsForResourcePool() : array
     {
         return $this->resourcePoolСonfirations;
     }
 
+    /**
+     * @param string|null $workerName - ключ в массиве $this->output, так же название файла воркера
+     * @return array
+     */
     public function getData(string $workerName = null) : array
     {
         if($workerName !== null && array_key_exists($workerName, $this->output)) {
