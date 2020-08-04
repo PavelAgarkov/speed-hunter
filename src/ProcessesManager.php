@@ -4,6 +4,7 @@ namespace src;
 
 use src\SharedMemory;
 use src\WorkerProcess;
+use src\DataManagerForWorkers;
 
 /** Класс для управления параллельными php процессами взаимодействующими через разделяемую память unix.
  * Class ProcessesManager
@@ -26,8 +27,19 @@ class ProcessesManager
      */
     private array $processPipes = [];
 
+    /**
+     * @var array - набор воркеров
+     */
     private array $poolOfWorkers;
 
+    /**
+     * @var array - массив объектов DataManager для каждого набора WorkerProcess
+     */
+    private array $dataManagerForWorkers;
+
+    /**
+     * @var \src\SharedMemory - объект разделяемой памяти
+     */
     private SharedMemory $SharedMemory;
 
     /** Метод для открытия нового процесса php передающего в открытый процесс данные о номере процесса
@@ -60,10 +72,8 @@ class ProcessesManager
      *  По окончанию выполнения последнего воркера цикл возвращает управление основному процессу.
      * @return ProcessesManager
      */
-//    public function startProcessLoop(int $countWorkers, array $resourcePool, string $workerName, int $memorySizeForOneWorker): void
     public function startProcessLoop(): ProcessesManager
     {
-//       $resourcePool =  $this->SharedMemory->getCongirationsForResourcePool();
         foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
                 $numberMemoryKey = $value[1];
@@ -80,23 +90,6 @@ class ProcessesManager
                 );
             }
         }
-
-//        foreach (range(0, $countWorkers - 1) as $processKey => $item) {
-//
-//            $numberMemoryKey = current($resourcePool[$processKey])[1];
-//
-//            $this->openProcess(
-//                $workerName,
-//                $processKey,
-//                $numberMemoryKey,
-//                [
-//                    0 => ['pipe', 'r'],
-//                    1 => ['pipe', 'w'],
-//                ],
-//                $memorySizeForOneWorker
-//            );
-//        }
-
         // демонстрация каналов для отладки
 
 //        while (array_filter($this->processes, function ($proc) {
@@ -120,7 +113,7 @@ class ProcessesManager
     /** Метод закрывающий каналы и процессы, открытые для работы.
      * @return ProcessesManager
      */
-    public function closePipesAndProcesses(): ProcessesManager
+    public function closeProcessLoop(): ProcessesManager
     {
         foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
@@ -129,16 +122,25 @@ class ProcessesManager
             }
         }
 
-//        foreach (range(0, $countResources - 1) as $processKey => $item) {
-//            fclose($this->pipes[$processKey][1]);
-//            proc_close($this->processes[$processKey]);
-//        }
-
         $this->SharedMemory->readAllDataFromResourcePool();
 
         return $this;
     }
 
+    /** Метод приримает массив конфигураций, создает менеджера управления разделяемой памятью
+     *  для каждого набора воркеров, создает пул ресурсов разделяемой памяти, заполняет ресурс
+     *  для каждого набора воркеров разбитыми данными на воркеры.
+     * @param array $workerConfigurations - массив конфигураций, включающий массивы содержащие
+     *  информацию о наборе воркеров. Структура :
+     * [
+         * 0 - путь до файла воркера, 1 - количество воркеров,
+         * 2 - память в килобайтах выделенная на один воркер,
+         * 3 - массив данных необходимых для параллельной обработки
+     * ]
+     * если не указан 3 элемент, то в воркер не передаются данные
+     * @return $this
+     * @throws \Exception
+     */
     public function configureProcessesLoop(array $workerConfigurations): ProcessesManager
     {
         $SharedMemory = new SharedMemory();
@@ -147,24 +149,45 @@ class ProcessesManager
         $pool = [];
         foreach ($workerConfigurations as $key => $configuration) {
             $pool[$configuration[0]] = new WorkerProcess($configuration);
+
+            if (isset($configuration[3])) {
+                $this->dataManagerForWorkers[$configuration[0]] = (new DataManagerForWorkers(
+                    $pool[$configuration[0]],
+                    $configuration[3]
+                ))
+                    ->splitDataForWorkers();
+            }
         }
 
-        $this->poolOfWorkers = $pool;
+        $this->poolOfWorkers = &$pool;
 
         $this->SharedMemory->createResourcePool($this->poolOfWorkers);
-//        var_dump($this->SharedMemory->resourcePool);
+
+        foreach ($workerConfigurations as $key => $configuration) {
+            if (isset($configuration[3])) {
+                $this->dataManagerForWorkers[$configuration[0]]
+                    ->putDataIntoWorkerSharedMemory($this->SharedMemory);
+            }
+        }
 
         return $this;
     }
 
-    public function deleteAllDataFromResourcePool()
+    /** Метод очищает пул ресурсов от данных из воркеров
+     * @return bool
+     */
+    public function clearResourcePool() : bool
     {
         return $this->SharedMemory->deleteAllDataFromResourcePool();
     }
 
-    public function getOutputData() : array
+    /** Метод управляет получение выходных данных из разделяемой памяти по ключу(или всех).
+     * @param string|null $workerName - имя воркера
+     * @return array
+     */
+    public function getOutputData(string $workerName = null): array
     {
-        return $this->SharedMemory->getData();
+        return $this->SharedMemory->getData($workerName);
     }
 
 }

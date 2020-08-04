@@ -14,8 +14,14 @@ class SharedMemory
      */
     private array $resourcePool = [];
 
+    /**
+     * @var array - набор ресурсов для записи дополнительных настроек
+     */
     private array $resourcePoolСonfirations = [];
 
+    /**
+     * @var array - набор воркеров
+     */
     private array $poolOfWorkers;
 
     /**
@@ -130,13 +136,6 @@ class SharedMemory
             }
         }
 
-//        foreach (range(0, $this->countResources - 1) as $key => $item) {
-//            $memoryResource = current($this->resourcePool[$key])[0];
-//            $read = $this->read($memoryResource, 0, shmop_size($memoryResource));
-//            $data = unserialize($read);
-//            $this->output[] = $data;
-//        }
-
         return $this->output;
     }
 
@@ -156,6 +155,10 @@ class SharedMemory
         return 0;
     }
 
+    /** Метод удаляет участок разделяемой памяти по ресурсу
+     * @param resource $memoryResource - ресурс разделяемой памяти
+     * @return bool
+     */
     public function delete($memoryResource): bool
     {
         if (SharedMemory::isResource($memoryResource)) {
@@ -181,14 +184,6 @@ class SharedMemory
                 }
             }
         }
-//        foreach (range(0, $this->countResources - 1) as $key => $item) {
-//            $memoryResource = current($this->resourcePool[$key])[0];
-//            $memoryNumber = current($this->resourcePool[$key])[1];
-//            $delete = $this->delete($memoryResource);
-//            if ($delete === true) {
-//                unset($this->resourcePool[$key]);
-//            }
-//        }
 
         return !empty($this->resourcePool);
     }
@@ -218,13 +213,23 @@ class SharedMemory
         return $this->resourcePool;
     }
 
+    /** Метод возвращает набор конфигурация для набора ресурсов
+     * @return array
+     */
     public function getCongirationsForResourcePool() : array
     {
         return $this->resourcePoolСonfirations;
     }
 
-    public function getData() : array
+    /**
+     * @param string|null $workerName - ключ в массиве $this->output, так же название файла воркера
+     * @return array
+     */
+    public function getData(string $workerName = null) : array
     {
+        if($workerName !== null && array_key_exists($workerName, $this->output)) {
+            return $this->output[$workerName];
+        }
         return $this->output;
     }
 }
