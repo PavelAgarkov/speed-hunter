@@ -9,6 +9,9 @@ Job::runJob(
     $argv,
     'array',
     function (&$Job, $read): array {
-        return [$read, 123, 3434343434];
+        return [
+//            $read,
+            123,
+            3434343434];
     }
 );

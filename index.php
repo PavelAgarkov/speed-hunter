@@ -21,27 +21,27 @@ $Processes
             // если не указан 3 элемент, то в воркер не передаются данные
             [
                 0 => 'workers/worker_1',
-                1 => 4,
-                2 => 30,
+                1 => 10,
+                2 => 1000,
 //                3 => [1, 2, 3, 4]
             ],
             [
                 0 => 'workers/worker_2',
-                1 => 2,
-                2 => 30,
-                3 => [10, 20, 30],
+                1 => 1,
+                2 => 50,
+//                3 => [10, 20, 30],
             ],
             [
                 0 => 'worker_3',
                 1 => 1,
                 2 => 30,
-                3 => ['a'],
+//                3 => ['a'],
             ],
             [
                 0 => 'workers/worker_4',
-                1 => 1,
+                1 => 3,
                 2 => 500,
-                3 => ['commit'],
+//                3 => ['commit'],
             ]
         ]
     )
@@ -50,7 +50,7 @@ $Processes
     ->clearResourcePool();
 
 // результат работы параллельных воркеров
-$output = $Processes->getOutputData('workers/worker_4');
-//$output = $Processes->getOutputData();
+//$output = $Processes->getOutputData('workers/worker_4');
+$output = $Processes->getOutputData();
 
 print_r($output);
