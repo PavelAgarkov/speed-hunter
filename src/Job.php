@@ -20,12 +20,17 @@ class Job
 
     private ?string $readData;
 
-    public function __construct(array $argv) {
-        $this->workerName = (string)$argv[0];
-        $this->processNumber = (int)$argv[1];
-        $this->sharedMemoryKey = (int)$argv[2];
+    private string $type;
+
+    public function __construct(array $argv, string $type) {
+
+        $this->workerName       = (string)$argv[0];
+        $this->processNumber    = (int)$argv[1];
+        $this->sharedMemoryKey  = (int)$argv[2];
         $this->sharedMemorySize = (int)$argv[3];
-        $this->SharedMemory = new SharedMemory();
+        $this->SharedMemory     = new SharedMemory();
+        $this->type             = $type;
+
     }
 
     public function restoreSharedMemoryResource(string $flag) : Job
@@ -71,5 +76,18 @@ class Job
     public function getSize() : int
     {
         return shmop_size($this->sharedMemoryResource);
+    }
+
+    public static function runJob(array $argv, string $type = 'array' , callable $function) : void
+    {
+        $Job = new Job($argv, $type);
+
+        $Job->restoreSharedMemoryResource('w');
+
+        $read = $Job->readFromSharedMemoryResource();
+
+        $array = $Job->handler($function, $read);
+
+        $Job->writeIntoSharedMemoryResource($array);
     }
 }

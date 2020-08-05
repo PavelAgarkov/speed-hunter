@@ -50,7 +50,7 @@ $Processes
     ->clearResourcePool();
 
 // результат работы параллельных воркеров
-//$output = $Processes->getOutputData('workers/worker_4');
-$output = $Processes->getOutputData();
+$output = $Processes->getOutputData('workers/worker_4');
+//$output = $Processes->getOutputData();
 
 print_r($output);
