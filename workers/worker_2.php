@@ -44,8 +44,7 @@ $serialize = serialize($array);
 // запись в разделяемую память сериализованных данных
 $SharedMemory->write(
     $memory,
-    $array,
-    0
+    $array
 );
 
 // подсчет памяти затрачивамой скриптом

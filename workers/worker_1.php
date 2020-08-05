@@ -45,12 +45,11 @@ $serialize = serialize($array);
 // запись в разделяемую память сериализованных данных
 $SharedMemory->write(
     $memory,
-    $array,
-    0
+    $array
 );
 
 // подсчет памяти затрачивамой скриптом
 $usage = memory_get_usage(true);
 
 // демонстрация каналов для отладки
-printf(PHP_EOL . " worker {$keyMemory}" . PHP_EOL);
+//printf(PHP_EOL . " worker {$keyMemory}" . PHP_EOL);

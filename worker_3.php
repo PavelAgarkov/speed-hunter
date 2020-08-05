@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 require __DIR__ . '/vendor/autoload.php';
 
@@ -45,8 +44,7 @@ $serialize = serialize($array);
 // запись в разделяемую память сериализованных данных
 $SharedMemory->write(
     $memory,
-    $array,
-    0
+    $array
 );
 
 // подсчет памяти затрачивамой скриптом
