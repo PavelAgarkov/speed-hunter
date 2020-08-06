@@ -4,50 +4,60 @@ declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use src\SharedMemory;
 use src\ProcessesManager;
-
-// необходимое количество воркеров и участков разделяемой памяти
-$countResourcesAndWorkers = 7;
-
-// объем разделяемой памяти для записи информации из каждого воркера. Нужно подбирать сколько памяти необходимо
-// для записи информации из воркера в kB
-$memorySizeForOneWorker = 100000;
-
-// инициализация разделяемой памяти
-$SharedMemory = new SharedMemory();
-
-// создание набора ресурсов в разделяемой памяти
-$SharedMemory->createResourcePool(
-    $countResourcesAndWorkers,
-    $memorySizeForOneWorker
-);
 
 // инициализация менеджера процессов
 $Processes = new ProcessesManager();
 
-// запуск цикла, создающего процесс для каждого воркера
-$Processes->startProcessLoop(
-    $countResourcesAndWorkers,
-    $SharedMemory->getResourcePool(),
-    'subprocess.php',
-    $memorySizeForOneWorker
-);
+$Processes
+    //конфигурирование цикла процессов
+    ->configureProcessesLoop(
+    // перечисление воркеров для конфигурирования цикла процессов
+        [
+            // принимает массив конфигураций, который содержит
+            // 0 - путь до файла воркера, 1 - количество воркеров,
+            // 2 - память в килобайтах выделенная на один воркер,
+            // 3 - массив данных необходимых для параллельной обработки
+            // если не указан 3 элемент, то в воркер не передаются данные(если воркер один)
+            // в элементе под ключом 3 хранится массив, 0 => разделять ли данные между воркерами
+            // true - разделять, false - не разделять, а передать в каждый воркер общие данные
+            [
+                0 => 'workers/worker_1',
+                1 => 10,
+                2 => 300,
+                3 => [
+                    0 => false,
+                    [1, 2, 3, 4]
+                ]
+            ],
+            [
+                0 => 'workers/worker_2',
+                1 => 4,
+                2 => 30000,
+                3 => [
+                    0 => false,
+                    1 => [10, 20, 30]
+                ],
+            ],
+            [
+                0 => 'workers/worker_4',
+                1 => 3,
+                2 => 50,
+                3 => [
+                    0 => false,
+                    1 => ['commit'],
+                ]
+            ]
+        ]
+    )
+    ->startProcessLoop()
+    ->closeProcessLoop()
+    ->clearResourcePool();
 
-// отключение всех процессов воркеров и каналов для связи
-$Processes->closePipesAndProcesses($countResourcesAndWorkers);
+// результат работы параллельных воркеров
+//$output = $Processes->getOutputData('workers/worker_4');
+$output = $Processes->getOutputData();
 
-// чтение записанных данных воркерами из разделяемой памяти, обход пула ресурсов и чтение из каждого ресурса
-// с дальнейшей записью из всех ресурсов в один массив
-$output = $SharedMemory->readAllDataFromResourcePool();
-
-// удаление участка разделяемой памяти и информации об этом учатке из массива ресурсов
-$delete = $SharedMemory->deleteAllDataFromResourcePool();
+$memory = $Processes->getResourceMemoryData();
 
 print_r($output);
-$sum = 0;
-foreach ($output as $key => $value) {
-    $sum += $value[0];
-}
-echo $sum . PHP_EOL;
-//echo 2;
