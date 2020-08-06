@@ -149,7 +149,7 @@ class SharedMemory
     {
         if (SharedMemory::isResource($memoryResource)) {
             $serialize = serialize($data);
-            $write = shmop_write($memoryResource, "{$serialize}", $offset);
+            $write = shmop_write($memoryResource, $serialize, $offset);
             return $write;
         }
         return 0;

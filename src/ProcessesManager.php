@@ -151,11 +151,21 @@ class ProcessesManager
             $pool[$configuration[0]] = new WorkerProcess($configuration);
 
             if (isset($configuration[3])) {
-                $this->dataManagerForWorkers[$configuration[0]] = (new DataManagerForWorkers(
+
+                if(!isset($configuration[3][0]) || $configuration[3][0] === null) {
+                    throw new \Exception('Не указан флаг разделителя для воркеров');
+                }
+
+                $DataManager = $this->dataManagerForWorkers[$configuration[0]] = new DataManagerForWorkers(
                     $pool[$configuration[0]],
                     $configuration[3]
-                ))
-                    ->splitDataForWorkers();
+                );
+
+                if ($configuration[3][0] === true) {
+                    $DataManager->splitDataForWorkers();
+                } else {
+                    $DataManager->passCommonDataForAllWorkers();
+                }
             }
         }
 
@@ -165,8 +175,15 @@ class ProcessesManager
 
         foreach ($workerConfigurations as $key => $configuration) {
             if (isset($configuration[3])) {
-                $this->dataManagerForWorkers[$configuration[0]]
-                    ->putDataIntoWorkerSharedMemory($this->SharedMemory);
+
+                if ($configuration[3][0] === true) {
+                    $this->dataManagerForWorkers[$configuration[0]]
+                        ->putDataIntoWorkerSharedMemory($this->SharedMemory);
+                } else {
+                    $this->dataManagerForWorkers[$configuration[0]]
+                    ->putCommonDataIntoWorkers($this->SharedMemory);
+                }
+
             }
         }
 

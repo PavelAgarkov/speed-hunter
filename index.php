@@ -12,7 +12,7 @@ $Processes = new ProcessesManager();
 $Processes
     //конфигурирование цикла процессов
     ->configureProcessesLoop(
-        // перечисление воркеров для конфигурирования цикла процессов
+    // перечисление воркеров для конфигурирования цикла процессов
         [
             // принимает массив конфигураций, который содержит
             // 0 - путь до файла воркера, 1 - количество воркеров,
@@ -28,14 +28,20 @@ $Processes
             [
                 0 => 'workers/worker_2.php',
                 1 => 2,
-                2 => 30,
-                3 => [10, 20, 30],
+                2 => 60,
+                3 => [
+                    0 => false,
+                    1 => [10, 20, 30]
+                ],
             ],
             [
                 0 => 'worker_3.php',
                 1 => 1,
                 2 => 30,
-                3 => ['a'],
+                3 => [
+                    0 => false,
+                    1 => ['a']
+                ]
             ]
         ]
     )
@@ -44,6 +50,7 @@ $Processes
     ->clearResourcePool();
 
 // результат работы параллельных воркеров
-$output = $Processes->getOutputData('workers/worker_1.php');
+//$output = $Processes->getOutputData('workers/worker_1.php');
+$output = $Processes->getOutputData();
 
 print_r($output);
