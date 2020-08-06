@@ -107,7 +107,7 @@ class DataManagerForWorkers
      */
     public function passCommonDataForAllWorkers() : DataManagerForWorkers
     {
-        $this->readyChunksOfDataForWorkers[] = $this->dataForSet[1];
+        $this->readyChunksOfDataForWorkers = $this->dataForSet[1];
         return $this;
     }
 }

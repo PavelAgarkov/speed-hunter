@@ -207,4 +207,12 @@ class ProcessesManager
         return $this->SharedMemory->getData($workerName);
     }
 
+    /** Метод возвращает пул ресурсво из объекта разделяемой памяти
+     * @return array
+     */
+    public function getResourceMemoryData() : array
+    {
+        return $this->SharedMemory->getResourcePool();
+    }
+
 }

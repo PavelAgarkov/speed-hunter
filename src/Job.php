@@ -55,14 +55,15 @@ class Job
      * @param array $argv - аргументы из вызываемого процесса
      * @param string $type - тип данных до сериализации и записи из воркера в раздеяемую память
      */
-    public function __construct(array $argv, string $type) {
+    public function __construct(array $argv, string $type)
+    {
 
-        $this->workerName       = (string)$argv[0];
-        $this->processNumber    = (int)$argv[1];
-        $this->sharedMemoryKey  = (int)$argv[2];
+        $this->workerName = (string)$argv[0];
+        $this->processNumber = (int)$argv[1];
+        $this->sharedMemoryKey = (int)$argv[2];
         $this->sharedMemorySize = (int)$argv[3];
-        $this->SharedMemory     = new SharedMemory();
-        $this->type             = $type;
+        $this->SharedMemory = new SharedMemory();
+        $this->type = $type;
 
     }
 
@@ -70,7 +71,7 @@ class Job
      * @param string $flag - флаг открытия памяти
      * @return $this
      */
-    public function restoreSharedMemoryResource(string $flag) : Job
+    public function restoreSharedMemoryResource(string $flag): Job
     {
         $resource = $this->SharedMemory->open(
             $this->sharedMemoryKey,
@@ -85,7 +86,7 @@ class Job
     /** Метод для чтения данных из разделяемой памяти для данного воркера
      * @return string|null
      */
-    public function readFromSharedMemoryResource() : ?string
+    public function readFromSharedMemoryResource(): ?string
     {
         $read = $this->SharedMemory->read($this->sharedMemoryResource, 0, shmop_size($this->sharedMemoryResource) - 0);
         $this->readData = $read;
@@ -96,7 +97,7 @@ class Job
      * @param array $array - данные
      * @return int|null
      */
-    public function writeIntoSharedMemoryResource(array $array) : ?int
+    public function writeIntoSharedMemoryResource(array $array): ?int
     {
         $write = $this->SharedMemory->write(
             $this->sharedMemoryResource,
@@ -111,16 +112,21 @@ class Job
      * @param string $read - прочитанные данные из памяти
      * @return array
      */
-    public function handler(callable $function, string $read) : array
+    public function handler(callable $function, string $read): array
     {
-        $array = $function($this, unserialize($read));
+        $unserialize = unserialize($read);
+        if ($unserialize === false) {
+            $unserialize = null;
+        }
+        $array = $function($this, $unserialize);
+
         return $array;
     }
 
     /** Метод удаляет данные из памяти по ресурсу
      * @return bool
      */
-    public function deleteDataFromSharedMemoryResource() : bool
+    public function deleteDataFromSharedMemoryResource(): bool
     {
         return $this->SharedMemory->delete($this->sharedMemoryResource);
     }
@@ -128,7 +134,7 @@ class Job
     /** Метод измеряем затраченную память на скрипт
      * @return int
      */
-    public function getSize() : int
+    public function getSize(): int
     {
         return shmop_size($this->sharedMemoryResource);
     }
@@ -138,7 +144,7 @@ class Job
      * @param string $type - тип данных для сериализации
      * @param callable $function - замыкание для выполнения
      */
-    public static function runJob(array $argv, string $type = 'array' , callable $function) : void
+    public static function runJob(array $argv, string $type = 'array', callable $function): void
     {
         $Job = new Job($argv, $type);
 

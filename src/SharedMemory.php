@@ -180,7 +180,7 @@ class SharedMemory
                 $memoryNumber = $value[1];
                 $delete = $this->delete($memoryResource);
                 if ($delete === true) {
-                    unset($this->resourcePool[$key]);
+                    unset($this->resourcePool[$workerName][$key]);
                 }
             }
         }
