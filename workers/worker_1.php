@@ -13,6 +13,6 @@ Job::runJob(
         foreach (range(0, 9) as $key => $value) {
             $array[] = $value;
         }
-        return [$array, $read];
+        return [$array];
     }
 );
