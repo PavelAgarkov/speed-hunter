@@ -130,7 +130,7 @@ class SharedMemory
         foreach ($this->resourcePool as $workerName => $configations) {
             foreach ($configations as $key => $value) {
                 $memoryResource = $value[0];
-                $read = $this->read($memoryResource, 0, shmop_size($memoryResource));
+                $read = $this->read($memoryResource, 0, shmop_size($memoryResource) - 0);
                 $data = unserialize($read);
                 $this->output[$workerName][$key] = $data;
             }
@@ -145,11 +145,11 @@ class SharedMemory
      * @param int $offset - символ с которого начнется запись в участок разделяемой памяти.
      * @return int|null
      */
-    public function write($memoryResource, array $data, int $offset = 0): ?int
+    public function write($memoryResource, array $data): ?int
     {
         if (SharedMemory::isResource($memoryResource)) {
             $serialize = serialize($data);
-            $write = shmop_write($memoryResource, "{$serialize}", $offset);
+            $write = shmop_write($memoryResource, $serialize, 0);
             return $write;
         }
         return 0;

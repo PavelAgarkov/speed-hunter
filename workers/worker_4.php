@@ -9,10 +9,9 @@ Job::runJob(
     $argv,
     'array',
     function (&$Job, $read): array {
-        $array = [10];
-        foreach (range(0, 9) as $key => $value) {
-            $array[] = $value;
-        }
-        return [$array];
+        return [
+//            $read,
+            123,
+            3434343434];
     }
 );

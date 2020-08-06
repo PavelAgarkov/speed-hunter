@@ -81,8 +81,7 @@ class DataManagerForWorkers
         foreach ($resourcePool as $memoryKey => $item) {
             $sharedMemory->write(
                 $item[0],
-                $this->readyChunksOfDataForWorkers[$counter],
-                0
+                $this->readyChunksOfDataForWorkers[$counter]
             );
             $counter++;
         }

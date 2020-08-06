@@ -16,7 +16,7 @@
 
 Пакет применим как серверный или консольный скрипт.
 
-Код для запуска.
+Код для запуска в основном процессе.
 
 ```php
 use src\ProcessesManager;
@@ -35,19 +35,19 @@ $Processes
             // 3 - массив данных необходимых для параллельной обработки  
             // если не указан 3 элемент, то в воркер не передаются данные
             [
-                0 => 'workers/worker_1.php',
+                0 => 'workers/worker_1',
                 1 => 4,
                 2 => 30,
 //                3 => [1, 2, 3, 4]
             ],
             [
-                0 => 'workers/worker_2.php',
+                0 => 'workers/worker_2',
                 1 => 2,
                 2 => 30,
                 3 => [10, 20, 30],
             ],
             [
-                0 => 'worker_3.php',
+                0 => 'worker_3',
                 1 => 1,
                 2 => 30,
                 3 => ['a'],
@@ -60,4 +60,21 @@ $Processes
 
 // результат работы параллельных воркеров
 $output = $Processes->getOutputData('workers/worker_1.php');
+```
+
+Код воркера .
+```php
+use src\Job;
+
+Job::runJob(
+    $argv,
+    'array',
+    function (&$Job, $read): array {
+        $array = [10];
+        foreach (range(0, 9) as $key => $value) {
+            $array[] = $value;
+        }
+        return [$array];
+    }
+);
 ```
