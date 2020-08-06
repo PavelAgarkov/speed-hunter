@@ -7,7 +7,6 @@ use src\Job;
 
 Job::runJob(
     $argv,
-    'array',
     function (&$Job, $read): array {
 
         $ch = curl_init("https://api.github.com/repos/PavelAgarkov/pocket-typing/events");

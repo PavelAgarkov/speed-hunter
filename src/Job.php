@@ -144,9 +144,9 @@ class Job
      * @param string $type - тип данных для сериализации
      * @param callable $function - замыкание для выполнения
      */
-    public static function runJob(array $argv, string $type = 'array', callable $function): void
+    public static function runJob(array $argv, callable $function): void
     {
-        $Job = new Job($argv, $type);
+        $Job = new Job($argv, 'array');
 
         $Job->restoreSharedMemoryResource('w');
 

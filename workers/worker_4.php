@@ -7,7 +7,6 @@ use src\Job;
 
 Job::runJob(
     $argv,
-    'array',
     function (&$Job, $read): array {
         return [
             $read,
