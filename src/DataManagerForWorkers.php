@@ -40,21 +40,21 @@ class DataManagerForWorkers
     public function splitDataForWorkers(): DataManagerForWorkers
     {
         if (($countWorkers = $this->workersSet->getCountWorkers()) == 1) {
-            $this->readyChunksOfDataForWorkers[] = $this->dataForSet;
+            $this->readyChunksOfDataForWorkers[] = $this->dataForSet[1];
             return $this;
         }
 
         $arrayChunks = [];
-        if (($count = count($this->dataForSet)) % $countWorkers == 0) {
+        if (($count = count($this->dataForSet[1])) % $countWorkers == 0) {
             $set = $count / $countWorkers;
-            $arrayChunks = array_chunk($this->dataForSet, $set);
+            $arrayChunks = array_chunk($this->dataForSet[1], $set);
         } else {
             if ($countWorkers > $count) {
                 throw new \Exception('Число воркеров не должно превышать количество данных для воркеров');
             }
 
             $set = (int)floor($count / $countWorkers);
-            $arrayChunks = array_chunk($this->dataForSet, $set);
+            $arrayChunks = array_chunk($this->dataForSet[1], $set);
 
             $lastKey = array_key_last($arrayChunks);
             $preLastKey = $lastKey - 1;
@@ -85,5 +85,29 @@ class DataManagerForWorkers
             );
             $counter++;
         }
+    }
+
+    /** Метод для записи данных без разделения по количеству воркеров, если в конфигурационном
+     *  массиве указан параметр 0 => false
+     * @param \src\SharedMemory $sharedMemory
+     */
+    public function putCommonDataIntoWorkers(SharedMemory $sharedMemory) :void
+    {
+        $resourcePool = $sharedMemory->getResourcePool()[$this->workersSet->getWorkerName()];
+        foreach ($resourcePool as $memoryKey => $item) {
+            $sharedMemory->write(
+                $item[0],
+                $this->readyChunksOfDataForWorkers
+            );
+        }
+    }
+
+    /** Метод записывает в участок разделяемой памяти одни данные для всех воркеров
+     * @return $this
+     */
+    public function passCommonDataForAllWorkers() : DataManagerForWorkers
+    {
+        $this->readyChunksOfDataForWorkers[] = $this->dataForSet[1];
+        return $this;
     }
 }
