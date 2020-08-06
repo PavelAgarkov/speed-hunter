@@ -61,7 +61,7 @@ class ProcessesManager
     ): void
     {
         $proc = proc_open(
-            "php {$workerName} {$processNumber} {$numberMemoryKey} {$memorySize}",
+            "php {$workerName}.php {$processNumber} {$numberMemoryKey} {$memorySize}",
             $descriptors,
             $this->processPipes);
         $this->processes[$processNumber] = $proc;
