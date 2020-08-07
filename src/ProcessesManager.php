@@ -74,6 +74,7 @@ class ProcessesManager
      */
     public function startProcessLoop(): ProcessesManager
     {
+//        $start = microtime(true);
         foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
                 $numberMemoryKey = $value[1];
@@ -88,6 +89,7 @@ class ProcessesManager
                     ],
                     $this->poolOfWorkers[$workerName]->getMemorySize()
                 );
+//                printf( "<br> open {$resourceKey} <br>");
             }
         }
         // демонстрация каналов для отладки
@@ -99,13 +101,16 @@ class ProcessesManager
 ////        usleep(10 * 1000); // 100ms
 //                // Read all available output (unread output is buffered).
 //
-//                $str = fread($this->pipes[$i][1], 8192);
+//                $str = fread($this->pipes[$i][1], 50);
 //
 //                if ($str) {
 //                    printf($str);
 //                }
 //            }
 //        }
+////
+//        $time = microtime(true) - $start;
+//        printf( "<br>" . $time . "<br>");
 
         return $this;
     }
@@ -117,6 +122,7 @@ class ProcessesManager
     {
         foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
+//                printf( "<br> close {$resourceKey} <br>");
                 fclose($this->pipes[$resourceKey][1]);
                 proc_close($this->processes[$resourceKey]);
             }
