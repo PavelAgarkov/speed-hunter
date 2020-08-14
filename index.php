@@ -11,16 +11,16 @@ $Processes
     ->configureProcessesLoop(
         [
             [
-                0 => 'workers/worker_1',
-                1 => 10,
+                0 => 'jobs/job_1',
+                1 => 3,
                 2 => 300,
                 3 => [
-                    0 => false,
+                    0 => true,
                     [1, 2, 3, 4]
                 ]
             ],
             [
-                0 => 'workers/worker_2',
+                0 => 'jobs/job_2',
                 1 => 10,
                 2 => 30000,
                 3 => [
@@ -29,7 +29,7 @@ $Processes
                 ],
             ],
             [
-                0 => 'workers/worker_4',
+                0 => 'jobs/job_4',
                 1 => 3,
                 2 => 50,
                 3 => [
@@ -44,4 +44,16 @@ $Processes
     ->clearResourcePool();
 
 $output = $Processes->getOutputData();
+
+$con = 0;
+foreach ($output as $key => $item) {
+    foreach ($item as $k => $v) {
+        if (!empty($v)) {
+            $con++;
+        }
+    }
+}
+
+print_r((string)$con);
 print_r($output);
+//print_r($Processes->getResourceMemoryData());
