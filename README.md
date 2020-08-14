@@ -38,16 +38,16 @@ $Processes
             // в элементе под ключом 3 хранится массив, 0 => разделять ли данные между воркерами
             // true - разделять, false - не разделять, а передать в каждый воркер общие данные
             [
-                0 => 'workers/worker_1',
+                0 => 'jobs/job_1',
                 1 => 10,
                 2 => 300,
                 3 => [
-                    0 => false,
+                    0 => true,
                     [1, 2, 3, 4]
                 ]
             ],
             [
-                0 => 'workers/worker_2',
+                0 => 'jobs/job_2',
                 1 => 4,
                 2 => 30000,
                 3 => [
@@ -56,7 +56,7 @@ $Processes
                 ],
             ],
             [
-                0 => 'workers/worker_4',
+                0 => 'jobs/job_4',
                 1 => 3,
                 2 => 50,
                 3 => [
@@ -74,7 +74,7 @@ $Processes
 $output = $Processes->getOutputData();
 ```
 
-Код воркера workers/worker_1 .
+Код воркера jobs/job_1 .
 ```php
 use src\Job;
 
