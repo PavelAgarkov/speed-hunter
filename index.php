@@ -12,7 +12,7 @@ $Processes
         [
             [
                 0 => 'jobs/job_1',
-                1 => 400,
+                1 => 1000,
                 2 => 300,
                 3 => [
                     0 => false,
@@ -45,18 +45,5 @@ $Processes
 
 $output = $Processes->getOutputData();
 
-$con = 0;
-foreach ($output as $key => $item) {
-    foreach ($item as $k => $v) {
-        if (!empty($v)) {
-            $con++;
-        }
-    }
-}
-
-print_r((string)$con);
-print_r($output);
+//print_r($output);
 //print_r($Processes->getResourceMemoryData());
-
-//phpinfo();
-//print_r($_SERVER);

@@ -49,9 +49,13 @@ class DataManagerForWorkers
             $set = $count / $countWorkers;
             $arrayChunks = array_chunk($this->dataForSet[1], $set);
         } else {
-            if ($countWorkers > $count) {
-                throw new \Exception('Число воркеров не должно превышать количество данных для воркеров');
-            }
+                try {
+                    if ($countWorkers > $count) {
+                        throw new \RuntimeException('The number of workers should not exceed the number of arrays for them.');
+                    }
+                } catch (\Exception $e) {
+                    exit($e->getMessage());
+                }
 
             $set = (int)floor($count / $countWorkers);
             $arrayChunks = array_chunk($this->dataForSet[1], $set);

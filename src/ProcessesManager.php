@@ -139,9 +139,9 @@ class ProcessesManager
      * @param array $workerConfigurations - массив конфигураций, включающий массивы содержащие
      *  информацию о наборе воркеров. Структура :
      * [
-         * 0 - путь до файла воркера, 1 - количество воркеров,
-         * 2 - память в килобайтах выделенная на один воркер,
-         * 3 - массив данных необходимых для параллельной обработки
+     * 0 - путь до файла воркера, 1 - количество воркеров,
+     * 2 - память в килобайтах выделенная на один воркер,
+     * 3 - массив данных необходимых для параллельной обработки
      * ]
      * если не указан 3 элемент, то в воркер не передаются данные
      * @return $this
@@ -158,8 +158,12 @@ class ProcessesManager
 
             if (isset($configuration[3])) {
 
-                if(!isset($configuration[3][0]) || $configuration[3][0] === null) {
-                    throw new \Exception('Не указан флаг разделителя для воркеров');
+                try {
+                    if (!isset($configuration[3][0]) || $configuration[3][0] === null || count($configuration[3]) == 1) {
+                        throw new \RuntimeException('The data separator flag for workers was not specified.');
+                    }
+                } catch (\Exception $e) {
+                    exit($e->getMessage());
                 }
 
                 $DataManager = $this->dataManagerForWorkers[$configuration[0]] = new DataManagerForWorkers(
@@ -187,7 +191,7 @@ class ProcessesManager
                         ->putDataIntoWorkerSharedMemory($this->SharedMemory);
                 } else {
                     $this->dataManagerForWorkers[$configuration[0]]
-                    ->putCommonDataIntoWorkers($this->SharedMemory);
+                        ->putCommonDataIntoWorkers($this->SharedMemory);
                 }
 
             }
@@ -199,7 +203,7 @@ class ProcessesManager
     /** Метод очищает пул ресурсов от данных из воркеров
      * @return bool
      */
-    public function clearResourcePool() : bool
+    public function clearResourcePool(): bool
     {
         return $this->SharedMemory->deleteAllDataFromResourcePool();
     }
@@ -216,7 +220,7 @@ class ProcessesManager
     /** Метод возвращает пул ресурсво из объекта разделяемой памяти
      * @return array
      */
-    public function getResourceMemoryData() : array
+    public function getResourceMemoryData(): array
     {
         return $this->SharedMemory->getResourcePool();
     }
