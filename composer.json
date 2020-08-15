@@ -1,5 +1,5 @@
 {
-  "name": "Pavel_Agarkov/speed-hunter",
+  "name": "pavel_agarkov/speed-hunter",
   "type": "project",
   "description": "Managing php-cli processes from under php-cgi and waiting for a response from the last process. (Only for * nix systems with shared memory support).",
   "keywords": [
