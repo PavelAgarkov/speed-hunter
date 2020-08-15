@@ -1,15 +1,34 @@
 {
+  "name": "Pavel_Agarkov/speed-hunter",
+  "type": "project",
+  "description": "Managing php-cli processes from under php-cgi and waiting for a response from the last process. (Only for * nix systems with shared memory support).",
+  "keywords": [
+    "cgi process",
+    "cli processes",
+    "jobs",
+    "process pool",
+    "multitasking work",
+    "unix shared memory",
+    "piping processes"
+  ],
+  "homepage": "https://github.com/PavelAgarkov/speed-hunter",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Pavel Agarkov",
+      "email": "agarkov.ru@mail.ru",
+      "role": "Developer"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "src\\": "src/"
     }
   },
   "require": {
+    "php": ">=7.4.8",
     "ext-shmop": "*",
     "ext-curl": "*",
     "ext-json": "*"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^9.2"
   }
 }

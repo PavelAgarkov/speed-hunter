@@ -12,10 +12,10 @@ $Processes
         [
             [
                 0 => 'jobs/job_1',
-                1 => 3,
+                1 => 400,
                 2 => 300,
                 3 => [
-                    0 => true,
+                    0 => false,
                     [1, 2, 3, 4]
                 ]
             ],
@@ -57,3 +57,6 @@ foreach ($output as $key => $item) {
 print_r((string)$con);
 print_r($output);
 //print_r($Processes->getResourceMemoryData());
+
+//phpinfo();
+//print_r($_SERVER);
