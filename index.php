@@ -45,5 +45,15 @@ $Processes
 
 $output = $Processes->getOutputData();
 
-//print_r($output);
+$con = 0;
+foreach ($output as $key => $item) {
+    foreach ($item as $k => $v) {
+        if (!empty($v)) {
+            $con++;
+        }
+    }
+}
+
+print_r((string)$con);
+print_r($output);
 //print_r($Processes->getResourceMemoryData());
