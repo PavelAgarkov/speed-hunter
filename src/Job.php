@@ -114,10 +114,12 @@ class Job
      */
     public function handler(callable $function, string $read): array
     {
-        $unserialize = unserialize($read);
-        if ($unserialize === false) {
-            $unserialize = null;
-        }
+        if (strcasecmp($read, "") == 0) {
+            $unserialize = unserialize($read);
+            if ($unserialize === false) {
+                $unserialize = null;
+            }
+        } else $unserialize = null;
         $array = $function($this, $unserialize);
 
         return $array;
