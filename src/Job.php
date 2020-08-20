@@ -114,14 +114,12 @@ class Job
      */
     public function handler(callable $function, string $read): array
     {
-        if (strcasecmp($read, "") == 0) {
-            $unserialize = unserialize($read);
-            if ($unserialize === false) {
-                $unserialize = null;
-            }
-        } else $unserialize = null;
-        $array = $function($this, $unserialize);
+        $unserialize = unserialize($read);
+        if ($unserialize === false) {
+            $unserialize = null;
+        }
 
+        $array = $function($this, $unserialize);
         return $array;
     }
 
@@ -151,6 +149,8 @@ class Job
         $Job = new Job($argv, 'array');
 
         $Job->restoreSharedMemoryResource('w');
+
+        $size = shmop_size($Job->sharedMemoryResource);
 
         $read = $Job->readFromSharedMemoryResource();
 
