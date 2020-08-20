@@ -24,9 +24,9 @@ class WorkerProcess
     private int $memorySize;
 
     public function __construct(array $workerSettings) {
-        $this->workerName = $workerSettings[0];
-        $this->countWorkers = $workerSettings[1];
-        $this->memorySize = $workerSettings[2];
+        $this->workerName = $workerSettings["jobName"];
+        $this->countWorkers = $workerSettings["numberJobs"];
+        $this->memorySize = $workerSettings["shSizeForOneJob"];
     }
 
     /** Метод возвращает количество воркеров
