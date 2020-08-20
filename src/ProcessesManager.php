@@ -74,7 +74,6 @@ class ProcessesManager
      */
     public function startProcessLoop(): ProcessesManager
     {
-//        $start = microtime(true);
         foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
                 $numberMemoryKey = $value[1];
@@ -109,9 +108,6 @@ class ProcessesManager
 //            }
 //        }
 ////
-//        $time = microtime(true) - $start;
-//        printf( "<br>" . $time . "<br>");
-
         return $this;
     }
 
@@ -154,24 +150,27 @@ class ProcessesManager
 
         $pool = [];
         foreach ($workerConfigurations as $key => $configuration) {
-            $pool[$configuration[0]] = new WorkerProcess($configuration);
+            $pool[$configuration["jobName"]] = new WorkerProcess($configuration);
 
-            if (isset($configuration[3])) {
+            if (isset($configuration["dataPartitioning"])) {
 
                 try {
-                    if (!isset($configuration[3][0]) || $configuration[3][0] === null || count($configuration[3]) == 1) {
+                    if (!isset($configuration["dataPartitioning"]["flagPartitioning"]) ||
+                        $configuration["dataPartitioning"]["flagPartitioning"] === null ||
+                        count($configuration["dataPartitioning"]) == 1) {
                         throw new \RuntimeException('The data separator flag for workers was not specified.');
                     }
                 } catch (\Exception $e) {
                     exit($e->getMessage());
                 }
 
-                $DataManager = $this->dataManagerForWorkers[$configuration[0]] = new DataManagerForWorkers(
-                    $pool[$configuration[0]],
-                    $configuration[3]
-                );
+                $DataManager = $this->dataManagerForWorkers[$configuration["jobName"]] =
+                    new DataManagerForWorkers(
+                        $pool[$configuration["jobName"]],
+                        $configuration["dataPartitioning"]
+                    );
 
-                if ($configuration[3][0] === true) {
+                if ($configuration["dataPartitioning"]["flagPartitioning"] === true) {
                     $DataManager->splitDataForWorkers();
                 } else {
                     $DataManager->passCommonDataForAllWorkers();
@@ -184,13 +183,13 @@ class ProcessesManager
         $this->SharedMemory->createResourcePool($this->poolOfWorkers);
 
         foreach ($workerConfigurations as $key => $configuration) {
-            if (isset($configuration[3])) {
+            if (isset($configuration["dataPartitioning"])) {
 
-                if ($configuration[3][0] === true) {
-                    $this->dataManagerForWorkers[$configuration[0]]
+                if ($configuration["dataPartitioning"]["flagPartitioning"] === true) {
+                    $this->dataManagerForWorkers[$configuration["jobName"]]
                         ->putDataIntoWorkerSharedMemory($this->SharedMemory);
                 } else {
-                    $this->dataManagerForWorkers[$configuration[0]]
+                    $this->dataManagerForWorkers[$configuration["jobName"]]
                         ->putCommonDataIntoWorkers($this->SharedMemory);
                 }
 
@@ -223,6 +222,17 @@ class ProcessesManager
     public function getResourceMemoryData(): array
     {
         return $this->SharedMemory->getResourcePool();
+    }
+
+    public static function runParallelJobs(array $jobs) : ProcessesManager
+    {
+        $Processes = new ProcessesManager();
+        $Processes
+            ->configureProcessesLoop($jobs)
+            ->startProcessLoop()
+            ->closeProcessLoop()
+            ->clearResourcePool();
+        return $Processes;
     }
 
 }

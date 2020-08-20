@@ -15,6 +15,6 @@ Job::runJob(
         curl_close($ch);
 
         $array = json_decode($cont, true);
-        return $array;
+        return [$array, $read];
     }
 );

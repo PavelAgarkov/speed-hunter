@@ -45,9 +45,9 @@ class DataManagerForWorkers
         }
 
         $arrayChunks = [];
-        if (($count = count($this->dataForSet[1])) % $countWorkers == 0) {
+        if (($count = count($this->dataForSet["dataToPartitioning"])) % $countWorkers == 0) {
             $set = $count / $countWorkers;
-            $arrayChunks = array_chunk($this->dataForSet[1], $set);
+            $arrayChunks = array_chunk($this->dataForSet["dataToPartitioning"], $set);
         } else {
                 try {
                     if ($countWorkers > $count) {
@@ -58,7 +58,7 @@ class DataManagerForWorkers
                 }
 
             $set = (int)floor($count / $countWorkers);
-            $arrayChunks = array_chunk($this->dataForSet[1], $set);
+            $arrayChunks = array_chunk($this->dataForSet["dataToPartitioning"], $set);
 
             $lastKey = array_key_last($arrayChunks);
             $preLastKey = $lastKey - 1;
@@ -111,7 +111,7 @@ class DataManagerForWorkers
      */
     public function passCommonDataForAllWorkers() : DataManagerForWorkers
     {
-        $this->readyChunksOfDataForWorkers = $this->dataForSet[1];
+        $this->readyChunksOfDataForWorkers = $this->dataForSet["dataToPartitioning"];
         return $this;
     }
 }
