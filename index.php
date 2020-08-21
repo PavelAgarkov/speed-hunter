@@ -8,10 +8,30 @@ use src\ProcessesManager;
 $Processes =
     ProcessesManager::runParallelJobs(
         array(
-            "jobs/job_2" => [10, 20, 30],
-            "jobs/job_4" => ['commit', 'sin'],
-        ),
-        "example.xml"
+            array(
+                "jobName" => 'jobs/job_1',
+                "numberJobs" => 485,
+                "shSizeForOneJob" => 300,
+            ),
+            array(
+                "jobName" => 'jobs/job_2',
+                "numberJobs" => 5,
+                "shSizeForOneJob" => 30000,
+                "dataPartitioning" => array(
+                    "flagPartitioning" => 0,
+                    "dataToPartitioning" => ['commit', 'sin']
+                )
+            ),
+            array(
+                "jobName" => 'jobs/job_4',
+                "numberJobs" => 10,
+                "shSizeForOneJob" => 300,
+                "dataPartitioning" => array(
+                    "flagPartitioning" => 0,
+                    "dataToPartitioning" => ['commit', 'sin']
+                )
+            )
+        )
     );
 
 $output = $Processes->getOutputData();

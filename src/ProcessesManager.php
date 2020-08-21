@@ -93,7 +93,6 @@ class ProcessesManager
                     ],
                     $this->poolOfWorkers[$workerName]->getMemorySize()
                 );
-//                printf( "<br> open {$resourceKey} <br>");
             }
         }
         // демонстрация каналов для отладки
@@ -123,7 +122,6 @@ class ProcessesManager
     {
         foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
-//                printf( "<br> close {$resourceKey} <br>");
                 fclose($this->pipes[$resourceKey][1]);
                 proc_close($this->processes[$resourceKey]);
             }
@@ -148,18 +146,18 @@ class ProcessesManager
      * @return $this
      * @throws \Exception
      */
-    public function configureProcessesLoop(array $data, string $xmlPath): ProcessesManager
+    public function configureProcessesLoop(array $workerConfigurations): ProcessesManager
     {
-        $XML = new XML($xmlPath);
-        $XML->addDataForJobs($data);
-        $workerConfigurations = $XML->getJobs();
+//        $XML = new XML($xmlPath);
+//        $XML->addDataForJobs($data);
+//        $workerConfigurations = $XML->getJobs();
 
         $SharedMemory = new SharedMemory();
         $this->SharedMemory = $SharedMemory;
 
-        $pool = [];
+        $poolOfWorkers = [];
         foreach ($workerConfigurations as $key => $configuration) {
-            $pool[$configuration["jobName"]] = new WorkerProcess($configuration);
+            $poolOfWorkers[$configuration["jobName"]] = new WorkerProcess($configuration);
 
             if (isset($configuration["dataPartitioning"])) {
 
@@ -175,7 +173,7 @@ class ProcessesManager
 
                 $DataManager = $this->dataManagerForWorkers[$configuration["jobName"]] =
                     new DataManagerForWorkers(
-                        $pool[$configuration["jobName"]],
+                        $poolOfWorkers[$configuration["jobName"]],
                         $configuration["dataPartitioning"]
                     );
 
@@ -187,7 +185,7 @@ class ProcessesManager
             }
         }
 
-        $this->poolOfWorkers = &$pool;
+        $this->poolOfWorkers = &$poolOfWorkers;
 
         $this->SharedMemory->createResourcePool($this->poolOfWorkers);
 
@@ -233,11 +231,11 @@ class ProcessesManager
         return $this->SharedMemory->getResourcePool();
     }
 
-    public static function runParallelJobs(array $jobs, string $xmlPath): ProcessesManager
+    public static function runParallelJobs(array $jobs): ProcessesManager
     {
         $Processes = new ProcessesManager();
         $Processes
-            ->configureProcessesLoop($jobs, $xmlPath)
+            ->configureProcessesLoop($jobs)
             ->startProcessLoop()
             ->closeProcessLoop()
             ->clearResourcePool();

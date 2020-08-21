@@ -177,7 +177,6 @@ class SharedMemory
         foreach ($this->resourcePool as $workerName => $configations) {
             foreach ($configations as $key => $value) {
                 $memoryResource = $value[0];
-                $memoryNumber = $value[1];
                 $delete = $this->delete($memoryResource);
                 if ($delete === true) {
                     unset($this->resourcePool[$workerName][$key]);
