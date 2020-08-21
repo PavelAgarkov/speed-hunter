@@ -60,8 +60,13 @@ class ProcessesManager
         int $memorySize
     ): void
     {
+        $unserializeFlag = 0;
+        if(array_key_exists($workerName, $this->dataManagerForWorkers)) {
+            $unserializeFlag = 1;
+        } else $unserializeFlag = 0;
+
         $proc = proc_open(
-            "php {$workerName}.php {$processNumber} {$numberMemoryKey} {$memorySize}",
+            "php {$workerName}.php {$processNumber} {$numberMemoryKey} {$memorySize} {$unserializeFlag}",
             $descriptors,
             $this->processPipes);
         $this->processes[$processNumber] = $proc;

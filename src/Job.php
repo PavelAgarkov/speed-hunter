@@ -10,6 +10,8 @@ use src\SharedMemory;
  */
 class Job
 {
+    const SERIALIZE_TRUE = 1;
+
     /**
      * @var string - имя зпущенного воркера
      */
@@ -50,6 +52,8 @@ class Job
      */
     private string $type;
 
+    private int $serializeFlag;
+
     /**
      * Job constructor.
      * @param array $argv - аргументы из вызываемого процесса
@@ -62,6 +66,8 @@ class Job
         $this->processNumber = (int)$argv[1];
         $this->sharedMemoryKey = (int)$argv[2];
         $this->sharedMemorySize = (int)$argv[3];
+        $this->serializeFlag = (int)$argv[4];
+
         $this->SharedMemory = new SharedMemory();
         $this->type = $type;
 
@@ -114,10 +120,12 @@ class Job
      */
     public function handler(callable $function, string $read): array
     {
-        $unserialize = unserialize($read);
-        if ($unserialize === false) {
-            $unserialize = null;
-        }
+        if ($read != "") {
+            $unserialize = unserialize($read);
+            if ($unserialize === false) {
+                $unserialize = null;
+            }
+        } else $unserialize = null;;
 
         $array = $function($this, $unserialize);
         return $array;
@@ -150,9 +158,9 @@ class Job
 
         $Job->restoreSharedMemoryResource('w');
 
-        $size = shmop_size($Job->sharedMemoryResource);
-
-        $read = $Job->readFromSharedMemoryResource();
+        if ($Job->serializeFlag == static::SERIALIZE_TRUE) {
+            $read = $Job->readFromSharedMemoryResource();
+        } else $read = "";
 
         $array = $Job->handler($function, $read);
 

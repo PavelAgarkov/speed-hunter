@@ -15,7 +15,7 @@ $Processes =
             ),
             array(
                 "jobName" => 'jobs/job_2',
-                "numberJobs" => 5,
+                "numberJobs" => 10,
                 "shSizeForOneJob" => 30000,
                 "dataPartitioning" => array(
                     "flagPartitioning" => false,
@@ -24,11 +24,11 @@ $Processes =
             ),
             array(
                 "jobName" => 'jobs/job_4',
-                "numberJobs" => 10,
+                "numberJobs" => 5,
                 "shSizeForOneJob" => 300,
                 "dataPartitioning" => array(
                     "flagPartitioning" => false,
-                    "dataToPartitioning" => ['commit']
+                    "dataToPartitioning" => ['commit', 'sin']
                 )
             )
         )
