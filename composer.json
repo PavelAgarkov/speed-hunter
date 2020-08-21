@@ -29,6 +29,8 @@
     "php": ">=7.4.8",
     "ext-shmop": "*",
     "ext-curl": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-xmlreader": "*",
+    "ext-simplexml": "*"
   }
 }

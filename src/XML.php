@@ -11,9 +11,7 @@ class XML
 
     private XMLReader $XmlReader;
 
-    private array $Jobs;
-
-    private array $finishJobs;
+    private array $Jobs = [];
 
     public function __construct(string $path)
     {

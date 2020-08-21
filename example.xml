@@ -2,14 +2,12 @@
 <jobs>
     <job>
         <jobName>jobs/job_1</jobName>
-
         <numberJobs>1</numberJobs>
         <shSizeForOneJob>300</shSizeForOneJob>
     </job>
     <job>
         <jobName>jobs/job_2</jobName>
         <numberJobs>10</numberJobs>
-
         <shSizeForOneJob>30000</shSizeForOneJob>
         <dataPartitioning>
             <flagPartitioning>0</flagPartitioning>
