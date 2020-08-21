@@ -61,7 +61,7 @@ class ProcessesManager
     ): void
     {
         $unserializeFlag = 0;
-        if(array_key_exists($workerName, $this->dataManagerForWorkers)) {
+        if (array_key_exists($workerName, $this->dataManagerForWorkers)) {
             $unserializeFlag = 1;
         } else $unserializeFlag = 0;
 
@@ -148,8 +148,12 @@ class ProcessesManager
      * @return $this
      * @throws \Exception
      */
-    public function configureProcessesLoop(array $workerConfigurations): ProcessesManager
+    public function configureProcessesLoop(array $data, string $xmlPath): ProcessesManager
     {
+        $XML = new XML($xmlPath);
+        $XML->addDataForJobs($data);
+        $workerConfigurations = $XML->getJobs();
+
         $SharedMemory = new SharedMemory();
         $this->SharedMemory = $SharedMemory;
 
@@ -175,7 +179,7 @@ class ProcessesManager
                         $configuration["dataPartitioning"]
                     );
 
-                if ($configuration["dataPartitioning"]["flagPartitioning"] === true) {
+                if ((int)$configuration["dataPartitioning"]["flagPartitioning"] == 1) {
                     $DataManager->splitDataForWorkers();
                 } else {
                     $DataManager->passCommonDataForAllWorkers();
@@ -190,7 +194,7 @@ class ProcessesManager
         foreach ($workerConfigurations as $key => $configuration) {
             if (isset($configuration["dataPartitioning"])) {
 
-                if ($configuration["dataPartitioning"]["flagPartitioning"] === true) {
+                if ((int)$configuration["dataPartitioning"]["flagPartitioning"] == 1) {
                     $this->dataManagerForWorkers[$configuration["jobName"]]
                         ->putDataIntoWorkerSharedMemory($this->SharedMemory);
                 } else {
@@ -229,11 +233,11 @@ class ProcessesManager
         return $this->SharedMemory->getResourcePool();
     }
 
-    public static function runParallelJobs(array $jobs) : ProcessesManager
+    public static function runParallelJobs(array $jobs, string $xmlPath): ProcessesManager
     {
         $Processes = new ProcessesManager();
         $Processes
-            ->configureProcessesLoop($jobs)
+            ->configureProcessesLoop($jobs, $xmlPath)
             ->startProcessLoop()
             ->closeProcessLoop()
             ->clearResourcePool();

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs>
+    <job>
+        <jobName>jobs/job_1</jobName>
+
+        <numberJobs>1</numberJobs>
+        <shSizeForOneJob>300</shSizeForOneJob>
+    </job>
+    <job>
+        <jobName>jobs/job_2</jobName>
+        <numberJobs>10</numberJobs>
+
+        <shSizeForOneJob>30000</shSizeForOneJob>
+        <dataPartitioning>
+            <flagPartitioning>0</flagPartitioning>
+        </dataPartitioning>
+    </job>
+    <job>
+        <jobName>jobs/job_4</jobName>
+        <numberJobs>2</numberJobs>
+        <shSizeForOneJob>300</shSizeForOneJob>
+        <dataPartitioning>
+            <flagPartitioning>1</flagPartitioning>
+        </dataPartitioning>
+    </job>
+</jobs>
