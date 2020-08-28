@@ -1,16 +1,19 @@
 <?php
 
-namespace src;
+namespace src\process;
 
+use src\data_manager\DataManagerForWorkers;
+use src\data_manager\DataPartitioningStrategy;
+use src\data_manager\PutDataInJobSharedMemoryStrategy;
+use src\settings\ParallelProcessSettings;
 use src\SharedMemory;
-use src\WorkerProcess;
-use src\DataManagerForWorkers;
+use src\process\WorkerProcess;
 
 /** Класс для управления параллельными php процессами взаимодействующими через разделяемую память unix.
  * Class ProcessesManager
  * @package src
  */
-class ProcessesManager
+class ParallelProcessesManager
 {
     /**
      * @var array - записи о каналах связи.
@@ -41,6 +44,8 @@ class ProcessesManager
      * @var \src\SharedMemory - объект разделяемой памяти
      */
     private SharedMemory $SharedMemory;
+
+    private ParallelProcessSettings $settings;
 
     /** Метод для открытия нового процесса php передающего в открытый процесс данные о номере процесса
      *  относительно родительского, а так же данные для заполнения разделяемой памяти из созданного процесса.
@@ -75,15 +80,16 @@ class ProcessesManager
 
     /** Метод открывает цикл процессов, который передает управление воркерам.
      *  По окончанию выполнения последнего воркера цикл возвращает управление основному процессу.
-     * @return ProcessesManager
+     * @return ParallelProcessesManager
      */
-    public function startProcessLoop(): ProcessesManager
+    public function startProcessLoop(): ParallelProcessesManager
     {
         foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
                 $numberMemoryKey = $value[1];
 
-                $this->openProcess(
+                $process = new ParallelProcess();
+                $process->processOpen(
                     $workerName,
                     $resourceKey,
                     $numberMemoryKey,
@@ -91,7 +97,8 @@ class ProcessesManager
                         0 => ['pipe', 'r'],
                         1 => ['pipe', 'w'],
                     ],
-                    $this->poolOfWorkers[$workerName]->getMemorySize()
+                    $this->poolOfWorkers[$workerName]->getMemorySize(),
+                    $this
                 );
             }
         }
@@ -116,9 +123,9 @@ class ProcessesManager
     }
 
     /** Метод закрывающий каналы и процессы, открытые для работы.
-     * @return ProcessesManager
+     * @return ParallelProcessesManager
      */
-    public function closeProcessLoop(): ProcessesManager
+    public function closeProcessLoop(): ParallelProcessesManager
     {
         foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
@@ -135,71 +142,63 @@ class ProcessesManager
     /** Метод приримает массив конфигураций, создает менеджера управления разделяемой памятью
      *  для каждого набора воркеров, создает пул ресурсов разделяемой памяти, заполняет ресурс
      *  для каждого набора воркеров разбитыми данными на воркеры.
-     * @param array $workerConfigurations - массив конфигураций, включающий массивы содержащие
-     *  информацию о наборе воркеров. Структура :
-     * [
-     * 0 - путь до файла воркера, 1 - количество воркеров,
-     * 2 - память в килобайтах выделенная на один воркер,
-     * 3 - массив данных необходимых для параллельной обработки
-     * ]
-     * если не указан 3 элемент, то в воркер не передаются данные
+     * @param ParallelProcessSettings $settings
      * @return $this
      * @throws \Exception
      */
-    public function configureProcessesLoop(array $workerConfigurations): ProcessesManager
+    public function configureProcessesLoop(ParallelProcessSettings $settings): ParallelProcessesManager
     {
-//        $XML = new XML($xmlPath);
-//        $XML->addDataForJobs($data);
-//        $workerConfigurations = $XML->getJobs();
+        $this->settings = $settings;
 
+        // 1 block
         $SharedMemory = new SharedMemory();
         $this->SharedMemory = $SharedMemory;
 
+        // 2 block
         $poolOfWorkers = [];
-        foreach ($workerConfigurations as $key => $configuration) {
-            $poolOfWorkers[$configuration["jobName"]] = new WorkerProcess($configuration);
+        foreach ($this->settings->getSettingsObjects() as $key => $configuration) {
 
-            if (isset($configuration["dataPartitioning"])) {
+            $jobSettings = $configuration->getJobTypeSettings();
+            $poolOfWorkers[$jobSettings["jobName"]] = new WorkerProcess($jobSettings);
 
+            if (isset($jobSettings["dataPartitioning"])) {
                 try {
-                    if (!isset($configuration["dataPartitioning"]["flagPartitioning"]) ||
-                        $configuration["dataPartitioning"]["flagPartitioning"] === null ||
-                        count($configuration["dataPartitioning"]) == 1) {
+                    if (!isset($jobSettings["dataPartitioning"]["flagPartitioning"]) ||
+                        $jobSettings["dataPartitioning"]["flagPartitioning"] === null ||
+                        count($jobSettings["dataPartitioning"]) == 1) {
                         throw new \RuntimeException('The data separator flag for workers was not specified.');
                     }
                 } catch (\Exception $e) {
                     exit($e->getMessage());
                 }
 
-                $DataManager = $this->dataManagerForWorkers[$configuration["jobName"]] =
+                $DataManager = $this->dataManagerForWorkers[$jobSettings["jobName"]] =
                     new DataManagerForWorkers(
-                        $poolOfWorkers[$configuration["jobName"]],
-                        $configuration["dataPartitioning"]
+                        $poolOfWorkers[$jobSettings["jobName"]],
+                        $jobSettings["dataPartitioning"]
                     );
 
-                if ((int)$configuration["dataPartitioning"]["flagPartitioning"] == 1) {
-                    $DataManager->splitDataForWorkers();
-                } else {
-                    $DataManager->passCommonDataForAllWorkers();
-                }
+                $strategy = new DataPartitioningStrategy($DataManager);
+                $strategy->prepareDataForRecording();
             }
         }
 
         $this->poolOfWorkers = &$poolOfWorkers;
 
+        // 3 block
         $this->SharedMemory->createResourcePool($this->poolOfWorkers);
 
-        foreach ($workerConfigurations as $key => $configuration) {
-            if (isset($configuration["dataPartitioning"])) {
+        // 4 block
+        foreach ($this->settings->getSettingsObjects() as $key => $configuration) {
 
-                if ((int)$configuration["dataPartitioning"]["flagPartitioning"] == 1) {
-                    $this->dataManagerForWorkers[$configuration["jobName"]]
-                        ->putDataIntoWorkerSharedMemory($this->SharedMemory);
-                } else {
-                    $this->dataManagerForWorkers[$configuration["jobName"]]
-                        ->putCommonDataIntoWorkers($this->SharedMemory);
-                }
+            $jobSettings = $configuration->getJobTypeSettings();
+            if (isset($jobSettings["dataPartitioning"])) {
 
+                $strategy = new PutDataInJobSharedMemoryStrategy(
+                    $this->dataManagerForWorkers[$jobSettings["jobName"]],
+                    $this->SharedMemory
+                );
+                $strategy->putData();
             }
         }
 
@@ -231,15 +230,19 @@ class ProcessesManager
         return $this->SharedMemory->getResourcePool();
     }
 
-    public static function runParallelJobs(array $jobs): ProcessesManager
+    public function &getProcessPipes(): array
     {
-        $Processes = new ProcessesManager();
-        $Processes
-            ->configureProcessesLoop($jobs)
-            ->startProcessLoop()
-            ->closeProcessLoop()
-            ->clearResourcePool();
-        return $Processes;
+        return $this->processPipes;
+    }
+
+    public function getDataManagerForWorkers(): array
+    {
+        return $this->dataManagerForWorkers;
+    }
+
+    public function getPipes(): array
+    {
+        return $this->pipes;
     }
 
 }

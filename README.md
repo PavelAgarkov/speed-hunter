@@ -20,9 +20,9 @@
 Код для запуска в основном процессе.
 
 ```php
-use src\ProcessesManager;
+use src\ParallelProcessesManager;
 $Processes =
-    ProcessesManager::runParallelJobs(
+    ParallelProcessesManager::runParallelJobs(
         array(
             array(
                 "jobName" => 'jobs/job_1',

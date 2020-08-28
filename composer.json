@@ -30,7 +30,6 @@
     "ext-shmop": "*",
     "ext-curl": "*",
     "ext-json": "*",
-    "ext-xmlreader": "*",
-    "ext-simplexml": "*"
+    "php-ds/php-ds": "^1.2"
   }
 }

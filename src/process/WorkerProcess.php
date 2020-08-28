@@ -1,6 +1,6 @@
 <?php
 
-namespace src;
+namespace src\process;
 
 /** Класс для создания сета однотипных процессов
  * Class WorkerProcess

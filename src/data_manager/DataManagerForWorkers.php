@@ -1,7 +1,8 @@
 <?php
 
-namespace src;
+namespace src\data_manager;
 
+use src\process\WorkerProcess;
 use src\SharedMemory;
 
 /** Класс реализует запись передаваемых в воркер данных в разделяемую
@@ -49,13 +50,13 @@ class DataManagerForWorkers
             $set = $count / $countWorkers;
             $arrayChunks = array_chunk($this->dataForSet["dataToPartitioning"], $set);
         } else {
-                try {
-                    if ($countWorkers > $count) {
-                        throw new \RuntimeException('The number of workers should not exceed the number of arrays for them.');
-                    }
-                } catch (\Exception $e) {
-                    exit($e->getMessage());
+            try {
+                if ($countWorkers > $count) {
+                    throw new \RuntimeException('The number of workers should not exceed the number of arrays for them.');
                 }
+            } catch (\Exception $e) {
+                exit($e->getMessage());
+            }
 
             $set = (int)floor($count / $countWorkers);
             $arrayChunks = array_chunk($this->dataForSet["dataToPartitioning"], $set);
@@ -77,7 +78,7 @@ class DataManagerForWorkers
      *  разделяемую память по ключам
      * @param \src\SharedMemory $sharedMemory - инъекция объектом SharedMemory
      */
-    public function putDataIntoWorkerSharedMemory(SharedMemory $sharedMemory) : void
+    public function putDataIntoWorkerSharedMemory(SharedMemory $sharedMemory): void
     {
         $resourcePool = $sharedMemory->getResourcePool()[$this->workersSet->getWorkerName()];
 
@@ -95,7 +96,7 @@ class DataManagerForWorkers
      *  массиве указан параметр 0 => false
      * @param \src\SharedMemory $sharedMemory
      */
-    public function putCommonDataIntoWorkers(SharedMemory $sharedMemory) :void
+    public function putCommonDataIntoWorkers(SharedMemory $sharedMemory): void
     {
         $resourcePool = $sharedMemory->getResourcePool()[$this->workersSet->getWorkerName()];
         foreach ($resourcePool as $memoryKey => $item) {
@@ -109,9 +110,14 @@ class DataManagerForWorkers
     /** Метод записывает в участок разделяемой памяти одни данные для всех воркеров
      * @return $this
      */
-    public function passCommonDataForAllWorkers() : DataManagerForWorkers
+    public function passCommonDataForAllWorkers(): DataManagerForWorkers
     {
         $this->readyChunksOfDataForWorkers = $this->dataForSet["dataToPartitioning"];
         return $this;
+    }
+
+    public function getDataForSet() : array
+    {
+        return $this->dataForSet;
     }
 }
