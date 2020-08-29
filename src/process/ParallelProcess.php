@@ -9,6 +9,16 @@ class ParallelProcess extends Process
         parent::__construct();
     }
 
+    /** Метод для открытия нового процесса php передающего в открытый процесс данные о номере процесса
+     *  относительно родительского, а так же данные для заполнения разделяемой памяти из созданного процесса.
+     * @param string $workerName
+     * @param int $processNumber
+     * @param int $numberMemoryKey
+     * @param array $descriptors
+     * @param int $memorySize
+     * @param ParallelProcessesManager $manager
+     */
+
     public function processOpen(
         string $workerName,
         int $processNumber,
@@ -28,8 +38,7 @@ class ParallelProcess extends Process
             "php {$workerName}.php {$processNumber} {$numberMemoryKey} {$memorySize} {$unserializeFlag}",
             $descriptors,
             $manager->getProcessPipes());
-        $manager->processes[$processNumber] = $proc;
-        $manager->getPipes()[$processNumber] = $manager->getProcessPipes();
+        $manager->setProcesses($processNumber, $proc);
+        $manager->setPipes($processNumber, $manager->getProcessPipes());
     }
-
 }

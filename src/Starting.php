@@ -2,38 +2,68 @@
 
 namespace src;
 
-use src\process\ParallelProcessesManager;
-use src\settings\ParallelProcessSettings;
-use src\settings\Settings;
+use src\process\ProcessManagerInterface;
 
 class Starting
 {
-    private ParallelProcessesManager $ParallelProcessManager;
+    private ProcessManagerInterface $ProcessManager;
 
-    private Settings $Settings;
-
-    public function __construct()
+    private function __construct(ProcessManagerInterface $manager)
     {
-        $this->ParallelProcessManager = new ParallelProcessesManager();
+        $this->ProcessManager = $manager;
     }
 
-    public function parallel(array $jobs): void
+    public function parallelRun(): Starting
     {
-        $this->Settings = $settings = new ParallelProcessSettings($jobs);
-        $this->ParallelProcessManager
-            ->configureProcessesLoop($settings)
+        $this->ProcessManager
+            ->configureProcessesLoop()
             ->startProcessLoop()
             ->closeProcessLoop()
             ->clearResourcePool();
+        return $this;
     }
 
-    public function oneAsyncProcess(): void
+    public function oneAsyncProcessRun(): Starting
+    {
+        $this->ProcessManager->single();
+        return $this;
+    }
+
+    public function multipleAsyncProcessesRun(): void
     {
 
     }
 
-    public function getProcessManager(): ParallelProcessesManager
+    public function getProcessManager(): ProcessManagerInterface
     {
-        return $this->ParallelProcessManager;
+        return $this->ProcessManager;
     }
+
+    public static function startingParallel(array $config): Starting
+    {
+        return new \src\Starting(
+            new \src\process\ParallelProcessesManager(
+                new \src\settings\ParallelProcessSettings(
+                    $config
+                )
+            )
+        );
+    }
+
+    public static function startingOneAsyncProcess(array $config): Starting
+    {
+        return new \src\Starting(
+            new \src\process\AsyncProcessManager(
+                new \src\settings\SingleProcessSettings(
+                    $config
+                )
+            )
+        );
+    }
+
+    public static function startingMultipleAsyncProcesses() : Starting
+    {
+
+    }
+
 }

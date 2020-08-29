@@ -1,12 +1,13 @@
 <?php
 
-namespace src\process;
 
-class SingleProcess extends Process
+namespace src\settings;
+
+
+class SomeAsyncProcessesSettings extends Settings
 {
     public function __construct()
     {
         parent::__construct();
     }
-
 }

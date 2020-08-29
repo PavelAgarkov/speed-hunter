@@ -2,10 +2,12 @@
 
 namespace src\process;
 
+use src\process\ProcessManagerInterface;
 use src\data_manager\DataManagerForWorkers;
 use src\data_manager\DataPartitioningStrategy;
 use src\data_manager\PutDataInJobSharedMemoryStrategy;
 use src\settings\ParallelProcessSettings;
+use src\settings\Settings;
 use src\SharedMemory;
 use src\process\WorkerProcess;
 
@@ -13,7 +15,7 @@ use src\process\WorkerProcess;
  * Class ProcessesManager
  * @package src
  */
-class ParallelProcessesManager
+class ParallelProcessesManager implements ProcessManagerInterface
 {
     /**
      * @var array - записи о каналах связи.
@@ -23,7 +25,7 @@ class ParallelProcessesManager
     /**
      * @var array - запущенные процессы.
      */
-    public array $processes = [];
+    private array $processes = [];
 
     /**
      * @var array - указатели на каналы связи между процессами.
@@ -45,37 +47,11 @@ class ParallelProcessesManager
      */
     private SharedMemory $SharedMemory;
 
-    private ParallelProcessSettings $settings;
+    private Settings $settings;
 
-    /** Метод для открытия нового процесса php передающего в открытый процесс данные о номере процесса
-     *  относительно родительского, а так же данные для заполнения разделяемой памяти из созданного процесса.
-     * @param string $workerName - имя воркера.
-     * @param int $processNumber - порядковый номер запускаемого процесса для родительского.
-     * @param int $numberMemoryKey - ключ разделяемой памяти, по которому внутри воркера открывается
-     *                              соединения для записи в участок разделяемой памяти.
-     * @param array $descriptors - дискрипторы для настройки каналов.
-     * @param int $memorySize - размер памяти для восстановления подключения к ресурсу разделяемой
-     *                          памяти внутри воркера.
-     */
-    public function openProcess(
-        string $workerName,
-        int $processNumber,
-        int $numberMemoryKey,
-        array $descriptors,
-        int $memorySize
-    ): void
+    public function __construct(Settings $settings)
     {
-        $unserializeFlag = 0;
-        if (array_key_exists($workerName, $this->dataManagerForWorkers)) {
-            $unserializeFlag = 1;
-        } else $unserializeFlag = 0;
-
-        $proc = proc_open(
-            "php {$workerName}.php {$processNumber} {$numberMemoryKey} {$memorySize} {$unserializeFlag}",
-            $descriptors,
-            $this->processPipes);
-        $this->processes[$processNumber] = $proc;
-        $this->pipes[$processNumber] = $this->processPipes;
+        $this->settings = $settings;
     }
 
     /** Метод открывает цикл процессов, который передает управление воркерам.
@@ -146,10 +122,8 @@ class ParallelProcessesManager
      * @return $this
      * @throws \Exception
      */
-    public function configureProcessesLoop(ParallelProcessSettings $settings): ParallelProcessesManager
+    public function configureProcessesLoop(): ParallelProcessesManager
     {
-        $this->settings = $settings;
-
         // 1 block
         $SharedMemory = new SharedMemory();
         $this->SharedMemory = $SharedMemory;
@@ -240,9 +214,19 @@ class ParallelProcessesManager
         return $this->dataManagerForWorkers;
     }
 
-    public function getPipes(): array
+    public function getPipes(int $processNumber): array
     {
-        return $this->pipes;
+        return $this->pipes[$processNumber];
+    }
+
+    public function setPipes(int $processNumber, array $processPipes): void
+    {
+        $this->pipes[$processNumber] = $processPipes;
+    }
+
+    public function setProcesses(int $processNumber, $proc): void
+    {
+        $this->processes[$processNumber] = $proc;
     }
 
 }
