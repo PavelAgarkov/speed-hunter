@@ -41,29 +41,35 @@ class Starting
 
     public static function startingParallel(array $config): Starting
     {
-        return new \src\Starting(
+        return (new \src\Starting(
             new \src\process\ParallelProcessesManager(
                 new \src\settings\ParallelProcessSettings(
                     $config
                 )
             )
-        );
+        ))->parallelRun();
     }
 
     public static function startingOneAsyncProcess(array $config): Starting
     {
-        return new \src\Starting(
+        return (new \src\Starting(
             new \src\process\AsyncProcessManager(
                 new \src\settings\SingleProcessSettings(
                     $config
                 )
             )
-        );
+        ))->oneAsyncProcessRun();
     }
 
-    public static function startingMultipleAsyncProcesses() : Starting
+    public static function startingMultipleAsyncProcesses($config) : Starting
     {
-
+        return new \src\Starting(
+            new \src\process\AsyncProcessManager(
+                new \src\settings\MultipleAsyncProcessesSettings(
+                    $config
+                )
+            )
+        );
     }
 
 }

@@ -2,11 +2,13 @@
 
 namespace src\process;
 
+use src\ResourcePool;
+
 class ParallelProcess extends Process
 {
-    public function __construct()
+    public function __construct(ResourcePool $pool)
     {
-        parent::__construct();
+        parent::__construct($pool);
     }
 
     /** Метод для открытия нового процесса php передающего в открытый процесс данные о номере процесса

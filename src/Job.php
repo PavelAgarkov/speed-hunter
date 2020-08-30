@@ -118,7 +118,7 @@ class Job
      * @param string $read - прочитанные данные из памяти
      * @return array
      */
-    public function handler(callable $function, string $read): array
+    public function handler(callable $function, string $read): ?array
     {
         if ($read != "") {
             $unserialize = unserialize($read);
@@ -165,5 +165,20 @@ class Job
         $array = $Job->handler($function, $read);
 
         $Job->writeIntoSharedMemoryResource($array);
+    }
+
+    public static function runSingleAsyncJob(array $argv, callable $function) : void
+    {
+        $Job = new Job($argv, 'array');
+
+        $Job->restoreSharedMemoryResource('w');
+
+        if ($Job->serializeFlag == static::SERIALIZE_TRUE) {
+            $read = $Job->readFromSharedMemoryResource();
+        } else $read = "";
+
+        $Job->handler($function, $read);
+
+        $Job->SharedMemory->delete($Job->sharedMemoryResource);
     }
 }

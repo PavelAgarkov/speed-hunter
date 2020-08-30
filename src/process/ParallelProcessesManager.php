@@ -6,6 +6,7 @@ use src\process\ProcessManagerInterface;
 use src\data_manager\DataManagerForWorkers;
 use src\data_manager\DataPartitioningStrategy;
 use src\data_manager\PutDataInJobSharedMemoryStrategy;
+use src\ResourcePool;
 use src\settings\ParallelProcessSettings;
 use src\settings\Settings;
 use src\SharedMemory;
@@ -15,7 +16,7 @@ use src\process\WorkerProcess;
  * Class ProcessesManager
  * @package src
  */
-class ParallelProcessesManager implements ProcessManagerInterface
+class ParallelProcessesManager extends ProcessManager implements ProcessManagerInterface
 {
     /**
      * @var array - записи о каналах связи.
@@ -38,20 +39,13 @@ class ParallelProcessesManager implements ProcessManagerInterface
     private array $poolOfWorkers;
 
     /**
-     * @var array - массив объектов DataManager для каждого набора WorkerProcess
-     */
-    private array $dataManagerForWorkers;
-
-    /**
      * @var \src\SharedMemory - объект разделяемой памяти
      */
     private SharedMemory $SharedMemory;
 
-    private Settings $settings;
-
     public function __construct(Settings $settings)
     {
-        $this->settings = $settings;
+        parent::__construct($settings);
     }
 
     /** Метод открывает цикл процессов, который передает управление воркерам.
@@ -64,7 +58,11 @@ class ParallelProcessesManager implements ProcessManagerInterface
             foreach ($configurations as $resourceKey => $value) {
                 $numberMemoryKey = $value[1];
 
-                $process = new ParallelProcess();
+                $process = new ParallelProcess(
+                    new ResourcePool(
+                        $this->getSettings()
+                    )
+                );
                 $process->processOpen(
                     $workerName,
                     $resourceKey,

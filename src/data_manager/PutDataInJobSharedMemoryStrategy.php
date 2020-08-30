@@ -25,4 +25,9 @@ class PutDataInJobSharedMemoryStrategy
         }
     }
 
+    public function putDataForSingleAsyncProcess() : void
+    {
+        $this->manager->putCommonDataIntoWorkers($this->memory);
+    }
+
 }

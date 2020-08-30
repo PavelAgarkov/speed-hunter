@@ -39,9 +39,7 @@ class SharedMemory
     }
 
     /** Метод создает набор участков разделяемой памяти и записываеи их в массив.
-     * @param int $countResources - количество ресурсов необходимые к созданию, исходя их количества воркеров
-     *  в клиентском коде.
-     * @param int $memorySize - размер разделяемой памяти для каждого участка управляемой памяти.
+     * @param array $poolOfWorkers
      */
 //    public function createResourcePool(int $countResources = 0, int $memorySize = 0)
     public function createResourcePool(array $poolOfWorkers)
@@ -230,5 +228,15 @@ class SharedMemory
             return $this->output[$workerName];
         }
         return $this->output;
+    }
+
+    public function getResourceByJobName(string $name) : array
+    {
+        return $this->getResourcePool()[$name];
+    }
+
+    public function getSize($resourceId) : int
+    {
+        return is_resource($resourceId) ? shmop_size($resourceId) : 0;
     }
 }

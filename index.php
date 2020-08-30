@@ -15,15 +15,15 @@ require __DIR__ . '/vendor/autoload.php';
 //                "numberJobs" => 1,
 //                "shSizeForOneJob" => 300,
 //            ),
-//            array(
-//                "jobName" => 'jobs/job_2',
-//                "numberJobs" => 10,
-//                "shSizeForOneJob" => 30000,
-//                "dataPartitioning" => array(
-//                    "flagPartitioning" => 0,
-//                    "dataToPartitioning" => ['commit', 'sin']
-//                )
-//            ),
+////            array(
+////                "jobName" => 'jobs/job_2',
+////                "numberJobs" => 10,
+////                "shSizeForOneJob" => 30000,
+////                "dataPartitioning" => array(
+////                    "flagPartitioning" => 0,
+////                    "dataToPartitioning" => ['commit', 'sin']
+////                )
+////            ),
 //            array(
 //                "jobName" => 'jobs/job_4',
 //                "numberJobs" => 2,
@@ -34,8 +34,7 @@ require __DIR__ . '/vendor/autoload.php';
 //                )
 //            )
 //        )
-//    )
-//        ->parallelRun();
+//    );
 //
 //$output = $parallel->getProcessManager()->getOutputData();
 //print_r($output);
@@ -43,11 +42,11 @@ require __DIR__ . '/vendor/autoload.php';
 $async =
     \src\Starting::startingOneAsyncProcess(
         array(
-            "jobName" => 'jobs/job_4',
-            "numberJobs" => 2,
+            "jobName" => 'jobs/async_1',
             "shSizeForOneJob" => 300,
             "data" => array(1, 2, 3)
         )
-    )
-        ->oneAsyncProcessRun();
+    );
+
+echo "Я все";
 

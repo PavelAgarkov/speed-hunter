@@ -107,12 +107,23 @@ class DataManagerForWorkers
         }
     }
 
+    public function putDataIntoSingleProcess(SharedMemory $sharedMemory) : void
+    {
+
+    }
+
     /** Метод записывает в участок разделяемой памяти одни данные для всех воркеров
      * @return $this
      */
     public function passCommonDataForAllWorkers(): DataManagerForWorkers
     {
         $this->readyChunksOfDataForWorkers = $this->dataForSet["dataToPartitioning"];
+        return $this;
+    }
+
+    public function passDataForSingleAsyncProcess() : DataManagerForWorkers
+    {
+        $this->readyChunksOfDataForWorkers = $this->dataForSet;
         return $this;
     }
 

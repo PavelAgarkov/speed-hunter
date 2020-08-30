@@ -25,7 +25,11 @@ class WorkerProcess
 
     public function __construct(array $workerSettings) {
         $this->workerName = $workerSettings["jobName"];
-        $this->countWorkers = $workerSettings["numberJobs"];
+        if(isset($workerSettings["numberJobs"])) {
+            $this->countWorkers = $workerSettings["numberJobs"];
+        } else {
+            $this->countWorkers = 1;
+        }
         $this->memorySize = $workerSettings["shSizeForOneJob"];
     }
 
