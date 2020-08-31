@@ -15,11 +15,7 @@ class Starting
 
     public function parallelRun(): Starting
     {
-        $this->ProcessManager
-            ->configureProcessesLoop()
-            ->startProcessLoop()
-            ->closeProcessLoop()
-            ->clearResourcePool();
+        $this->ProcessManager->parallel();
         return $this;
     }
 
@@ -70,6 +66,11 @@ class Starting
                 )
             )
         );
+    }
+
+    public function getOutput() : array
+    {
+        return $this->getProcessManager()->getOutputData();
     }
 
 }

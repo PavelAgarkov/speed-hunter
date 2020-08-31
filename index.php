@@ -15,15 +15,15 @@ require __DIR__ . '/vendor/autoload.php';
 //                "numberJobs" => 1,
 //                "shSizeForOneJob" => 300,
 //            ),
-////            array(
-////                "jobName" => 'jobs/job_2',
-////                "numberJobs" => 10,
-////                "shSizeForOneJob" => 30000,
-////                "dataPartitioning" => array(
-////                    "flagPartitioning" => 0,
-////                    "dataToPartitioning" => ['commit', 'sin']
-////                )
-////            ),
+//            array(
+//                "jobName" => 'jobs/job_2',
+//                "numberJobs" => 10,
+//                "shSizeForOneJob" => 30000,
+//                "dataPartitioning" => array(
+//                    "flagPartitioning" => 0,
+//                    "dataToPartitioning" => ['commit', 'sin']
+//                )
+//            ),
 //            array(
 //                "jobName" => 'jobs/job_4',
 //                "numberJobs" => 2,
@@ -36,7 +36,7 @@ require __DIR__ . '/vendor/autoload.php';
 //        )
 //    );
 //
-//$output = $parallel->getProcessManager()->getOutputData();
+//$output = $parallel->getOutput();
 //print_r($output);
 
 $async =

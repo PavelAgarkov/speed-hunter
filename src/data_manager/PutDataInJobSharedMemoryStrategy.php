@@ -2,32 +2,33 @@
 
 namespace src\data_manager;
 
+use src\ResourcePool;
 use src\SharedMemory;
 
 class PutDataInJobSharedMemoryStrategy
 {
     private DataManagerForWorkers $manager;
 
-    private SharedMemory $memory;
+    private ResourcePool $resourcePool;
 
-    public function __construct(DataManagerForWorkers $dataManagerForWorkers, SharedMemory &$sharedMemory)
+    public function __construct(DataManagerForWorkers $dataManagerForWorkers, ResourcePool $resourcePool)
     {
         $this->manager = $dataManagerForWorkers;
-        $this->memory = $sharedMemory;
+        $this->resourcePool = $resourcePool;
     }
 
     public function putData() : void
     {
         if ((int)$this->manager->getDataForSet()['flagPartitioning'] == 1) {
-            $this->manager->putDataIntoWorkerSharedMemory($this->memory);
+            $this->manager->putDataIntoWorkerSharedMemory($this->resourcePool);
         } else {
-            $this->manager->putCommonDataIntoWorkers($this->memory);
+            $this->manager->putCommonDataIntoWorkers($this->resourcePool);
         }
     }
 
     public function putDataForSingleAsyncProcess() : void
     {
-        $this->manager->putCommonDataIntoWorkers($this->memory);
+        $this->manager->putCommonDataIntoWorkers($this->resourcePool);
     }
 
 }

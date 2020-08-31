@@ -3,7 +3,6 @@
 namespace src\process;
 
 use src\ResourcePool;
-use src\settings\Settings;
 
 class AsyncProcess extends Process
 {
@@ -17,7 +16,7 @@ class AsyncProcess extends Process
         $settings = $this->ResourcePool->getSettingsForSingleProcess();
 
         $name = $settings['jobName'];
-        $shResources = $this->ResourcePool->getSharedMemory()->getResourceByJobName($name);
+        $shResources = $this->ResourcePool->getResourceByJobName($name);
 
         $resourceKey = array_key_first($shResources);
         $numberMemory = current($shResources)[1];

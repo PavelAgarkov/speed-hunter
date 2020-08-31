@@ -3,6 +3,7 @@
 namespace src\data_manager;
 
 use src\process\WorkerProcess;
+use src\ResourcePool;
 use src\SharedMemory;
 
 /** Класс реализует запись передаваемых в воркер данных в разделяемую
@@ -27,10 +28,13 @@ class DataManagerForWorkers
      */
     private array $readyChunksOfDataForWorkers;
 
-    public function __construct(WorkerProcess &$workerSet, array $dataForWorkersSet)
+    private SharedMemory $SharedMemory;
+
+    public function __construct(WorkerProcess &$workerSet, array $dataForWorkersSet, SharedMemory &$sharedMemory)
     {
-        $this->workersSet = $workerSet;
-        $this->dataForSet = $dataForWorkersSet;
+        $this->workersSet   = $workerSet;
+        $this->dataForSet   = $dataForWorkersSet;
+        $this->SharedMemory = $sharedMemory;
     }
 
     /** Метод разбивает на "куски" неподготовленные данные для всех воркеров,
@@ -76,15 +80,15 @@ class DataManagerForWorkers
 
     /** Метод записывает подготовленные "куски" данных в подготовленную
      *  разделяемую память по ключам
-     * @param \src\SharedMemory $sharedMemory - инъекция объектом SharedMemory
+     * @param ResourcePool $resourcePool
      */
-    public function putDataIntoWorkerSharedMemory(SharedMemory $sharedMemory): void
+    public function putDataIntoWorkerSharedMemory(ResourcePool $resourcePool): void
     {
-        $resourcePool = $sharedMemory->getResourcePool()[$this->workersSet->getWorkerName()];
+        $resourcePool = $resourcePool->getResourcePool()[$this->workersSet->getWorkerName()];
 
         $counter = 0;
         foreach ($resourcePool as $memoryKey => $item) {
-            $sharedMemory->write(
+            $this->SharedMemory->write(
                 $item[0],
                 $this->readyChunksOfDataForWorkers[$counter]
             );
@@ -94,13 +98,13 @@ class DataManagerForWorkers
 
     /** Метод для записи данных без разделения по количеству воркеров, если в конфигурационном
      *  массиве указан параметр 0 => false
-     * @param \src\SharedMemory $sharedMemory
+     * @param ResourcePool $resourcePool
      */
-    public function putCommonDataIntoWorkers(SharedMemory $sharedMemory): void
+    public function putCommonDataIntoWorkers(ResourcePool $resourcePool): void
     {
-        $resourcePool = $sharedMemory->getResourcePool()[$this->workersSet->getWorkerName()];
+        $resourcePool = $resourcePool->getResourcePool()[$this->workersSet->getWorkerName()];
         foreach ($resourcePool as $memoryKey => $item) {
-            $sharedMemory->write(
+            $this->SharedMemory->write(
                 $item[0],
                 $this->readyChunksOfDataForWorkers
             );

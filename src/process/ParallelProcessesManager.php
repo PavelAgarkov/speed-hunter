@@ -33,16 +33,6 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
      */
     private array $processPipes = [];
 
-    /**
-     * @var array - набор воркеров
-     */
-    private array $poolOfWorkers;
-
-    /**
-     * @var \src\SharedMemory - объект разделяемой памяти
-     */
-    private SharedMemory $SharedMemory;
-
     public function __construct(Settings $settings)
     {
         parent::__construct($settings);
@@ -50,19 +40,18 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
 
     /** Метод открывает цикл процессов, который передает управление воркерам.
      *  По окончанию выполнения последнего воркера цикл возвращает управление основному процессу.
+     * @param ResourcePool $resourcePool
      * @return ParallelProcessesManager
      */
-    public function startProcessLoop(): ParallelProcessesManager
+    public function startProcessLoop(ResourcePool $resourcePool): ParallelProcessesManager
     {
-        foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
+        $this->setResourcePool($resourcePool);
+
+        foreach ($resourcePool->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
                 $numberMemoryKey = $value[1];
 
-                $process = new ParallelProcess(
-                    new ResourcePool(
-                        $this->getSettings()
-                    )
-                );
+                $process = new ParallelProcess($resourcePool);
                 $process->processOpen(
                     $workerName,
                     $resourceKey,
@@ -71,28 +60,11 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
                         0 => ['pipe', 'r'],
                         1 => ['pipe', 'w'],
                     ],
-                    $this->poolOfWorkers[$workerName]->getMemorySize(),
+                    $process->getResourcePool()->getPoolOfWorkers()[$workerName]->getMemorySize(),
                     $this
                 );
             }
         }
-        // демонстрация каналов для отладки
-
-//        while (array_filter($this->processes, function ($proc) {
-//            return proc_get_status($proc)['running'];
-//        })) {
-//            foreach (range(0, 4) as $i) {
-////        usleep(10 * 1000); // 100ms
-//                // Read all available output (unread output is buffered).
-//
-//                $str = fread($this->pipes[$i][1], 50);
-//
-//                if ($str) {
-//                    printf($str);
-//                }
-//            }
-//        }
-////
         return $this;
     }
 
@@ -101,78 +73,15 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
      */
     public function closeProcessLoop(): ParallelProcessesManager
     {
-        foreach ($this->SharedMemory->getResourcePool() as $workerName => $configurations) {
+        foreach ($this->getResourcePool()->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
                 fclose($this->pipes[$resourceKey][1]);
+                fclose($this->pipes[$resourceKey][0]);
                 proc_close($this->processes[$resourceKey]);
             }
         }
 
-        $this->SharedMemory->readAllDataFromResourcePool();
-
-        return $this;
-    }
-
-    /** Метод приримает массив конфигураций, создает менеджера управления разделяемой памятью
-     *  для каждого набора воркеров, создает пул ресурсов разделяемой памяти, заполняет ресурс
-     *  для каждого набора воркеров разбитыми данными на воркеры.
-     * @param ParallelProcessSettings $settings
-     * @return $this
-     * @throws \Exception
-     */
-    public function configureProcessesLoop(): ParallelProcessesManager
-    {
-        // 1 block
-        $SharedMemory = new SharedMemory();
-        $this->SharedMemory = $SharedMemory;
-
-        // 2 block
-        $poolOfWorkers = [];
-        foreach ($this->settings->getSettingsObjects() as $key => $configuration) {
-
-            $jobSettings = $configuration->getJobTypeSettings();
-            $poolOfWorkers[$jobSettings["jobName"]] = new WorkerProcess($jobSettings);
-
-            if (isset($jobSettings["dataPartitioning"])) {
-                try {
-                    if (!isset($jobSettings["dataPartitioning"]["flagPartitioning"]) ||
-                        $jobSettings["dataPartitioning"]["flagPartitioning"] === null ||
-                        count($jobSettings["dataPartitioning"]) == 1) {
-                        throw new \RuntimeException('The data separator flag for workers was not specified.');
-                    }
-                } catch (\Exception $e) {
-                    exit($e->getMessage());
-                }
-
-                $DataManager = $this->dataManagerForWorkers[$jobSettings["jobName"]] =
-                    new DataManagerForWorkers(
-                        $poolOfWorkers[$jobSettings["jobName"]],
-                        $jobSettings["dataPartitioning"]
-                    );
-
-                $strategy = new DataPartitioningStrategy($DataManager);
-                $strategy->prepareDataForRecording();
-            }
-        }
-
-        $this->poolOfWorkers = &$poolOfWorkers;
-
-        // 3 block
-        $this->SharedMemory->createResourcePool($this->poolOfWorkers);
-
-        // 4 block
-        foreach ($this->settings->getSettingsObjects() as $key => $configuration) {
-
-            $jobSettings = $configuration->getJobTypeSettings();
-            if (isset($jobSettings["dataPartitioning"])) {
-
-                $strategy = new PutDataInJobSharedMemoryStrategy(
-                    $this->dataManagerForWorkers[$jobSettings["jobName"]],
-                    $this->SharedMemory
-                );
-                $strategy->putData();
-            }
-        }
+        $this->getResourcePool()->readAllDataFromResourcePool();
 
         return $this;
     }
@@ -182,7 +91,7 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
      */
     public function clearResourcePool(): bool
     {
-        return $this->SharedMemory->deleteAllDataFromResourcePool();
+        return $this->getResourcePool()->deleteAllDataFromResourcePool();
     }
 
     /** Метод управляет получение выходных данных из разделяемой памяти по ключу(или всех).
@@ -191,15 +100,7 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
      */
     public function getOutputData(string $workerName = null): array
     {
-        return $this->SharedMemory->getData($workerName);
-    }
-
-    /** Метод возвращает пул ресурсво из объекта разделяемой памяти
-     * @return array
-     */
-    public function getResourceMemoryData(): array
-    {
-        return $this->SharedMemory->getResourcePool();
+        return $this->getResourcePool()->getSharedMemory()->getData($workerName);
     }
 
     public function &getProcessPipes(): array
@@ -225,6 +126,22 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
     public function setProcesses(int $processNumber, $proc): void
     {
         $this->processes[$processNumber] = $proc;
+    }
+
+    public function parallel(): void
+    {
+        $process = new ParallelProcess(
+            new ResourcePool(
+                $this->getSettings()
+            )
+        );
+        $pool = $process->getResourcePool();
+        $pool->configureResourcePoolForParallelProcesses($this);
+
+        $this
+            ->startProcessLoop($pool)
+            ->closeProcessLoop()
+            ->clearResourcePool();
     }
 
 }
