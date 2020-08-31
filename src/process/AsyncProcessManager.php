@@ -15,11 +15,13 @@ class AsyncProcessManager extends ProcessManager implements ProcessManagerInterf
 
     public function single(): void
     {
-        $process = new AsyncProcess(
-            new ResourcePool(
-                $this->getSettings()
-            )
-        );
+        $process =
+            new AsyncProcess(
+                new ResourcePool(
+                    $this->getSettings()
+                )
+            );
+
         $process->getResourcePool()
             ->configurePoolForSingleProcess($this);
 

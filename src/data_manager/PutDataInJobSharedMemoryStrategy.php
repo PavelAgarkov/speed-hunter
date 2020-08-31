@@ -3,7 +3,6 @@
 namespace src\data_manager;
 
 use src\ResourcePool;
-use src\SharedMemory;
 
 class PutDataInJobSharedMemoryStrategy
 {

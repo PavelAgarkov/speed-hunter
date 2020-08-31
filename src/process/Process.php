@@ -3,7 +3,6 @@
 namespace src\process;
 
 use src\ResourcePool;
-use src\settings\Settings;
 
 abstract class Process
 {

@@ -131,14 +131,6 @@ class Job
         return $array;
     }
 
-    /** Метод удаляет данные из памяти по ресурсу
-     * @return bool
-     */
-    public function deleteDataFromSharedMemoryResource(): bool
-    {
-        return $this->SharedMemory->delete($this->sharedMemoryResource);
-    }
-
     /** Метод измеряем затраченную память на скрипт
      * @return int
      */

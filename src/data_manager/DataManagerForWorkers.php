@@ -111,11 +111,6 @@ class DataManagerForWorkers
         }
     }
 
-    public function putDataIntoSingleProcess(SharedMemory $sharedMemory) : void
-    {
-
-    }
-
     /** Метод записывает в участок разделяемой памяти одни данные для всех воркеров
      * @return $this
      */

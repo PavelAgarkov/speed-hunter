@@ -25,9 +25,9 @@ class Starting
         return $this;
     }
 
-    public function multipleAsyncProcessesRun(): void
+    public function multipleAsyncProcessesRun(): Starting
     {
-
+        return $this;
     }
 
     public function getProcessManager(): ProcessManagerInterface
@@ -57,18 +57,18 @@ class Starting
         ))->oneAsyncProcessRun();
     }
 
-    public static function startingMultipleAsyncProcesses($config) : Starting
+    public static function startingMultipleAsyncProcesses($config): Starting
     {
-        return new \src\Starting(
+        return (new \src\Starting(
             new \src\process\AsyncProcessManager(
                 new \src\settings\MultipleAsyncProcessesSettings(
                     $config
                 )
             )
-        );
+        ))->multipleAsyncProcessesRun();
     }
 
-    public function getOutput() : array
+    public function getOutput(): array
     {
         return $this->getProcessManager()->getOutputData();
     }

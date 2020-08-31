@@ -3,14 +3,8 @@
 namespace src\process;
 
 use src\process\ProcessManagerInterface;
-use src\data_manager\DataManagerForWorkers;
-use src\data_manager\DataPartitioningStrategy;
-use src\data_manager\PutDataInJobSharedMemoryStrategy;
 use src\ResourcePool;
-use src\settings\ParallelProcessSettings;
 use src\settings\Settings;
-use src\SharedMemory;
-use src\process\WorkerProcess;
 
 /** Класс для управления параллельными php процессами взаимодействующими через разделяемую память unix.
  * Class ProcessesManager
@@ -130,11 +124,13 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
 
     public function parallel(): void
     {
-        $process = new ParallelProcess(
-            new ResourcePool(
-                $this->getSettings()
-            )
-        );
+        $process =
+            new ParallelProcess(
+                new ResourcePool(
+                    $this->getSettings()
+                )
+            );
+
         $pool = $process->getResourcePool();
         $pool->configureResourcePoolForParallelProcesses($this);
 
