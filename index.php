@@ -9,14 +9,14 @@ require __DIR__ . '/vendor/autoload.php';
 
 use src\Starting;
 
-$parallel =
-    Starting::startingParallel(
-        array(
-            array(
-                "jobName" => 'jobs/job_1',
-                "numberJobs" => 1,
-                "shSizeForOneJob" => 300,
-            ),
+//$parallel =
+//    Starting::startingParallel(
+//        array(
+//            array(
+//                "jobName" => 'jobs/job_1',
+//                "numberJobs" => 1,
+//                "shSizeForOneJob" => 300,
+//            ),
 //            array(
 //                "jobName" => 'jobs/job_2',
 //                "numberJobs" => 10,
@@ -26,20 +26,20 @@ $parallel =
 //                    "dataToPartitioning" => ['commit', 'sin']
 //                )
 //            ),
-            array(
-                "jobName" => 'jobs/job_4',
-                "numberJobs" => 2,
-                "shSizeForOneJob" => 300,
-                "dataPartitioning" => array(
-                    "flagPartitioning" => 1,
-                    "dataToPartitioning" => ['commit', 'sin']
-                )
-            )
-        )
-    );
-
-$output = $parallel->getOutput();
-print_r($output);
+//            array(
+//                "jobName" => 'jobs/job_4',
+//                "numberJobs" => 2,
+//                "shSizeForOneJob" => 300,
+//                "dataPartitioning" => array(
+//                    "flagPartitioning" => 1,
+//                    "dataToPartitioning" => ['commit', 'sin']
+//                )
+//            )
+//        )
+//    );
+//
+//$output = $parallel->getOutput();
+//print_r($output);
 
 //Starting::startingOneAsyncProcess(
 //    array(
