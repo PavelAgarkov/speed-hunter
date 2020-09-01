@@ -28,18 +28,19 @@ class ParallelProcess extends Process
         array $descriptors,
         int $memorySize,
         ParallelProcessesManager &$manager
-    ): void
-
-    {
+    ): void {
         $unserializeFlag = 0;
         if (array_key_exists($workerName, $manager->getDataManagerForWorkers())) {
             $unserializeFlag = 1;
-        } else $unserializeFlag = 0;
+        } else {
+            $unserializeFlag = 0;
+        }
 
         $proc = proc_open(
             "php {$workerName}.php {$processNumber} {$numberMemoryKey} {$memorySize} {$unserializeFlag}",
             $descriptors,
-            $manager->getProcessPipes());
+            $manager->getProcessPipes()
+        );
         $manager->setProcesses($processNumber, $proc);
         $manager->setPipes($processNumber, $manager->getProcessPipes());
     }

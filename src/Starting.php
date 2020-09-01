@@ -2,7 +2,12 @@
 
 namespace src;
 
+use src\process\AsyncProcessManager;
+use src\process\ParallelProcessesManager;
 use src\process\ProcessManagerInterface;
+use src\settings\MultipleAsyncProcessesSettings;
+use src\settings\ParallelProcessSettings;
+use src\settings\SingleProcessSettings;
 
 class Starting
 {
@@ -37,9 +42,9 @@ class Starting
 
     public static function startingParallel(array $config): Starting
     {
-        return (new \src\Starting(
-            new \src\process\ParallelProcessesManager(
-                new \src\settings\ParallelProcessSettings(
+        return (new Starting(
+            new ParallelProcessesManager(
+                new ParallelProcessSettings(
                     $config
                 )
             )
@@ -48,9 +53,9 @@ class Starting
 
     public static function startingOneAsyncProcess(array $config): Starting
     {
-        return (new \src\Starting(
-            new \src\process\AsyncProcessManager(
-                new \src\settings\SingleProcessSettings(
+        return (new Starting(
+            new AsyncProcessManager(
+                new SingleProcessSettings(
                     $config
                 )
             )
@@ -59,9 +64,9 @@ class Starting
 
     public static function startingMultipleAsyncProcesses($config): Starting
     {
-        return (new \src\Starting(
-            new \src\process\AsyncProcessManager(
-                new \src\settings\MultipleAsyncProcessesSettings(
+        return (new Starting(
+            new AsyncProcessManager(
+                new MultipleAsyncProcessesSettings(
                     $config
                 )
             )

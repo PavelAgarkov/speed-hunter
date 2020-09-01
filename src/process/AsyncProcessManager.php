@@ -30,6 +30,5 @@ class AsyncProcessManager extends ProcessManager implements ProcessManagerInterf
 
     public function multiple(): void
     {
-
     }
 }

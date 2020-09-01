@@ -75,12 +75,10 @@ class ResourcePool
         return $manager;
     }
 
-    public function configureResourcePoolForParallelProcesses
-    (ParallelProcessesManager $manager): ParallelProcessesManager
-    {
+    public function configureResourcePoolForParallelProcesses(ParallelProcessesManager $manager
+    ): ParallelProcessesManager {
         $poolOfWorkers = [];
         foreach ($this->settings->getSettingsObjects() as $key => $configuration) {
-
             $jobSettings = $configuration->getJobTypeSettings();
             $poolOfWorkers[$jobSettings["jobName"]] = new WorkerProcess($jobSettings);
 
@@ -142,7 +140,6 @@ class ResourcePool
     public function createResourcePool(array $poolOfWorkers)
     {
         foreach ($poolOfWorkers as $key => $worker) {
-
             $workerName = $worker->getWorkerName();
             $count = $worker->getCountWorkers();
             $memorySize = $worker->getMemorySize();

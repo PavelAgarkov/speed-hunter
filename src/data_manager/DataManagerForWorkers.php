@@ -32,8 +32,8 @@ class DataManagerForWorkers
 
     public function __construct(WorkerProcess &$workerSet, array $dataForWorkersSet, SharedMemory &$sharedMemory)
     {
-        $this->workersSet   = $workerSet;
-        $this->dataForSet   = $dataForWorkersSet;
+        $this->workersSet = $workerSet;
+        $this->dataForSet = $dataForWorkersSet;
         $this->SharedMemory = $sharedMemory;
     }
 
@@ -56,7 +56,9 @@ class DataManagerForWorkers
         } else {
             try {
                 if ($countWorkers > $count) {
-                    throw new \RuntimeException('The number of workers should not exceed the number of arrays for them.');
+                    throw new \RuntimeException(
+                        'The number of workers should not exceed the number of arrays for them.'
+                    );
                 }
             } catch (\Exception $e) {
                 exit($e->getMessage());
@@ -120,13 +122,13 @@ class DataManagerForWorkers
         return $this;
     }
 
-    public function passDataForSingleAsyncProcess() : DataManagerForWorkers
+    public function passDataForSingleAsyncProcess(): DataManagerForWorkers
     {
         $this->readyChunksOfDataForWorkers = $this->dataForSet;
         return $this;
     }
 
-    public function getDataForSet() : array
+    public function getDataForSet(): array
     {
         return $this->dataForSet;
     }

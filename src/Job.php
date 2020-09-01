@@ -61,7 +61,6 @@ class Job
      */
     public function __construct(array $argv, string $type)
     {
-
         $this->workerName = (string)$argv[0];
         $this->processNumber = (int)$argv[1];
         $this->sharedMemoryKey = (int)$argv[2];
@@ -70,7 +69,6 @@ class Job
 
         $this->SharedMemory = new SharedMemory();
         $this->type = $type;
-
     }
 
     /** Метод восстанавливает ресурс памяти по указанному флагу
@@ -125,7 +123,9 @@ class Job
             if ($unserialize === false) {
                 $unserialize = null;
             }
-        } else $unserialize = null;;
+        } else {
+            $unserialize = null;
+        };
 
         $array = $function($this, $unserialize);
         return $array;
@@ -152,14 +152,16 @@ class Job
 
         if ($Job->serializeFlag == static::SERIALIZE_TRUE) {
             $read = $Job->readFromSharedMemoryResource();
-        } else $read = "";
+        } else {
+            $read = "";
+        }
 
         $array = $Job->handler($function, $read);
 
         $Job->writeIntoSharedMemoryResource($array);
     }
 
-    public static function runSingleAsyncJob(array $argv, callable $function) : void
+    public static function runSingleAsyncJob(array $argv, callable $function): void
     {
         $Job = new Job($argv, 'array');
 
@@ -167,7 +169,9 @@ class Job
 
         if ($Job->serializeFlag == static::SERIALIZE_TRUE) {
             $read = $Job->readFromSharedMemoryResource();
-        } else $read = "";
+        } else {
+            $read = "";
+        }
 
         $Job->handler($function, $read);
 

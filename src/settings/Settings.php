@@ -8,10 +8,9 @@ abstract class Settings implements SettingsInterface
 
     public function __construct()
     {
-
     }
 
-    public function getSettingsObjects() : array
+    public function getSettingsObjects(): array
     {
         return $this->settingsObjects;
     }

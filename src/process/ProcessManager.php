@@ -37,12 +37,12 @@ class ProcessManager
         $this->dataManagerForWorkers[$key] = $dataManagerForWorkers;
     }
 
-    public function setResourcePool(ResourcePool $resourcePool) : void
+    public function setResourcePool(ResourcePool $resourcePool): void
     {
         $this->ResourcePool = $resourcePool;
     }
 
-    public function getResourcePool() : ResourcePool
+    public function getResourcePool(): ResourcePool
     {
         return $this->ResourcePool;
     }

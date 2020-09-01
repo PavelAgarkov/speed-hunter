@@ -13,11 +13,8 @@ abstract class Process
         $this->ResourcePool = $pool;
     }
 
-    public function getResourcePool() : ResourcePool
+    public function getResourcePool(): ResourcePool
     {
         return $this->ResourcePool;
     }
-
-
-
 }

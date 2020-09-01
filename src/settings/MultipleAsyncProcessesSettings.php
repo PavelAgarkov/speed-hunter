@@ -1,8 +1,6 @@
 <?php
 
-
 namespace src\settings;
-
 
 class MultipleAsyncProcessesSettings extends Settings
 {

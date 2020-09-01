@@ -11,7 +11,7 @@ class JobSettings
         $this->jobTypeSettings = $jobSettings;
     }
 
-    public function getJobTypeSettings() : array
+    public function getJobTypeSettings(): array
     {
         return $this->jobTypeSettings;
     }

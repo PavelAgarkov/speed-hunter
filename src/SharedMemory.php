@@ -99,20 +99,20 @@ class SharedMemory
      * @param string|null $workerName - ключ в массиве $this->output, так же название файла воркера
      * @return array
      */
-    public function getData(string $workerName = null) : array
+    public function getData(string $workerName = null): array
     {
-        if($workerName !== null && array_key_exists($workerName, $this->output)) {
+        if ($workerName !== null && array_key_exists($workerName, $this->output)) {
             return $this->output[$workerName];
         }
         return $this->output;
     }
 
-    public function getSize($resourceId) : int
+    public function getSize($resourceId): int
     {
         return is_resource($resourceId) ? shmop_size($resourceId) : 0;
     }
 
-    public function setOutputElementByKey(string $workerName, string $key, array $data) : void
+    public function setOutputElementByKey(string $workerName, string $key, array $data): void
     {
         $this->output[$workerName][$key] = $data;
     }
