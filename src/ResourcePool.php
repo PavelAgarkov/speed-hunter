@@ -2,15 +2,10 @@
 
 namespace src;
 
-use http\Exception\RuntimeException;
-use http\Exception\UnexpectedValueException;
-use MongoDB\Driver\Exception\CommandException;
-use MongoDB\Driver\Exception\EncryptionException;
 use src\data_manager\DataManagerForWorkers;
 use src\data_manager\DataPartitioningStrategy;
 use src\data_manager\PutDataInJobSharedMemoryStrategy;
 use src\process\AsyncProcessManager;
-use src\process\ParallelProcessesManager;
 use src\process\ProcessManager;
 use src\process\WorkerProcess;
 use src\settings\Settings;
@@ -83,28 +78,6 @@ class ResourcePool
 
         return $manager;
     }
-
-//    public function configureResourcePoolForMultipleAsyncProcesses(AsyncProcessManager $manager): AsyncProcessManager
-//    {
-//        $poolOfWorkers = [];
-//        $poolOfWorkers[$name = $this->getSettingsForSingleProcess()["jobName"]] =
-//            new WorkerProcess($this->getSettingsForSingleProcess());
-//
-//        $manager->setDataManagerForWorkers(
-//            $name,
-//            $dataManager =
-//                new DataManagerForWorkers(
-//                    $poolOfWorkers[$name],
-//                    $this->getSettingsForSingleProcess()['data'],
-//                    $this->SharedMemory
-//                )
-//        );
-//
-//        $this->poolOfWorkers = &$poolOfWorkers;
-//        $this->createResourcePool($this->poolOfWorkers);
-//
-//        return $manager;
-//    }
 
     public function configureResourcePoolForParallelProcesses(ProcessManager $manager
     ): ProcessManager {
