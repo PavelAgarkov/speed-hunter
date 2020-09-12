@@ -126,9 +126,7 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
     {
         $process =
             new ParallelProcess(
-                new ResourcePool(
-                    $this->getSettings()
-                )
+                new ResourcePool($this->getSettings())
             );
 
         $pool = $process->getResourcePool();

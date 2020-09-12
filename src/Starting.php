@@ -35,6 +35,7 @@ class Starting
 
     public function multipleAsyncProcessesRun(): Starting
     {
+        $this->ProcessManager->multiple();
         return $this;
     }
 
@@ -43,7 +44,7 @@ class Starting
         return $this->ProcessManager;
     }
 
-    public static function startingParallel(array $config): Starting
+    public static function parallel(array $config): Starting
     {
         new ParallelProcessesDecorator(
             $staring =
@@ -56,7 +57,7 @@ class Starting
         return $staring;
     }
 
-    public static function startingOneAsyncProcess(array $config): Starting
+    public static function singleAsyncProcess(array $config): void
     {
         new OneAsyncProcessDecorator(
             $starting =
@@ -66,10 +67,9 @@ class Starting
                     )
                 ))
         );
-        return $starting;
     }
 
-    public static function startingMultipleAsyncProcesses($config): Starting
+    public static function multipleAsyncProcesses($config): void
     {
         new MultipleAsyncProcessesDecorator(
             $starting =
@@ -79,7 +79,6 @@ class Starting
                     )
                 ))
         );
-        return $starting;
     }
 
     public function getOutput(): array

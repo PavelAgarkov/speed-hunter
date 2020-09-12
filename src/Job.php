@@ -116,7 +116,7 @@ class Job
      * @param string $read - прочитанные данные из памяти
      * @return array
      */
-    public function handler(callable $function, string $read): ?array
+    public function handler(callable $function, ?string $read): ?array
     {
         if ($read != "") {
             $unserialize = unserialize($read);

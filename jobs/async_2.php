@@ -10,8 +10,7 @@ Job::runSingleAsyncJob(
         sleep(1);
         $id = posix_getpid();
         $fp = fopen("t{$id}.txt", "w");
-        $str = implode(',', $read);
-        fwrite($fp, " {$str} \r\n");
+        fwrite($fp, " {$read[0]} \r\n");
         fclose($fp);
     }
 );

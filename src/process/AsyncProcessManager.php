@@ -17,9 +17,7 @@ class AsyncProcessManager extends ProcessManager implements ProcessManagerInterf
     {
         $process =
             new AsyncProcess(
-                new ResourcePool(
-                    $this->getSettings()
-                )
+                new ResourcePool($this->getSettings())
             );
 
         $process->getResourcePool()
@@ -30,5 +28,14 @@ class AsyncProcessManager extends ProcessManager implements ProcessManagerInterf
 
     public function multiple(): void
     {
+        $process =
+            new AsyncProcess(
+                new ResourcePool($this->getSettings())
+            );
+
+        $pool = $process->getResourcePool();
+        $pool->configureResourcePoolForParallelProcesses($this);
+
+        $process->multipleProcessesOpen();
     }
 }

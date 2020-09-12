@@ -2,11 +2,16 @@
 
 namespace src;
 
+use http\Exception\RuntimeException;
+use http\Exception\UnexpectedValueException;
+use MongoDB\Driver\Exception\CommandException;
+use MongoDB\Driver\Exception\EncryptionException;
 use src\data_manager\DataManagerForWorkers;
 use src\data_manager\DataPartitioningStrategy;
 use src\data_manager\PutDataInJobSharedMemoryStrategy;
 use src\process\AsyncProcessManager;
 use src\process\ParallelProcessesManager;
+use src\process\ProcessManager;
 use src\process\WorkerProcess;
 use src\settings\Settings;
 
@@ -44,6 +49,10 @@ class ResourcePool
         return $this->settings->getSettingsObjects()[0]->getJobTypeSettings();
     }
 
+    public function getSettingByWorkerName(string $workerName): array
+    {
+        return current($this->settings->getSettingsObjects()[$workerName]);
+    }
     public function configurePoolForSingleProcess(AsyncProcessManager $manager): AsyncProcessManager
     {
         $poolOfWorkers = [];
@@ -75,8 +84,30 @@ class ResourcePool
         return $manager;
     }
 
-    public function configureResourcePoolForParallelProcesses(ParallelProcessesManager $manager
-    ): ParallelProcessesManager {
+//    public function configureResourcePoolForMultipleAsyncProcesses(AsyncProcessManager $manager): AsyncProcessManager
+//    {
+//        $poolOfWorkers = [];
+//        $poolOfWorkers[$name = $this->getSettingsForSingleProcess()["jobName"]] =
+//            new WorkerProcess($this->getSettingsForSingleProcess());
+//
+//        $manager->setDataManagerForWorkers(
+//            $name,
+//            $dataManager =
+//                new DataManagerForWorkers(
+//                    $poolOfWorkers[$name],
+//                    $this->getSettingsForSingleProcess()['data'],
+//                    $this->SharedMemory
+//                )
+//        );
+//
+//        $this->poolOfWorkers = &$poolOfWorkers;
+//        $this->createResourcePool($this->poolOfWorkers);
+//
+//        return $manager;
+//    }
+
+    public function configureResourcePoolForParallelProcesses(ProcessManager $manager
+    ): ProcessManager {
         $poolOfWorkers = [];
         foreach ($this->settings->getSettingsObjects() as $key => $configuration) {
             $jobSettings = $configuration->getJobTypeSettings();
@@ -195,8 +226,11 @@ class ResourcePool
             foreach ($configations as $key => $value) {
                 $memoryResource = $value[0];
                 $read = $sharedMemory->read($memoryResource, 0, shmop_size($memoryResource) - 0);
+
                 $data = unserialize($read);
-                $sharedMemory->setOutputElementByKey($workerName, $key, $data);
+                $data = $data === false ? null : $data;
+
+                $sharedMemory->setOutputElementByKey($workerName, $key, $data, $value);
             }
         }
 
