@@ -10,6 +10,8 @@ use src\SharedMemory;
  */
 class Job
 {
+    const SERIALIZE_TRUE = 1;
+
     /**
      * @var string - имя зпущенного воркера
      */
@@ -50,6 +52,8 @@ class Job
      */
     private string $type;
 
+    private int $serializeFlag;
+
     /**
      * Job constructor.
      * @param array $argv - аргументы из вызываемого процесса
@@ -57,14 +61,14 @@ class Job
      */
     public function __construct(array $argv, string $type)
     {
-
         $this->workerName = (string)$argv[0];
         $this->processNumber = (int)$argv[1];
         $this->sharedMemoryKey = (int)$argv[2];
         $this->sharedMemorySize = (int)$argv[3];
+        $this->serializeFlag = (int)$argv[4];
+
         $this->SharedMemory = new SharedMemory();
         $this->type = $type;
-
     }
 
     /** Метод восстанавливает ресурс памяти по указанному флагу
@@ -112,23 +116,19 @@ class Job
      * @param string $read - прочитанные данные из памяти
      * @return array
      */
-    public function handler(callable $function, string $read): array
+    public function handler(callable $function, ?string $read): ?array
     {
-        $unserialize = unserialize($read);
-        if ($unserialize === false) {
+        if ($read != "") {
+            $unserialize = unserialize($read);
+            if ($unserialize === false) {
+                $unserialize = null;
+            }
+        } else {
             $unserialize = null;
-        }
+        };
+
         $array = $function($this, $unserialize);
-
         return $array;
-    }
-
-    /** Метод удаляет данные из памяти по ресурсу
-     * @return bool
-     */
-    public function deleteDataFromSharedMemoryResource(): bool
-    {
-        return $this->SharedMemory->delete($this->sharedMemoryResource);
     }
 
     /** Метод измеряем затраченную память на скрипт
@@ -150,10 +150,31 @@ class Job
 
         $Job->restoreSharedMemoryResource('w');
 
-        $read = $Job->readFromSharedMemoryResource();
+        if ($Job->serializeFlag == static::SERIALIZE_TRUE) {
+            $read = $Job->readFromSharedMemoryResource();
+        } else {
+            $read = "";
+        }
 
         $array = $Job->handler($function, $read);
 
         $Job->writeIntoSharedMemoryResource($array);
+    }
+
+    public static function runSingleAsyncJob(array $argv, callable $function): void
+    {
+        $Job = new Job($argv, 'array');
+
+        $Job->restoreSharedMemoryResource('w');
+
+        if ($Job->serializeFlag == static::SERIALIZE_TRUE) {
+            $read = $Job->readFromSharedMemoryResource();
+        } else {
+            $read = "";
+        }
+
+        $Job->handler($function, $read);
+
+        $Job->SharedMemory->delete($Job->sharedMemoryResource);
     }
 }

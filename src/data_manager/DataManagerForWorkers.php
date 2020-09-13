@@ -1,7 +1,9 @@
 <?php
 
-namespace src;
+namespace src\data_manager;
 
+use src\process\WorkerProcess;
+use src\ResourcePool;
 use src\SharedMemory;
 
 /** Класс реализует запись передаваемых в воркер данных в разделяемую
@@ -26,10 +28,16 @@ class DataManagerForWorkers
      */
     private array $readyChunksOfDataForWorkers;
 
-    public function __construct(WorkerProcess &$workerSet, array $dataForWorkersSet)
-    {
+    private SharedMemory $SharedMemory;
+
+    public function __construct(
+        WorkerProcess &$workerSet,
+        array $dataForWorkersSet,
+        SharedMemory &$sharedMemory
+    ) {
         $this->workersSet = $workerSet;
         $this->dataForSet = $dataForWorkersSet;
+        $this->SharedMemory = $sharedMemory;
     }
 
     /** Метод разбивает на "куски" неподготовленные данные для всех воркеров,
@@ -49,13 +57,15 @@ class DataManagerForWorkers
             $set = $count / $countWorkers;
             $arrayChunks = array_chunk($this->dataForSet["dataToPartitioning"], $set);
         } else {
-                try {
-                    if ($countWorkers > $count) {
-                        throw new \RuntimeException('The number of workers should not exceed the number of arrays for them.');
-                    }
-                } catch (\Exception $e) {
-                    exit($e->getMessage());
+            try {
+                if ($countWorkers > $count) {
+                    throw new \RuntimeException(
+                        'The number of workers should not exceed the number of arrays for them.'
+                    );
                 }
+            } catch (\Exception $e) {
+                exit($e->getMessage());
+            }
 
             $set = (int)floor($count / $countWorkers);
             $arrayChunks = array_chunk($this->dataForSet["dataToPartitioning"], $set);
@@ -75,15 +85,15 @@ class DataManagerForWorkers
 
     /** Метод записывает подготовленные "куски" данных в подготовленную
      *  разделяемую память по ключам
-     * @param \src\SharedMemory $sharedMemory - инъекция объектом SharedMemory
+     * @param ResourcePool $resourcePool
      */
-    public function putDataIntoWorkerSharedMemory(SharedMemory $sharedMemory) : void
+    public function putDataIntoWorkerSharedMemory(ResourcePool $resourcePool): void
     {
-        $resourcePool = $sharedMemory->getResourcePool()[$this->workersSet->getWorkerName()];
+        $resourcePool = $resourcePool->getResourcePool()[$this->workersSet->getWorkerName()];
 
         $counter = 0;
         foreach ($resourcePool as $memoryKey => $item) {
-            $sharedMemory->write(
+            $this->SharedMemory->write(
                 $item[0],
                 $this->readyChunksOfDataForWorkers[$counter]
             );
@@ -93,13 +103,13 @@ class DataManagerForWorkers
 
     /** Метод для записи данных без разделения по количеству воркеров, если в конфигурационном
      *  массиве указан параметр 0 => false
-     * @param \src\SharedMemory $sharedMemory
+     * @param ResourcePool $resourcePool
      */
-    public function putCommonDataIntoWorkers(SharedMemory $sharedMemory) :void
+    public function putCommonDataIntoWorkers(ResourcePool $resourcePool): void
     {
-        $resourcePool = $sharedMemory->getResourcePool()[$this->workersSet->getWorkerName()];
+        $resourcePool = $resourcePool->getResourcePool()[$this->workersSet->getWorkerName()];
         foreach ($resourcePool as $memoryKey => $item) {
-            $sharedMemory->write(
+            $this->SharedMemory->write(
                 $item[0],
                 $this->readyChunksOfDataForWorkers
             );
@@ -109,9 +119,20 @@ class DataManagerForWorkers
     /** Метод записывает в участок разделяемой памяти одни данные для всех воркеров
      * @return $this
      */
-    public function passCommonDataForAllWorkers() : DataManagerForWorkers
+    public function passCommonDataForAllWorkers(): DataManagerForWorkers
     {
         $this->readyChunksOfDataForWorkers = $this->dataForSet["dataToPartitioning"];
         return $this;
+    }
+
+    public function passDataForSingleAsyncProcess(): DataManagerForWorkers
+    {
+        $this->readyChunksOfDataForWorkers = $this->dataForSet;
+        return $this;
+    }
+
+    public function getDataForSet(): array
+    {
+        return $this->dataForSet;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace src;
+namespace src\process;
 
 /** Класс для создания сета однотипных процессов
  * Class WorkerProcess
@@ -23,16 +23,21 @@ class WorkerProcess
      */
     private int $memorySize;
 
-    public function __construct(array $workerSettings) {
+    public function __construct(array $workerSettings)
+    {
         $this->workerName = $workerSettings["jobName"];
-        $this->countWorkers = $workerSettings["numberJobs"];
+        if (isset($workerSettings["numberJobs"])) {
+            $this->countWorkers = $workerSettings["numberJobs"];
+        } else {
+            $this->countWorkers = 1;
+        }
         $this->memorySize = $workerSettings["shSizeForOneJob"];
     }
 
     /** Метод возвращает количество воркеров
      * @return int
      */
-    public function getCountWorkers() : int
+    public function getCountWorkers(): int
     {
         return $this->countWorkers;
     }
@@ -40,7 +45,7 @@ class WorkerProcess
     /** Метод возвращает размер разделяемой памяти дял каждого воркера из сета
      * @return int
      */
-    public function getMemorySize() : int
+    public function getMemorySize(): int
     {
         return $this->memorySize;
     }
@@ -48,7 +53,7 @@ class WorkerProcess
     /** Метод возвращает имя файла воркера для набора
      * @return string
      */
-    public function getWorkerName() : string
+    public function getWorkerName(): string
     {
         return $this->workerName;
     }
