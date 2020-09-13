@@ -48,6 +48,7 @@ class ResourcePool
     {
         return current($this->settings->getSettingsObjects()[$workerName]);
     }
+
     public function configurePoolForSingleProcess(AsyncProcessManager $manager): AsyncProcessManager
     {
         $poolOfWorkers = [];
@@ -79,7 +80,8 @@ class ResourcePool
         return $manager;
     }
 
-    public function configureResourcePoolForParallelProcesses(ProcessManager $manager
+    public function configureResourcePoolForParallelProcesses(
+        ProcessManager $manager
     ): ProcessManager {
         $poolOfWorkers = [];
         foreach ($this->settings->getSettingsObjects() as $key => $configuration) {
@@ -175,8 +177,11 @@ class ResourcePool
      * @param resource $sharedMemoryResource - ресурс разделяемой памяти.
      * @param int $sharedMemoryKey - ключ разделяемой памяти.
      */
-    private function addInResourcePool($sharedMemoryResource, int $sharedMemoryKey, string $workerName): void
-    {
+    private function addInResourcePool(
+        $sharedMemoryResource,
+        int $sharedMemoryKey,
+        string $workerName
+    ): void {
         if ($sharedMemoryResource === false) {
             $sharedMemoryKey = rand(100, 9000000);
         } else {

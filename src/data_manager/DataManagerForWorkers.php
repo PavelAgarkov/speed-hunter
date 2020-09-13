@@ -30,8 +30,11 @@ class DataManagerForWorkers
 
     private SharedMemory $SharedMemory;
 
-    public function __construct(WorkerProcess &$workerSet, array $dataForWorkersSet, SharedMemory &$sharedMemory)
-    {
+    public function __construct(
+        WorkerProcess &$workerSet,
+        array $dataForWorkersSet,
+        SharedMemory &$sharedMemory
+    ) {
         $this->workersSet = $workerSet;
         $this->dataForSet = $dataForWorkersSet;
         $this->SharedMemory = $sharedMemory;

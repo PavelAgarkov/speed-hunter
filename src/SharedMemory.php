@@ -2,10 +2,6 @@
 
 namespace src;
 
-use http\Exception\RuntimeException;
-
-use function PHPUnit\Framework\throwException;
-
 /** Класс управления разделяемой памятью unix для параллельной работы процессов.
  * Class SharedMemory
  * @package src
@@ -32,8 +28,11 @@ class SharedMemory
      * @param int $size - объем памяти в kB для одного учатка.
      * @return resource
      */
-    public function open(int $memoryKey, string $openFlag = "n", int $size = 0)
-    {
+    public function open(
+        int $memoryKey,
+        string $openFlag = "n",
+        int $size = 0
+    ) {
         $sharedMemoryResource = shmop_open($memoryKey, $openFlag, 0755, $size);
         return $sharedMemoryResource;
     }
@@ -44,8 +43,11 @@ class SharedMemory
      * @param int $size - размер разделяемой памяти в kB.
      * @return string|null
      */
-    public function read($memoryResource, int $start = 0, int $size = 0): ?string
-    {
+    public function read(
+        $memoryResource,
+        int $start = 0,
+        int $size = 0
+    ): ?string {
         if (SharedMemory::isResource($memoryResource)) {
             $read = shmop_read($memoryResource, $start, $size);
             return $read;
@@ -116,8 +118,12 @@ class SharedMemory
         return is_resource($resourceId) ? shmop_size($resourceId) : 0;
     }
 
-    public function setOutputElementByKey(string $workerName, string $key, ?array $data, array $value): void
-    {
+    public function setOutputElementByKey(
+        string $workerName,
+        string $key,
+        ?array $data,
+        array $value
+    ): void {
         if ($data === null) {
             throw new \RuntimeException(
                 "Shared memory node id ${value[1]} in process name ${workerName} less than necessary!"

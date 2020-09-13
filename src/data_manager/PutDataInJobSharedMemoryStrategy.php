@@ -10,8 +10,10 @@ class PutDataInJobSharedMemoryStrategy
 
     private ResourcePool $resourcePool;
 
-    public function __construct(DataManagerForWorkers $dataManagerForWorkers, ResourcePool $resourcePool)
-    {
+    public function __construct(
+        DataManagerForWorkers $dataManagerForWorkers,
+        ResourcePool $resourcePool
+    ) {
         $this->manager = $dataManagerForWorkers;
         $this->resourcePool = $resourcePool;
     }

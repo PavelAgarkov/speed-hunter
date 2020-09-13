@@ -32,8 +32,10 @@ class ProcessManager
         return $this->dataManagerForWorkers;
     }
 
-    public function setDataManagerForWorkers(string $key, DataManagerForWorkers $dataManagerForWorkers): void
-    {
+    public function setDataManagerForWorkers(
+        string $key,
+        DataManagerForWorkers $dataManagerForWorkers
+    ): void {
         $this->dataManagerForWorkers[$key] = $dataManagerForWorkers;
     }
 

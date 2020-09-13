@@ -18,7 +18,7 @@ $parallel =
             ),
             array(
                 "jobName" => 'jobs/job_2',
-                "numberJobs" => 1,
+                "numberJobs" => 5,
                 "shSizeForOneJob" => 90000,
                 "dataPartitioning" => array(
                     "flagPartitioning" => 0,

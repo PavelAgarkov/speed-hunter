@@ -22,7 +22,13 @@ class AsyncProcess extends Process
         $numberMemory = current($shResources)[1];
         $size = $this->ResourcePool->getSharedMemory()->getSize(current($shResources)[0]);
 
-        proc_close(proc_open("php {$name}.php {$resourceKey} {$numberMemory} {$size} 1 --foo=1 &", array(), $foo));
+        proc_close(
+            proc_open(
+                "php {$name}.php {$resourceKey} {$numberMemory} {$size} 1 --foo=1 &",
+                array(),
+                $foo
+            )
+        );
     }
 
     public function multipleProcessesOpen(): void
@@ -36,7 +42,13 @@ class AsyncProcess extends Process
                 $numberMemoryKey = $value[1];
                 $size = $this->ResourcePool->getSharedMemory()->getSize(current($shResources)[0]);
 
-                proc_close(proc_open("php {$name}.php {$resourceKey} {$numberMemoryKey} {$size} 1 --foo=1 &", array(), $foo));
+                proc_close(
+                    proc_open(
+                        "php {$name}.php {$resourceKey} {$numberMemoryKey} {$size} 1 --foo=1 &",
+                        array(),
+                        $foo
+                    )
+                );
             }
         }
     }
