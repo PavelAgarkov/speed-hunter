@@ -4,6 +4,11 @@ namespace src;
 
 use src\SharedMemory;
 
+
+//Напрашивается выделение двух объектов :
+//1. Объект для $workerName, $processNumber, $readData, $type, $serializeFlag(что-то вроде InputObject)
+//2. Объект для $sharedMemoryKey, $sharedMemorySize, $SharedMemory, $sharedMemoryResource(что-то вроде SharedMemoryJobClient)
+
 /** Класс заданий для реализации интерфейса работы в воркере
  * Class Job
  * @package src
@@ -95,8 +100,13 @@ class Job
      */
     public function readFromSharedMemoryResource(): ?string
     {
-        $read = $this->SharedMemory->read($this->sharedMemoryResource, 0, shmop_size($this->sharedMemoryResource) - 0);
+        $read = $this->SharedMemory->read(
+            $this->sharedMemoryResource,
+            0,
+            shmop_size($this->sharedMemoryResource) - 0
+        );
         $this->readData = $read;
+
         return $this->readData;
     }
 
@@ -131,6 +141,7 @@ class Job
         };
 
         $array = $function($this, $unserialize);
+
         return $array;
     }
 
@@ -164,6 +175,10 @@ class Job
         $Job->writeIntoSharedMemoryResource($array);
     }
 
+    /**
+     * @param array $argv
+     * @param callable $function
+     */
     public static function runSingleAsyncJob(array $argv, callable $function): void
     {
         $Job = new Job($argv, 'array');
