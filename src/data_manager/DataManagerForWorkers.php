@@ -28,8 +28,17 @@ class DataManagerForWorkers
      */
     private array $readyChunksOfDataForWorkers;
 
+    /**
+     * @var SharedMemory
+     */
     private SharedMemory $SharedMemory;
 
+    /**
+     * DataManagerForWorkers constructor.
+     * @param WorkerProcess $workerSet
+     * @param array $dataForWorkersSet
+     * @param SharedMemory $sharedMemory
+     */
     public function __construct(
         WorkerProcess &$workerSet,
         array $dataForWorkersSet,
@@ -122,15 +131,23 @@ class DataManagerForWorkers
     public function passCommonDataForAllWorkers(): DataManagerForWorkers
     {
         $this->readyChunksOfDataForWorkers = $this->dataForSet["dataToPartitioning"];
+
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function passDataForSingleAsyncProcess(): DataManagerForWorkers
     {
         $this->readyChunksOfDataForWorkers = $this->dataForSet;
+
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getDataForSet(): array
     {
         return $this->dataForSet;

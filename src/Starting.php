@@ -24,18 +24,21 @@ class Starting
     public function parallelRun(): Starting
     {
         $this->ProcessManager->parallel();
+
         return $this;
     }
 
     public function oneAsyncProcessRun(): Starting
     {
         $this->ProcessManager->single();
+
         return $this;
     }
 
     public function multipleAsyncProcessesRun(): Starting
     {
         $this->ProcessManager->multiple();
+
         return $this;
     }
 
@@ -54,6 +57,7 @@ class Starting
                     )
                 )
         );
+
         return $staring;
     }
 
@@ -85,5 +89,4 @@ class Starting
     {
         return $this->getProcessManager()->getOutputData();
     }
-
 }

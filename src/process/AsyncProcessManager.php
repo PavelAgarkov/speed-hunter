@@ -6,13 +6,24 @@ use src\process\ProcessManagerInterface;
 use src\ResourcePool;
 use src\settings\Settings;
 
+/**
+ * Class AsyncProcessManager
+ * @package src\process
+ */
 class AsyncProcessManager extends ProcessManager implements ProcessManagerInterface
 {
+    /**
+     * AsyncProcessManager constructor.
+     * @param Settings $settings
+     */
     public function __construct(Settings $settings)
     {
         parent::__construct($settings);
     }
 
+    /**
+     *
+     */
     public function single(): void
     {
         $process =
@@ -26,6 +37,9 @@ class AsyncProcessManager extends ProcessManager implements ProcessManagerInterf
         $process->singleProcessOpen();
     }
 
+    /**
+     *
+     */
     public function multiple(): void
     {
         $process =

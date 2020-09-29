@@ -9,11 +9,6 @@ namespace src;
 class SharedMemory
 {
     /**
-     * @var int - количество ресурсов разделяемой памяти для создания.
-     */
-    private int $countResources;
-
-    /**
      * @var array - массив, в который записываются данные из каждого ресурса разделяемой памяти.
      */
     private array $output;
@@ -118,6 +113,12 @@ class SharedMemory
         return is_resource($resourceId) ? shmop_size($resourceId) : 0;
     }
 
+    /**
+     * @param string $workerName
+     * @param string $key
+     * @param array|null $data
+     * @param array $value
+     */
     public function setOutputElementByKey(
         string $workerName,
         string $key,

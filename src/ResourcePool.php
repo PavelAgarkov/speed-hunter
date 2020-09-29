@@ -10,6 +10,10 @@ use src\process\ProcessManager;
 use src\process\WorkerProcess;
 use src\settings\Settings;
 
+/**
+ * Class ResourcePool
+ * @package src
+ */
 class ResourcePool
 {
     /**
@@ -17,8 +21,14 @@ class ResourcePool
      */
     private array $poolOfWorkers;
 
+    /**
+     * @var Settings
+     */
     protected Settings $settings;
 
+    /**
+     * @var SharedMemory
+     */
     private SharedMemory $SharedMemory;
 
     /**
@@ -32,6 +42,10 @@ class ResourcePool
      */
     private array $resourcePool = [];
 
+    /**
+     * ResourcePool constructor.
+     * @param Settings $settings
+     */
     public function __construct(Settings $settings)
     {
         $this->settings = $settings;
@@ -39,16 +53,27 @@ class ResourcePool
         $this->SharedMemory = new SharedMemory();
     }
 
+    /**
+     * @return array
+     */
     public function getSettingsForSingleProcess(): array
     {
         return $this->settings->getSettingsObjects()[0]->getJobTypeSettings();
     }
 
+    /**
+     * @param string $workerName
+     * @return array
+     */
     public function getSettingByWorkerName(string $workerName): array
     {
         return current($this->settings->getSettingsObjects()[$workerName]);
     }
 
+    /**
+     * @param AsyncProcessManager $manager
+     * @return AsyncProcessManager
+     */
     public function configurePoolForSingleProcess(AsyncProcessManager $manager): AsyncProcessManager
     {
         $poolOfWorkers = [];
@@ -80,6 +105,10 @@ class ResourcePool
         return $manager;
     }
 
+    /**
+     * @param ProcessManager $manager
+     * @return ProcessManager
+     */
     public function configureResourcePoolForParallelProcesses(
         ProcessManager $manager
     ): ProcessManager {
@@ -135,6 +164,9 @@ class ResourcePool
         return $manager;
     }
 
+    /**
+     * @return SharedMemory
+     */
     public function getSharedMemory(): SharedMemory
     {
         return $this->SharedMemory;
@@ -243,11 +275,18 @@ class ResourcePool
         return $this->resourcePool;
     }
 
+    /**
+     * @param string $name
+     * @return array
+     */
     public function getResourceByJobName(string $name): array
     {
         return $this->getResourcePool()[$name];
     }
 
+    /**
+     * @return array
+     */
     public function getPoolOfWorkers(): array
     {
         return $this->poolOfWorkers;

@@ -4,8 +4,16 @@ namespace src\process;
 
 use src\ResourcePool;
 
+/**
+ * Class ParallelProcess
+ * @package src\process
+ */
 class ParallelProcess extends Process
 {
+    /**
+     * ParallelProcess constructor.
+     * @param ResourcePool $pool
+     */
     public function __construct(ResourcePool $pool)
     {
         parent::__construct($pool);
@@ -20,7 +28,6 @@ class ParallelProcess extends Process
      * @param int $memorySize
      * @param ParallelProcessesManager $manager
      */
-
     public function processOpen(
         string $workerName,
         int $processNumber,

@@ -52,6 +52,9 @@ class Job
      */
     private string $type;
 
+    /**
+     * @var int
+     */
     private int $serializeFlag;
 
     /**

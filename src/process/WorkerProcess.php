@@ -23,6 +23,10 @@ class WorkerProcess
      */
     private int $memorySize;
 
+    /**
+     * WorkerProcess constructor.
+     * @param array $workerSettings
+     */
     public function __construct(array $workerSettings)
     {
         $this->workerName = $workerSettings["jobName"];

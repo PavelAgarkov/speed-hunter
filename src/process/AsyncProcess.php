@@ -4,13 +4,24 @@ namespace src\process;
 
 use src\ResourcePool;
 
+/**
+ * Class AsyncProcess
+ * @package src\process
+ */
 class AsyncProcess extends Process
 {
+    /**
+     * AsyncProcess constructor.
+     * @param ResourcePool $pool
+     */
     public function __construct(ResourcePool $pool)
     {
         parent::__construct($pool);
     }
 
+    /**
+     *
+     */
     public function singleProcessOpen(): void
     {
         $settings = $this->ResourcePool->getSettingsForSingleProcess();
@@ -31,6 +42,9 @@ class AsyncProcess extends Process
         );
     }
 
+    /**
+     *
+     */
     public function multipleProcessesOpen(): void
     {
         foreach ($this->ResourcePool->getResourcePool() as $workerName => $configurations) {

@@ -27,6 +27,10 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
      */
     private array $processPipes = [];
 
+    /**
+     * ParallelProcessesManager constructor.
+     * @param Settings $settings
+     */
     public function __construct(Settings $settings)
     {
         parent::__construct($settings);
@@ -59,6 +63,7 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
                 );
             }
         }
+
         return $this;
     }
 
@@ -97,31 +102,52 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
         return $this->getResourcePool()->getSharedMemory()->getData($workerName);
     }
 
+    /**
+     * @return array
+     */
     public function &getProcessPipes(): array
     {
         return $this->processPipes;
     }
 
+    /**
+     * @return array
+     */
     public function getDataManagerForWorkers(): array
     {
         return $this->dataManagerForWorkers;
     }
 
+    /**
+     * @param int $processNumber
+     * @return array
+     */
     public function getPipes(int $processNumber): array
     {
         return $this->pipes[$processNumber];
     }
 
+    /**
+     * @param int $processNumber
+     * @param array $processPipes
+     */
     public function setPipes(int $processNumber, array $processPipes): void
     {
         $this->pipes[$processNumber] = $processPipes;
     }
 
+    /**
+     * @param int $processNumber
+     * @param $proc
+     */
     public function setProcesses(int $processNumber, $proc): void
     {
         $this->processes[$processNumber] = $proc;
     }
 
+    /**
+     *
+     */
     public function parallel(): void
     {
         $process =
