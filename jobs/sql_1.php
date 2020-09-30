@@ -5,7 +5,7 @@ ini_set('display_startup_errors', 1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use src\Job;
+use src\job\Job;
 
 $connect = new PDO("pgsql:host=127.0.0.1;port=5432;dbname=test;user=pavel;password=11");
 $sql = "select * from log";

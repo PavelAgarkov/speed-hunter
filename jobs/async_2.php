@@ -2,7 +2,7 @@
 declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 
-use src\Job;
+use src\job\Job;
 
 Job::runSingleAsyncJob(
     $argv,
