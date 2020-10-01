@@ -24,9 +24,10 @@ class AsyncProcess extends Process
      */
     public function singleProcessOpen(): void
     {
-        $settings = $this->ResourcePool->getSettingsForSingleProcess();
+        $workerProcess = current($this->ResourcePool->getPoolOfWorkers());
+        $name = $workerProcess->getWorkerName();
+        $phpPath = $workerProcess->getPhpPath();
 
-        $name = $settings['jobName'];
         $shResources = $this->ResourcePool->getResourceByJobName($name);
 
         $resourceKey = array_key_first($shResources);
@@ -35,7 +36,7 @@ class AsyncProcess extends Process
 
         proc_close(
             proc_open(
-                "php {$name}.php {$resourceKey} {$numberMemory} {$size} 1 --foo=1 &",
+                "{$phpPath} {$name}.php {$resourceKey} {$numberMemory} {$size} 1 --foo=1 &",
                 array(),
                 $foo
             )
@@ -47,18 +48,20 @@ class AsyncProcess extends Process
      */
     public function multipleProcessesOpen(): void
     {
+        $workerProcess = $this->ResourcePool->getPoolOfWorkers();
         foreach ($this->ResourcePool->getResourcePool() as $workerName => $configurations) {
-            $settings = $this->ResourcePool->getSettingByWorkerName($workerName);
+            $settings = $workerProcess[$workerName];
 
             foreach ($configurations as $resourceKey => $value) {
-                $name = $settings['jobName'];
+                $name = $settings->getWorkerName();
+                $phpPath = $settings->getPhpPath();
                 $shResources = $this->ResourcePool->getResourceByJobName($name);
                 $numberMemoryKey = $value[1];
                 $size = $this->ResourcePool->getSharedMemory()->getSize(current($shResources)[0]);
 
                 proc_close(
                     proc_open(
-                        "php {$name}.php {$resourceKey} {$numberMemoryKey} {$size} 1 --foo=1 &",
+                        "{$phpPath} {$name}.php {$resourceKey} {$numberMemoryKey} {$size} 1 --foo=1 &",
                         array(),
                         $foo
                     )

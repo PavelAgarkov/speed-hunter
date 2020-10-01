@@ -64,24 +64,22 @@ class Starting
     public static function singleAsyncProcess(array $config): void
     {
         new OneAsyncProcessDecorator(
-            $starting =
-                (new Starting(
-                    new AsyncProcessManager(
-                        new SingleProcessSettings($config)
-                    )
-                ))
+            new Starting(
+                new AsyncProcessManager(
+                    new SingleProcessSettings($config)
+                )
+            )
         );
     }
 
     public static function multipleAsyncProcesses($config): void
     {
         new MultipleAsyncProcessesDecorator(
-            $starting =
-                (new Starting(
-                    new AsyncProcessManager(
-                        new MultipleAsyncProcessesSettings($config)
-                    )
-                ))
+            new Starting(
+                new AsyncProcessManager(
+                    new MultipleAsyncProcessesSettings($config)
+                )
+            )
         );
     }
 

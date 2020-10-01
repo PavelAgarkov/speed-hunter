@@ -12,11 +12,13 @@ $parallel =
     Starting::parallel(
         array(
             array(
+                "phpPath" => "php7.4",
                 "jobName" => 'jobs/job_1',
                 "numberJobs" => 1,
                 "shSizeForOneJob" => 300,
             ),
             array(
+                "phpPath" => "php7.4",
                 "jobName" => 'jobs/job_2',
                 "numberJobs" => 5,
                 "shSizeForOneJob" => 90000,
@@ -26,6 +28,7 @@ $parallel =
                 )
             ),
             array(
+                "phpPath" => "php7.4",
                 "jobName" => 'jobs/job_4',
                 "numberJobs" => 2,
                 "shSizeForOneJob" => 300,
@@ -42,6 +45,7 @@ print_r($output);
 
 Starting::singleAsyncProcess(
     array(
+        "phpPath" => "php7.4",
         "jobName" => 'jobs/async_1',
         "shSizeForOneJob" => 300,
         "data" => array(1, 2, 3)
@@ -51,6 +55,7 @@ Starting::singleAsyncProcess(
 Starting::multipleAsyncProcesses(
     array(
         array(
+            "phpPath" => "php7.4",
             "jobName" => 'jobs/async_1',
             "numberJobs" => 3,
             "shSizeForOneJob" => 300,
@@ -60,6 +65,7 @@ Starting::multipleAsyncProcesses(
             ]
         ),
         array(
+            "phpPath" => "php7.4",
             "jobName" => 'jobs/async_2',
             "numberJobs" => 1,
             "shSizeForOneJob" => 300,

@@ -9,6 +9,11 @@ namespace src\process;
 class WorkerProcess
 {
     /**
+     * @var string
+     */
+    private string $phpPath;
+
+    /**
      * @var mixed|string - имя воркера
      */
     private string $workerName;
@@ -29,12 +34,16 @@ class WorkerProcess
      */
     public function __construct(array $workerSettings)
     {
+        $this->phpPath = (isset($workerSettings["phpPath"]) && $workerSettings["phpPath"] !== null)
+            ? $workerSettings["phpPath"]
+            : 'php';
+
         $this->workerName = $workerSettings["jobName"];
-        if (isset($workerSettings["numberJobs"])) {
-            $this->countWorkers = $workerSettings["numberJobs"];
-        } else {
-            $this->countWorkers = 1;
-        }
+
+        $this->countWorkers = isset($workerSettings["numberJobs"])
+            ? $workerSettings["numberJobs"]
+            : 1;
+
         $this->memorySize = $workerSettings["shSizeForOneJob"];
     }
 
@@ -62,4 +71,11 @@ class WorkerProcess
         return $this->workerName;
     }
 
+    /**
+     * @return string
+     */
+    public function getPhpPath(): string
+    {
+        return $this->phpPath;
+    }
 }

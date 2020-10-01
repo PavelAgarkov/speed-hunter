@@ -44,13 +44,16 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
     public function startProcessLoop(ResourcePool $resourcePool): ParallelProcessesManager
     {
         $this->setResourcePool($resourcePool);
+        $workerProcess = $resourcePool->getPoolOfWorkers();
 
         foreach ($resourcePool->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
                 $numberMemoryKey = $value[1];
 
+                $phpPath = $workerProcess[$workerName]->getPhpPath();
                 $process = new ParallelProcess($resourcePool);
                 $process->processOpen(
+                    $phpPath,
                     $workerName,
                     $resourceKey,
                     $numberMemoryKey,
