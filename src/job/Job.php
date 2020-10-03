@@ -4,7 +4,7 @@ namespace src\job;
 
 use src\job\value_object\LaunchedJob;
 use src\job\value_object\SharedMemoryJob;
-use src\SharedMemoryManager;
+use src\shared_memory\SharedMemoryManager;
 
 /** Класс заданий для реализации интерфейса работы в воркере
  * Class Job

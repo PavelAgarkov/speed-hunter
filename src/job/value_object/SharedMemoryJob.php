@@ -2,8 +2,8 @@
 
 namespace src\job\value_object;
 
-use src\SharedMemory;
-use src\SharedMemoryManager;
+use src\shared_memory\SharedMemory;
+use src\shared_memory\SharedMemoryManager;
 
 /**
  * Class SharedMemoryJob

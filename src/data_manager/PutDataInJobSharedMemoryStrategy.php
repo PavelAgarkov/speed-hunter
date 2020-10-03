@@ -33,9 +33,6 @@ class PutDataInJobSharedMemoryStrategy
         $this->resourcePool = $resourcePool;
     }
 
-    /**
-     *
-     */
     public function putData(): void
     {
         if ((int)$this->manager->getDataForSet()['flagPartitioning'] == 1) {
@@ -45,9 +42,6 @@ class PutDataInJobSharedMemoryStrategy
         }
     }
 
-    /**
-     *
-     */
     public function putDataForSingleAsyncProcess(): void
     {
         $this->manager->putCommonDataIntoWorkers($this->resourcePool);

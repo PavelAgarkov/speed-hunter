@@ -4,7 +4,7 @@ namespace src\data_manager;
 
 use src\process\WorkerProcess;
 use src\ResourcePool;
-use src\SharedMemory;
+use src\shared_memory\SharedMemory;
 
 /** Класс реализует запись передаваемых в воркер данных в разделяемую
  *  память предназначенную для набора воркров.
