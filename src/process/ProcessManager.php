@@ -4,7 +4,7 @@ namespace src\process;
 
 use src\data_manager\DataManagerForWorkers;
 use src\ResourcePool;
-use src\settings\Settings;
+use src\settings\SettingsList;
 
 /**
  * Class ProcessManager
@@ -18,9 +18,9 @@ class ProcessManager
     protected array $dataManagerForWorkers;
 
     /**
-     * @var Settings
+     * @var SettingsList
      */
-    protected Settings $settings;
+    protected SettingsList $settingsList;
 
     /**
      * @var ResourcePool
@@ -29,19 +29,19 @@ class ProcessManager
 
     /**
      * ProcessManager constructor.
-     * @param Settings $settings
+     * @param SettingsList $settingsList
      */
-    public function __construct(Settings $settings)
+    public function __construct(SettingsList $settingsList)
     {
-        $this->settings = $settings;
+        $this->settingsList = $settingsList;
     }
 
     /**
-     * @return Settings
+     * @return SettingsList
      */
-    public function getSettings(): Settings
+    public function getSettingsList(): SettingsList
     {
-        return $this->settings;
+        return $this->settingsList;
     }
 
     /**

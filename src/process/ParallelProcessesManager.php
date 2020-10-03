@@ -4,7 +4,7 @@ namespace src\process;
 
 use src\process\ProcessManagerInterface;
 use src\ResourcePool;
-use src\settings\Settings;
+use src\settings\SettingsList;
 
 /** Класс для управления параллельными php процессами взаимодействующими через разделяемую память unix.
  * Class ProcessesManager
@@ -29,11 +29,11 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
 
     /**
      * ParallelProcessesManager constructor.
-     * @param Settings $settings
+     * @param SettingsList $settingsList
      */
-    public function __construct(Settings $settings)
+    public function __construct(SettingsList $settingsList)
     {
-        parent::__construct($settings);
+        parent::__construct($settingsList);
     }
 
     /** Метод открывает цикл процессов, который передает управление воркерам.
@@ -155,7 +155,7 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
     {
         $process =
             new ParallelProcess(
-                new ResourcePool($this->getSettings())
+                new ResourcePool($this->getSettingsList())
             );
 
         $pool = $process->getResourcePool();

@@ -8,7 +8,7 @@ use src\data_manager\PutDataInJobSharedMemoryStrategy;
 use src\process\AsyncProcessManager;
 use src\process\ProcessManager;
 use src\process\WorkerProcess;
-use src\settings\Settings;
+use src\settings\SettingsList;
 
 /**
  * Class ResourcePool
@@ -22,9 +22,9 @@ class ResourcePool
     private array $poolOfWorkers;
 
     /**
-     * @var Settings
+     * @var SettingsList
      */
-    protected Settings $settings;
+    protected SettingsList $settingsList;
 
     /**
      * @var SharedMemory
@@ -44,30 +44,21 @@ class ResourcePool
 
     /**
      * ResourcePool constructor.
-     * @param Settings $settings
+     * @param SettingsList $settingsList
      */
-    public function __construct(Settings $settings)
+    public function __construct(SettingsList $settingsList)
     {
-        $this->settings = $settings;
+        $this->settingsList = $settingsList;
 
         $this->SharedMemory = new SharedMemory();
     }
 
     /**
-     * @return array
+     * @return SettingsList
      */
-    public function getSettingsForSingleProcess(): array
+    public function getSettingsList(): SettingsList
     {
-        return $this->settings->getSettingsObjects()[0]->getJobTypeSettings();
-    }
-
-    /**
-     * @param string $workerName
-     * @return array
-     */
-    public function getSettingByWorkerName(string $workerName): array
-    {
-        return current($this->settings->getSettingsObjects()[$workerName]);
+        return $this->settingsList;
     }
 
     /**
@@ -77,15 +68,15 @@ class ResourcePool
     public function configurePoolForSingleProcess(AsyncProcessManager $manager): AsyncProcessManager
     {
         $poolOfWorkers = [];
-        $poolOfWorkers[$name = $this->getSettingsForSingleProcess()["jobName"]] =
-            new WorkerProcess($this->getSettingsForSingleProcess());
+        $poolOfWorkers[$name = $this->settingsList->getFirst()->getJobName()] =
+            new WorkerProcess($first = $this->settingsList->getFirst());
 
         $manager->setDataManagerForWorkers(
             $name,
             $dataManager =
                 new DataManagerForWorkers(
                     $poolOfWorkers[$name],
-                    $this->getSettingsForSingleProcess()['data'],
+                    $first->getData(),
                     $this->SharedMemory
                 )
         );
@@ -111,30 +102,45 @@ class ResourcePool
      */
     public function configureResourcePoolForParallelProcesses(
         ProcessManager $manager
-    ): ProcessManager {
+    ): ProcessManager
+    {
         $poolOfWorkers = [];
-        foreach ($this->settings->getSettingsObjects() as $key => $configuration) {
-            $jobSettings = $configuration->getJobTypeSettings();
-            $poolOfWorkers[$jobSettings["jobName"]] = new WorkerProcess($jobSettings);
+        foreach ($this->settingsList->getList() as $key => $configuration) {
+            $poolOfWorkers[$configuration->getJobName()] = new WorkerProcess($configuration);
+            $dataPartitioning = $configuration->getDataPartitioning();
+            $name = $configuration->getJobName();
 
-            if (isset($jobSettings["dataPartitioning"])) {
+            $emptyData = false;
+            if (empty($dataPartitioning)) {
+                $emptyData = true;
+                $manager->setDataManagerForWorkers(
+                    $name,
+                    $dataManager =
+                        new DataManagerForWorkers(
+                            $poolOfWorkers[$name],
+                            $dataPartitioning,
+                            $this->SharedMemory
+                        )
+                );
+            }
+
+            if (isset($dataPartitioning) && !$emptyData) {
                 try {
-                    if (!isset($jobSettings["dataPartitioning"]["flagPartitioning"]) ||
-                        $jobSettings["dataPartitioning"]["flagPartitioning"] === null ||
-                        count($jobSettings["dataPartitioning"]) == 1) {
+                    if (!isset($dataPartitioning["flagPartitioning"]) ||
+                        $dataPartitioning["flagPartitioning"] === null ||
+                        count($dataPartitioning) == 1) {
                         throw new \RuntimeException('The data separator flag for workers was not specified.');
                     }
                 } catch (\Exception $e) {
                     exit($e->getMessage());
                 }
 
-                $name = $jobSettings["jobName"];
                 $manager->setDataManagerForWorkers(
                     $name,
                     $dataManager =
                         new DataManagerForWorkers(
                             $poolOfWorkers[$name],
-                            $jobSettings['dataPartitioning'],
+                            $dataPartitioning,
                             $this->SharedMemory
                         )
                 );
@@ -148,11 +154,11 @@ class ResourcePool
 
         $this->createResourcePool($this->poolOfWorkers);
 
-        foreach ($this->settings->getSettingsObjects() as $key => $configuration) {
-            $jobSettings = $configuration->getJobTypeSettings();
+        foreach ($this->settingsList->getList() as $key => $configuration) {
+            $dataPartitioning = $configuration->getDataPartitioning();
 
-            if (isset($jobSettings["dataPartitioning"])) {
-                $name = $jobSettings["jobName"];
+            if (isset($dataPartitioning) && !empty($dataPartitioning)) {
+                $name = $configuration->getJobName();
                 $strategy = new PutDataInJobSharedMemoryStrategy(
                     $manager->getDataManagerForWorkers()[$name],
                     $this
@@ -213,7 +219,8 @@ class ResourcePool
         $sharedMemoryResource,
         int $sharedMemoryKey,
         string $workerName
-    ): void {
+    ): void
+    {
         if ($sharedMemoryResource === false) {
             $sharedMemoryKey = rand(100, 9000000);
         } else {

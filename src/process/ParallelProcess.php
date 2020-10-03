@@ -37,12 +37,20 @@ class ParallelProcess extends Process
         array $descriptors,
         int $memorySize,
         ParallelProcessesManager &$manager
-    ): void {
+    ): void
+    {
+
         $unserializeFlag = 0;
-        if (array_key_exists($workerName, $manager->getDataManagerForWorkers())) {
+        if (array_key_exists(
+                $workerName,
+                $manager->getDataManagerForWorkers()
+            ) &&
+            (!empty($manager
+                ->getSettingsList()
+                ->getSettingsObject($workerName)
+                ->getDataPartitioning()))) {
+
             $unserializeFlag = 1;
-        } else {
-            $unserializeFlag = 0;
         }
 
         $proc = proc_open(

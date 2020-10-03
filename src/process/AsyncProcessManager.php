@@ -5,6 +5,7 @@ namespace src\process;
 use src\process\ProcessManagerInterface;
 use src\ResourcePool;
 use src\settings\Settings;
+use src\settings\SettingsList;
 
 /**
  * Class AsyncProcessManager
@@ -14,11 +15,11 @@ class AsyncProcessManager extends ProcessManager implements ProcessManagerInterf
 {
     /**
      * AsyncProcessManager constructor.
-     * @param Settings $settings
+     * @param SettingsList $settingsList
      */
-    public function __construct(Settings $settings)
+    public function __construct(SettingsList $settingsList)
     {
-        parent::__construct($settings);
+        parent::__construct($settingsList);
     }
 
     /**
@@ -28,7 +29,7 @@ class AsyncProcessManager extends ProcessManager implements ProcessManagerInterf
     {
         $process =
             new AsyncProcess(
-                new ResourcePool($this->getSettings())
+                new ResourcePool($this->getSettingsList())
             );
 
         $process->getResourcePool()
@@ -44,7 +45,7 @@ class AsyncProcessManager extends ProcessManager implements ProcessManagerInterf
     {
         $process =
             new AsyncProcess(
-                new ResourcePool($this->getSettings())
+                new ResourcePool($this->getSettingsList())
             );
 
         $pool = $process->getResourcePool();

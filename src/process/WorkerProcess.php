@@ -2,11 +2,13 @@
 
 namespace src\process;
 
+use src\settings\Settings;
+
 /** Класс для создания сета однотипных процессов
  * Class WorkerProcess
  * @package src
  */
-class WorkerProcess
+final class WorkerProcess
 {
     /**
      * @var string
@@ -30,21 +32,17 @@ class WorkerProcess
 
     /**
      * WorkerProcess constructor.
-     * @param array $workerSettings
+     * @param Settings $settings
      */
-    public function __construct(array $workerSettings)
+    public function __construct(Settings $settings)
     {
-        $this->phpPath = (isset($workerSettings["phpPath"]) && $workerSettings["phpPath"] !== null)
-            ? $workerSettings["phpPath"]
+        $this->phpPath = ($settings->getPhpPath() && $settings->getPhpPath() !== null)
+            ? $settings->getPhpPath()
             : 'php';
 
-        $this->workerName = $workerSettings["jobName"];
-
-        $this->countWorkers = isset($workerSettings["numberJobs"])
-            ? $workerSettings["numberJobs"]
-            : 1;
-
-        $this->memorySize = $workerSettings["shSizeForOneJob"];
+        $this->workerName = $settings->getJobName();
+        $this->countWorkers = $settings->getNumberJobs();
+        $this->memorySize = $settings->getShSizeForOneJob();
     }
 
     /** Метод возвращает количество воркеров

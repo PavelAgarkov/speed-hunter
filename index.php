@@ -6,35 +6,38 @@ ini_set('display_startup_errors', 1);
 
 require __DIR__ . '/vendor/autoload.php';
 
+use src\settings\MultipleProcessesSettings;
+use src\settings\SettingsList;
+use src\settings\SingleProcessSettings;
 use src\Starting;
 
 $parallel =
     Starting::parallel(
-        array(
-            array(
-                "phpPath" => "php7.4",
-                "jobName" => 'jobs/job_1',
-                "numberJobs" => 1,
-                "shSizeForOneJob" => 300,
+        new SettingsList(
+            new MultipleProcessesSettings(
+                "php7.4",
+                'jobs/job_1',
+                1,
+                300
             ),
-            array(
-                "phpPath" => "php7.4",
-                "jobName" => 'jobs/job_2',
-                "numberJobs" => 5,
-                "shSizeForOneJob" => 90000,
-                "dataPartitioning" => array(
+            new MultipleProcessesSettings(
+                "php7.4",
+                'jobs/job_2',
+                5,
+                90000,
+                array(
                     "flagPartitioning" => 0,
                     "dataToPartitioning" => ['commit', 'sin']
                 )
             ),
-            array(
-                "phpPath" => "php7.4",
-                "jobName" => 'jobs/job_4',
-                "numberJobs" => 2,
-                "shSizeForOneJob" => 300,
-                "dataPartitioning" => array(
+            new MultipleProcessesSettings(
+                "php7.4",
+                'jobs/job_4',
+                2,
+                300,
+                array(
                     "flagPartitioning" => 1,
-                    "dataToPartitioning" => ['commit', 'sin']
+                    "dataToPartitioning" => ['commit', 'sin', 'cos']
                 )
             )
         )
@@ -44,35 +47,37 @@ $output = $parallel->getOutput();
 print_r($output);
 
 Starting::singleAsyncProcess(
-    array(
-        "phpPath" => "php7.4",
-        "jobName" => 'jobs/async_1',
-        "shSizeForOneJob" => 300,
-        "data" => array(1, 2, 3)
+    new SettingsList(
+        new SingleProcessSettings(
+            "php7.4",
+            'jobs/async_1',
+            300,
+            array(1, 2, 3)
+        )
     )
 );
 
 Starting::multipleAsyncProcesses(
-    array(
-        array(
-            "phpPath" => "php7.4",
-            "jobName" => 'jobs/async_1',
-            "numberJobs" => 3,
-            "shSizeForOneJob" => 300,
-            "dataPartitioning" => [
-                "flagPartitioning" => 0,
+    new SettingsList(
+        new MultipleProcessesSettings(
+            "php7.4",
+            'jobs/async_1',
+            3,
+            300,
+            array(
+                "flagPartitioning" => 1,
                 "dataToPartitioning" => array(1, 2, 3)
-            ]
+            )
         ),
-        array(
-            "phpPath" => "php7.4",
-            "jobName" => 'jobs/async_2',
-            "numberJobs" => 1,
-            "shSizeForOneJob" => 300,
-            "dataPartitioning" => [
+        new MultipleProcessesSettings(
+            "php7.4",
+            'jobs/async_2',
+            3,
+            300,
+            array(
                 "flagPartitioning" => 0,
                 "dataToPartitioning" => array('Hi')
-            ]
+            )
         )
     )
 );

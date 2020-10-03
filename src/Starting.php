@@ -8,19 +8,31 @@ use src\process\ProcessManagerInterface;
 use src\process\running_process_decorator\MultipleAsyncProcessesDecorator;
 use src\process\running_process_decorator\OneAsyncProcessDecorator;
 use src\process\running_process_decorator\ParallelProcessesDecorator;
-use src\settings\MultipleAsyncProcessesSettings;
-use src\settings\ParallelProcessSettings;
-use src\settings\SingleProcessSettings;
+use src\settings\SettingsList;
 
+/**
+ * Class Starting
+ * @package src
+ */
 class Starting
 {
+    /**
+     * @var ProcessManagerInterface
+     */
     private ProcessManagerInterface $ProcessManager;
 
+    /**
+     * Starting constructor.
+     * @param ProcessManagerInterface $manager
+     */
     private function __construct(ProcessManagerInterface $manager)
     {
         $this->ProcessManager = $manager;
     }
 
+    /**
+     * @return $this
+     */
     public function parallelRun(): Starting
     {
         $this->ProcessManager->parallel();
@@ -28,6 +40,9 @@ class Starting
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function oneAsyncProcessRun(): Starting
     {
         $this->ProcessManager->single();
@@ -35,6 +50,9 @@ class Starting
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function multipleAsyncProcessesRun(): Starting
     {
         $this->ProcessManager->multiple();
@@ -42,47 +60,61 @@ class Starting
         return $this;
     }
 
+    /**
+     * @return ProcessManagerInterface
+     */
     public function getProcessManager(): ProcessManagerInterface
     {
         return $this->ProcessManager;
     }
 
-    public static function parallel(array $config): Starting
+    /**
+     * @param SettingsList $settingsList
+     * @return Starting
+     */
+    public static function parallel(SettingsList $settingsList): Starting
     {
         new ParallelProcessesDecorator(
             $staring =
                 new Starting(
-                    new ParallelProcessesManager(
-                        new ParallelProcessSettings($config)
-                    )
+                    new ParallelProcessesManager($settingsList)
                 )
         );
 
         return $staring;
     }
 
-    public static function singleAsyncProcess(array $config): void
+    /**
+     * @param SettingsList $settingsList
+     */
+    public static function singleAsyncProcess(SettingsList $settingsList): void
     {
+        if ($settingsList->getCount() > 1) {
+            throw new \RuntimeException("SingleProcess can't start some times");
+        }
+
         new OneAsyncProcessDecorator(
             new Starting(
-                new AsyncProcessManager(
-                    new SingleProcessSettings($config)
-                )
+                new AsyncProcessManager($settingsList)
             )
         );
     }
 
-    public static function multipleAsyncProcesses($config): void
+    /**
+     * @param SettingsList $settingsList
+     */
+    public static function multipleAsyncProcesses(SettingsList $settingsList): void
     {
         new MultipleAsyncProcessesDecorator(
             new Starting(
-                new AsyncProcessManager(
-                    new MultipleAsyncProcessesSettings($config)
-                )
+                new AsyncProcessManager($settingsList)
             )
         );
     }
 
+    /**
+     * @return array
+     */
     public function getOutput(): array
     {
         return $this->getProcessManager()->getOutputData();
