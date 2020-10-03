@@ -1,6 +1,6 @@
 <?php
 
-namespace src;
+namespace src\shared_memory;
 
 /** Класс управления разделяемой памятью unix для параллельной работы процессов.
  * Class SharedMemory

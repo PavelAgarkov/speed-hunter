@@ -4,7 +4,6 @@ namespace src\process;
 
 use src\process\ProcessManagerInterface;
 use src\ResourcePool;
-use src\settings\Settings;
 use src\settings\SettingsList;
 
 /**

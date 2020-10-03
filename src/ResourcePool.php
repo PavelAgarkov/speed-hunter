@@ -9,6 +9,7 @@ use src\process\AsyncProcessManager;
 use src\process\ProcessManager;
 use src\process\WorkerProcess;
 use src\settings\SettingsList;
+use src\shared_memory\SharedMemory;
 
 /**
  * Class ResourcePool
@@ -214,6 +215,7 @@ class ResourcePool
      *  в массив.
      * @param resource $sharedMemoryResource - ресурс разделяемой памяти.
      * @param int $sharedMemoryKey - ключ разделяемой памяти.
+     * @param string $workerName
      */
     private function addInResourcePool(
         $sharedMemoryResource,

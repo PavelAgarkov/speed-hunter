@@ -48,8 +48,8 @@ class ParallelProcess extends Process
             (!empty($manager
                 ->getSettingsList()
                 ->getSettingsObject($workerName)
-                ->getDataPartitioning()))) {
-
+                ->getDataPartitioning())))
+        {
             $unserializeFlag = 1;
         }
 

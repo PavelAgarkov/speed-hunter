@@ -1,6 +1,6 @@
 <?php
 
-namespace src;
+namespace src\shared_memory;
 
 /**
  * Class SharedMemoryManager
