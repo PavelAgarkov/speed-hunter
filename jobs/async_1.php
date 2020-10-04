@@ -7,7 +7,7 @@ use src\job\Job;
 Job::runSingleAsyncJob(
     $argv,
     function (&$Job, $read) {
-        sleep(1);
+//        sleep(1);
         $id = posix_getpid();
         $fp = fopen("t{$id}.txt", "w");
         $str = implode(',', $read);

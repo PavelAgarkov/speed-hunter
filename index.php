@@ -22,10 +22,10 @@ $parallel =
             new MultipleProcessesSettings(
                 "php7.4",
                 'jobs/job_2',
-                3,
+                5,
                 array(
                     "flagPartitioning" => 0,
-                    "dataToPartitioning" => $data2 =  ['commit', 'sin']
+                    "dataToPartitioning" => $data2 =  ['commit', 'sin', 'cod', 'cos', 'tan']
                 ),
                 Starting::weighData($data2)
             ),

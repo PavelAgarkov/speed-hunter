@@ -76,15 +76,37 @@ class DataManagerForWorkers
                 exit($e->getMessage());
             }
 
-            $set = (int)floor($count / $countWorkers);
-            $arrayChunks = array_chunk($this->dataForSet["dataToPartitioning"], $set);
+            if($count % $countWorkers == 1) {
+                $set = (int)floor($count / $countWorkers);
+                $arrayChunks = array_chunk($this->dataForSet["dataToPartitioning"], $set);
 
-            $lastKey = array_key_last($arrayChunks);
-            $preLastKey = $lastKey - 1;
+                $lastKey = array_key_last($arrayChunks);
+                $preLastKey = $lastKey - 1;
 
-            $result = array_merge($arrayChunks[$preLastKey], $arrayChunks[$lastKey]);
-            unset($arrayChunks[$preLastKey], $arrayChunks[$lastKey]);
-            $arrayChunks[count($arrayChunks)] = $result;
+                $result = array_merge($arrayChunks[$preLastKey], $arrayChunks[$lastKey]);
+                unset($arrayChunks[$preLastKey], $arrayChunks[$lastKey]);
+                $arrayChunks[count($arrayChunks)] = $result;
+            }
+
+            if($count % $countWorkers == 2) {
+                $arrayChunks = array_chunk($this->dataForSet["dataToPartitioning"], 1);
+
+                $lastKey = array_key_last($arrayChunks);
+                $preLastKey = $lastKey - 1;
+                $beforePreLastKey = $preLastKey - 1;
+
+                $result = array_merge(
+                    $arrayChunks[$preLastKey],
+                    $arrayChunks[$lastKey],
+                    $arrayChunks[$beforePreLastKey]
+                );
+                unset(
+                    $arrayChunks[$preLastKey],
+                    $arrayChunks[$lastKey],
+                    $arrayChunks[$beforePreLastKey]
+                );
+                $arrayChunks[count($arrayChunks)] = $result;
+            }
         }
 
         $this->readyChunksOfDataForWorkers = $arrayChunks;

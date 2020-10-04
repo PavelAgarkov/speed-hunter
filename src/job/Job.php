@@ -83,6 +83,8 @@ class Job
      */
     public static function runJob(array $argv, callable $function): void
     {
+        $start = microtime(true);
+
         $Job = new Job($argv, 'array');
         $read = $Job->launchedJob->getSerializeFlag() == static::SERIALIZE_TRUE
             ? $Job->sharedMemoryJob->getReadData() : "";
@@ -100,6 +102,7 @@ class Job
             $Job->sharedMemoryJob->getSharedMemoryResource(),
             $data
         );
+        $time = microtime(true) - $start;
     }
 
     /**
