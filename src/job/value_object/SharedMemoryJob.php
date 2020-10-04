@@ -36,6 +36,10 @@ class SharedMemoryJob
      */
     private ?string $readData;
 
+    /**
+     * SharedMemoryJob constructor.
+     * @param array $inputData
+     */
     public function __construct(array $inputData)
     {
         $this->SharedMemory = new SharedMemory();
@@ -99,5 +103,21 @@ class SharedMemoryJob
     public function getReadData(): ?string
     {
         return $this->readData;
+    }
+
+    /**
+     * @param int $sharedMemorySize
+     */
+    public function setSharedMemorySize(int $sharedMemorySize): void
+    {
+        $this->sharedMemorySize = $sharedMemorySize;
+    }
+
+    /**
+     * @param resource $sharedMemoryResource
+     */
+    public function setSharedMemoryResource($sharedMemoryResource): void
+    {
+        $this->sharedMemoryResource = $sharedMemoryResource;
     }
 }

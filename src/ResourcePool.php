@@ -10,6 +10,7 @@ use src\process\ProcessManager;
 use src\process\WorkerProcess;
 use src\settings\SettingsList;
 use src\shared_memory\SharedMemory;
+use src\shared_memory\SharedMemoryManager;
 
 /**
  * Class ResourcePool
@@ -42,6 +43,16 @@ class ResourcePool
      * о созданных участках разделяемой памяти.
      */
     private array $resourcePool = [];
+
+    /**
+     * @var array
+     */
+    private array $newResourcePool = [];
+
+    /**
+     * @var array
+     */
+    private array $mergedResourcePool = [];
 
     /**
      * ResourcePool constructor.
@@ -167,7 +178,6 @@ class ResourcePool
                 $strategy->putData();
             }
         }
-
         return $manager;
     }
 
@@ -241,7 +251,11 @@ class ResourcePool
     public function readAllDataFromResourcePool(): array
     {
         $sharedMemory = $this->getSharedMemory();
-        foreach ($this->getResourcePool() as $workerName => $configations) {
+        $this
+            ->createNewResourcePool()
+            ->mergedResourcePool();
+
+        foreach ($this->mergedResourcePool as $workerName => $configations) {
             foreach ($configations as $key => $value) {
                 $memoryResource = $value[0];
                 $read = $sharedMemory->read($memoryResource, 0, shmop_size($memoryResource) - 0);
@@ -263,7 +277,7 @@ class ResourcePool
     public function deleteAllDataFromResourcePool(): bool
     {
         $sharedMemory = $this->getSharedMemory();
-        foreach ($this->getResourcePool() as $workerName => $configations) {
+        foreach ($this->mergedResourcePool as $workerName => $configations) {
             foreach ($configations as $key => $value) {
                 $memoryResource = $value[0];
                 $delete = $sharedMemory->delete($memoryResource);
@@ -300,4 +314,48 @@ class ResourcePool
     {
         return $this->poolOfWorkers;
     }
+
+    /**
+     * @return $this
+     */
+    private function createNewResourcePool(): self
+    {
+        $sharedMemory = $this->getSharedMemory();
+        $newResourcePoll = [];
+        foreach ($this->resourcePool as $workerName => $configations) {
+            foreach ($configations as $key => $value) {
+                $poolConf = $this->resourcePoolСonfirations;
+                $open = SharedMemoryManager::openShResource(
+                    $sharedMemory,
+                    array(
+                        "sharedMemoryKey" => $value[1],
+                        "openFlag" => "a",
+                        "shSize" => $poolConf[$workerName]["memorySize"]
+                    )
+                );
+                $newResourcePoll[$workerName][$key] = [$open, $value[1]];
+            }
+        }
+        $this->newResourcePool = $newResourcePoll;
+
+        return $this;
+    }
+
+    private function mergedResourcePool(): void
+    {
+        $merged = [];
+        foreach ($this->resourcePool as $name => $value) {
+            foreach ($value as $oldKey => $oldValue) {
+                if (array_key_exists($name, $this->newResourcePool)) {
+                    if (array_key_exists($oldKey, $this->newResourcePool[$name])) {
+                        $merged[$name][$oldKey] = $this->newResourcePool[$name][$oldKey];
+                        continue;
+                    }
+                }
+                $merged[$name][$oldKey] = $oldValue;
+            }
+        }
+        $this->mergedResourcePool = $merged;
+    }
+
 }

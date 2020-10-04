@@ -89,6 +89,12 @@ class Job
 
         $data = $Job->handler($function, $read);
 
+        $Resolver = new JobSharedMemoryResolver($Job, $data);
+        if (!$Resolver->check()) {
+            $resolveSettings = $Resolver->reload();
+            $Resolver->resolveSharedMemoryJob($resolveSettings);
+        }
+
         SharedMemoryManager::writeIntoSh(
             $Job->sharedMemoryJob->getSharedMemory(),
             $Job->sharedMemoryJob->getSharedMemoryResource(),
@@ -112,5 +118,13 @@ class Job
             $Job->sharedMemoryJob->getSharedMemory(),
             $Job->sharedMemoryJob->getSharedMemoryResource()
         );
+    }
+
+    /**
+     * @return SharedMemoryJob
+     */
+    public function getSharedMemoryJob(): SharedMemoryJob
+    {
+        return $this->sharedMemoryJob;
     }
 }

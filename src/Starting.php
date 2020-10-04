@@ -119,4 +119,9 @@ class Starting
     {
         return $this->getProcessManager()->getOutputData();
     }
+
+    public static function weighData(array $data): int
+    {
+        return (int)strlen(serialize($data));
+    }
 }
