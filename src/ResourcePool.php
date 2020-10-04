@@ -257,9 +257,9 @@ class ResourcePool
     public function readAllDataFromResourcePool(): array
     {
         $sharedMemory = $this->getSharedMemory();
-        $resultPool = $this->getResultResourcePool();
+        $this->getResultResourcePool();
 
-        foreach ($this->getMergedResourcePool() as $workerName => $configations) {
+        foreach ($this->mergedResourcePool as $workerName => $configations) {
             foreach ($configations as $key => $value) {
                 $memoryResource = $value[0];
                 $read = $sharedMemory->read($memoryResource, 0, shmop_size($memoryResource) - 0);

@@ -17,28 +17,27 @@ $parallel =
             new MultipleProcessesSettings(
                 "php7.4",
                 'jobs/job_1',
-                1,
-                300
+                4
             ),
             new MultipleProcessesSettings(
                 "php7.4",
                 'jobs/job_2',
                 5,
-                90000,
                 array(
                     "flagPartitioning" => 0,
-                    "dataToPartitioning" => ['commit', 'sin']
-                )
+                    "dataToPartitioning" => $data2 =  ['commit', 'sin']
+                ),
+                Starting::weighData($data2)
             ),
             new MultipleProcessesSettings(
                 "php7.4",
                 'jobs/job_4',
                 2,
-                300,
                 array(
                     "flagPartitioning" => 1,
-                    "dataToPartitioning" => ['commit', 'sin', 'cos']
-                )
+                    "dataToPartitioning" => $data3 = ['commit', 'sin', 'cos']
+                ),
+                Starting::weighData($data3)
             )
         )
     );
@@ -51,8 +50,8 @@ Starting::singleAsyncProcess(
         new SingleProcessSettings(
             "php7.4",
             'jobs/async_1',
-            300,
-            array(1, 2, 3)
+            $data4 =array(1, 2, 3),
+            Starting::weighData($data4)
         )
     )
 );
@@ -63,21 +62,21 @@ Starting::multipleAsyncProcesses(
             "php7.4",
             'jobs/async_1',
             3,
-            300,
             array(
                 "flagPartitioning" => 1,
-                "dataToPartitioning" => array(1, 2, 3)
-            )
+                "dataToPartitioning" =>  $data5 = array(1, 2, 3)
+            ),
+            Starting::weighData($data5)
         ),
         new MultipleProcessesSettings(
             "php7.4",
             'jobs/async_2',
             3,
-            300,
             array(
                 "flagPartitioning" => 0,
-                "dataToPartitioning" => array('Hi')
-            )
+                "dataToPartitioning" => $data6 = array('Hi')
+            ),
+            Starting::weighData($data5)
         )
     )
 );
