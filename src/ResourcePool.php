@@ -5,7 +5,6 @@ namespace src;
 use src\data_manager\DataManagerForWorkers;
 use src\data_manager\DataPartitioningStrategy;
 use src\data_manager\PutDataInJobSharedMemoryStrategy;
-use src\process\AsyncProcess;
 use src\process\AsyncProcessManager;
 use src\process\ProcessManager;
 use src\process\WorkerProcess;
@@ -54,11 +53,6 @@ class ResourcePool
      * @var array
      */
     private array $mergedResourcePool = [];
-
-    /**
-     * @var array
-     */
-    private array $readDataFromSubProc = [];
 
     /**
      * ResourcePool constructor.
@@ -257,7 +251,9 @@ class ResourcePool
     public function readAllDataFromResourcePool(): array
     {
         $sharedMemory = $this->getSharedMemory();
-        $this->getResultResourcePool();
+        $this
+            ->createNewResourcePool()
+            ->mergedResourcePool();
 
         foreach ($this->mergedResourcePool as $workerName => $configations) {
             foreach ($configations as $key => $value) {
@@ -300,14 +296,6 @@ class ResourcePool
     public function getResourcePool(): array
     {
         return $this->resourcePool;
-    }
-
-    /**
-     * @param array $resourcePool
-     */
-    public function setResourcePool(array $resourcePool): void
-    {
-        $this->resourcePool = $resourcePool;
     }
 
     /**
@@ -370,24 +358,4 @@ class ResourcePool
         $this->mergedResourcePool = $merged;
     }
 
-    /**
-     * @return array
-     */
-    public function getMergedResourcePool(): array
-    {
-        return $this->mergedResourcePool;
-    }
-
-    private function getResultResourcePool(): array
-    {
-        if (!empty($this->mergedResourcePool)) {
-            return $poolForForeach = $this->mergedResourcePool;
-        }
-
-        $this
-            ->createNewResourcePool()
-            ->mergedResourcePool();
-
-        return $poolForForeach = $this->mergedResourcePool;
-    }
 }

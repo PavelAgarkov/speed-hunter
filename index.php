@@ -22,7 +22,7 @@ $parallel =
             new MultipleProcessesSettings(
                 "php7.4",
                 'jobs/job_2',
-                5,
+                3,
                 array(
                     "flagPartitioning" => 0,
                     "dataToPartitioning" => $data2 =  ['commit', 'sin']
