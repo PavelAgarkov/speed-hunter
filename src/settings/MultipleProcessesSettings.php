@@ -18,14 +18,14 @@ final class MultipleProcessesSettings extends Settings
      * @param string $phpPath
      * @param string $jobName
      * @param int $numberJobs
-     * @param int $shSizeForOneJob
      * @param array $dataPartitioning
+     * @param int $shSizeForOneJob
      */
     public function __construct(string $phpPath,
                                 string $jobName,
                                 int $numberJobs,
-                                int $shSizeForOneJob,
-                                array $dataPartitioning = [])
+                                array $dataPartitioning = [],
+                                int $shSizeForOneJob = 1)
     {
         parent::__construct(
             $phpPath,
