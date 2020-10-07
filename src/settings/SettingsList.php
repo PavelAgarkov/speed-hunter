@@ -2,6 +2,8 @@
 
 namespace src\settings;
 
+use src\settings\value_object\Settings;
+
 /**
  * Class SettingsList
  * @package src\settings

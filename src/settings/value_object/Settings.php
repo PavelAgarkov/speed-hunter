@@ -1,12 +1,12 @@
 <?php
 
-namespace src\settings;
+namespace src\settings\value_object;
 
 /**
  * Class Settings
  * @package src\settings
  */
-abstract class Settings implements SettingsInterface
+abstract class Settings
 {
     /**
      * @var string
@@ -22,11 +22,6 @@ abstract class Settings implements SettingsInterface
      * @var int
      */
     protected int $shSizeForOneJob;
-
-    /**
-     * @var array
-     */
-    protected array $settingsObjects;
 
     /**
      * @var int
@@ -49,14 +44,6 @@ abstract class Settings implements SettingsInterface
         $this->jobName = $jobName;
         $this->shSizeForOneJob = $shSizeForOneJob;
         $this->numberJobs = $numberJobs;
-    }
-
-    /**
-     * @return array
-     */
-    public function getSettingsObjects(): array
-    {
-        return $this->settingsObjects;
     }
 
     /**

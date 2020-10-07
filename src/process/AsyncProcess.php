@@ -19,9 +19,6 @@ class AsyncProcess extends Process
         parent::__construct($pool);
     }
 
-    /**
-     *
-     */
     public function singleProcessOpen(): void
     {
         $workerProcess = current($this->ResourcePool->getPoolOfWorkers());
@@ -43,9 +40,6 @@ class AsyncProcess extends Process
         );
     }
 
-    /**
-     *
-     */
     public function multipleProcessesOpen(): void
     {
         $workerProcess = $this->ResourcePool->getPoolOfWorkers();

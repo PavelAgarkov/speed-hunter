@@ -8,7 +8,7 @@ use src\Starting;
  * Class MultipleAsyncProcessesDecorator
  * @package src\process\running_process_decorator
  */
-class MultipleAsyncProcessesDecorator extends Decorator
+final class MultipleAsyncProcessesDecorator extends Decorator
 {
     /**
      * MultipleAsyncProcessesDecorator constructor.

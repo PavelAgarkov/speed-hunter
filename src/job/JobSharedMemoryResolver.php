@@ -2,7 +2,7 @@
 
 namespace src\job;
 
-use http\Exception\RuntimeException;
+use RuntimeException;
 use src\shared_memory\SharedMemoryManager;
 
 class JobSharedMemoryResolver
@@ -44,7 +44,7 @@ class JobSharedMemoryResolver
             $shResource
         );
         if(!$delete) {
-            throw new \RuntimeException("Не удалось удалить sh {$shKey} с ресурсом {$shResource}");
+            throw new RuntimeException("Не удалось удалить sh {$shKey} с ресурсом {$shResource}");
         }
 
         $this->roundUp($shSize);
@@ -58,7 +58,7 @@ class JobSharedMemoryResolver
             )
         );
         if(!$open) {
-            throw new \RuntimeException("Не удалось открыть sh {$shKey} с ресурсом {$shResource}");
+            throw new RuntimeException("Не удалось открыть sh {$shKey} с ресурсом {$shResource}");
         }
 
         return array(

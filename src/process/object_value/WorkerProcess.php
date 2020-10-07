@@ -1,8 +1,8 @@
 <?php
 
-namespace src\process;
+namespace src\process\object_value;
 
-use src\settings\Settings;
+use src\settings\value_object\Settings;
 
 /** Класс для создания сета однотипных процессов
  * Class WorkerProcess

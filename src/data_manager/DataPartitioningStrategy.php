@@ -34,9 +34,6 @@ class DataPartitioningStrategy
         }
     }
 
-    /**
-     *
-     */
     public function writeDadaForSingleAsyncProcess(): void
     {
         $this->manager->passDataForSingleAsyncProcess();

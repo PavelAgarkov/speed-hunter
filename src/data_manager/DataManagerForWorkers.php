@@ -2,7 +2,9 @@
 
 namespace src\data_manager;
 
-use src\process\WorkerProcess;
+use Exception;
+use RuntimeException;
+use src\process\object_value\WorkerProcess;
 use src\ResourcePool;
 use src\shared_memory\SharedMemory;
 
@@ -52,7 +54,7 @@ class DataManagerForWorkers
     /** Метод разбивает на "куски" неподготовленные данные для всех воркеров,
      *  в зависимости от их количества
      * @return $this
-     * @throws \Exception
+     * @throws RuntimeException
      */
     public function splitDataForWorkers(): DataManagerForWorkers
     {
@@ -68,11 +70,11 @@ class DataManagerForWorkers
         } else {
             try {
                 if ($countWorkers > $count) {
-                    throw new \RuntimeException(
+                    throw new RuntimeException(
                         'The number of workers should not exceed the number of arrays for them.'
                     );
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 exit($e->getMessage());
             }
 

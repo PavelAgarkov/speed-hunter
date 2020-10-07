@@ -8,7 +8,7 @@ use src\Starting;
  * Class Decorator
  * @package src\process\running_process_decorator
  */
-class Decorator
+abstract class Decorator
 {
     /**
      * @var Starting

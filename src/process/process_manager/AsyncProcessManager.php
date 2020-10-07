@@ -1,8 +1,9 @@
 <?php
 
-namespace src\process;
+namespace src\process\process_manager;
 
-use src\process\ProcessManagerInterface;
+use src\process\AsyncProcess;
+use src\process\process_manager\ProcessManagerInterface;
 use src\ResourcePool;
 use src\settings\SettingsList;
 
@@ -21,9 +22,6 @@ class AsyncProcessManager extends ProcessManager implements ProcessManagerInterf
         parent::__construct($settingsList);
     }
 
-    /**
-     *
-     */
     public function single(): void
     {
         $process =
@@ -37,9 +35,6 @@ class AsyncProcessManager extends ProcessManager implements ProcessManagerInterf
         $process->singleProcessOpen();
     }
 
-    /**
-     *
-     */
     public function multiple(): void
     {
         $process =

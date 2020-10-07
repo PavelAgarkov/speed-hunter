@@ -102,6 +102,7 @@ class Job
             $Job->sharedMemoryJob->getSharedMemoryResource(),
             $data
         );
+
         $time = microtime(true) - $start;
     }
 

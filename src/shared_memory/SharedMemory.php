@@ -2,6 +2,8 @@
 
 namespace src\shared_memory;
 
+use RuntimeException;
+
 /** Класс управления разделяемой памятью unix для параллельной работы процессов.
  * Class SharedMemory
  * @package src
@@ -53,7 +55,6 @@ class SharedMemory
     /** Метод записывает в указанный участок разделяемой памяти сериализованный массив.
      * @param resource $memoryResource - ресурс разделяемой памяти.
      * @param array $data - данные для записи.
-     * @param int $offset - символ с которого начнется запись в участок разделяемой памяти.
      * @return int|null
      */
     public function write($memoryResource, array $data): ?int
@@ -126,7 +127,7 @@ class SharedMemory
         array $value
     ): void {
         if ($data === null) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 "Shared memory node id ${value[1]} in process name ${workerName} less than necessary!"
             );
         }

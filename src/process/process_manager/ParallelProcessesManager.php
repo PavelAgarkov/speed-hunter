@@ -1,8 +1,9 @@
 <?php
 
-namespace src\process;
+namespace src\process\process_manager;
 
-use src\process\ProcessManagerInterface;
+use src\process\ParallelProcess;
+use src\process\process_manager\ProcessManagerInterface;
 use src\ResourcePool;
 use src\settings\SettingsList;
 
@@ -153,9 +154,6 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
         $this->processes[$processNumber] = $proc;
     }
 
-    /**
-     *
-     */
     public function parallel(): void
     {
         $process =

@@ -8,7 +8,7 @@ use src\Starting;
  * Class OneAsyncProcessDecorator
  * @package src\process\running_process_decorator
  */
-class OneAsyncProcessDecorator extends Decorator
+final class OneAsyncProcessDecorator extends Decorator
 {
     /**
      * OneAsyncProcessDecorator constructor.

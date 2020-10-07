@@ -1,6 +1,6 @@
 <?php
 
-namespace src\process;
+namespace src\process\process_manager;
 
 use src\data_manager\DataManagerForWorkers;
 use src\ResourcePool;

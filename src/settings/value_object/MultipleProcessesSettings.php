@@ -1,6 +1,8 @@
 <?php
 
-namespace src\settings;
+namespace src\settings\value_object;
+
+use src\settings\value_object\Settings;
 
 /**
  * Class MultipleAsyncProcessesSettings

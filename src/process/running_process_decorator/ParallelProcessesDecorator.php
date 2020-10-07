@@ -9,7 +9,7 @@ use src\Starting;
  * Class ParallelProcessesDecorator
  * @package src\process\running_process_decorator
  */
-class ParallelProcessesDecorator extends Decorator
+final class ParallelProcessesDecorator extends Decorator
 {
     /**
      * ParallelProcessesDecorator constructor.

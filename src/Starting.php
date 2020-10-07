@@ -2,9 +2,10 @@
 
 namespace src;
 
-use src\process\AsyncProcessManager;
-use src\process\ParallelProcessesManager;
-use src\process\ProcessManagerInterface;
+use RuntimeException;
+use src\process\process_manager\AsyncProcessManager;
+use src\process\process_manager\ParallelProcessesManager;
+use src\process\process_manager\ProcessManagerInterface;
 use src\process\running_process_decorator\MultipleAsyncProcessesDecorator;
 use src\process\running_process_decorator\OneAsyncProcessDecorator;
 use src\process\running_process_decorator\ParallelProcessesDecorator;
@@ -90,7 +91,7 @@ class Starting
     public static function singleAsyncProcess(SettingsList $settingsList): void
     {
         if ($settingsList->getCount() > 1) {
-            throw new \RuntimeException("SingleProcess can't start some times");
+            throw new RuntimeException("SingleProcess can't start some times");
         }
 
         new OneAsyncProcessDecorator(

@@ -2,6 +2,7 @@
 
 namespace src\process;
 
+use src\process\process_manager\ParallelProcessesManager;
 use src\ResourcePool;
 
 /**

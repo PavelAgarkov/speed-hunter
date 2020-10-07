@@ -2,12 +2,14 @@
 
 namespace src;
 
+use Exception;
+use RuntimeException;
 use src\data_manager\DataManagerForWorkers;
 use src\data_manager\DataPartitioningStrategy;
 use src\data_manager\PutDataInJobSharedMemoryStrategy;
-use src\process\AsyncProcessManager;
-use src\process\ProcessManager;
-use src\process\WorkerProcess;
+use src\process\process_manager\AsyncProcessManager;
+use src\process\process_manager\ProcessManager;
+use src\process\object_value\WorkerProcess;
 use src\settings\SettingsList;
 use src\shared_memory\SharedMemory;
 use src\shared_memory\SharedMemoryManager;
@@ -111,6 +113,7 @@ class ResourcePool
     /**
      * @param ProcessManager $manager
      * @return ProcessManager
+     * @throws \Exception
      */
     public function configureResourcePoolForParallelProcesses(
         ProcessManager $manager
@@ -141,9 +144,9 @@ class ResourcePool
                     if (!isset($dataPartitioning["flagPartitioning"]) ||
                         $dataPartitioning["flagPartitioning"] === null ||
                         count($dataPartitioning) == 1) {
-                        throw new \RuntimeException('The data separator flag for workers was not specified.');
+                        throw new RuntimeException('The data separator flag for workers was not specified.');
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     exit($e->getMessage());
                 }
 

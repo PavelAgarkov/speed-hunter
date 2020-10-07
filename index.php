@@ -6,9 +6,9 @@ ini_set('display_startup_errors', 1);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use src\settings\MultipleProcessesSettings;
+use src\settings\value_object\MultipleProcessesSettings;
 use src\settings\SettingsList;
-use src\settings\SingleProcessSettings;
+use src\settings\value_object\SingleProcessSettings;
 use src\Starting;
 
 $parallel =
