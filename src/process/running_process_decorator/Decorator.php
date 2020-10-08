@@ -2,7 +2,8 @@
 
 namespace src\process\running_process_decorator;
 
-use src\Starting;
+use src\phpRoutine;
+
 
 /**
  * Class Decorator
@@ -11,16 +12,16 @@ use src\Starting;
 abstract class Decorator
 {
     /**
-     * @var Starting
+     * @var phpRoutine
      */
-    public Starting $starting;
+    public phpRoutine $phpRoutine;
 
     /**
      * Decorator constructor.
-     * @param Starting $starting
+     * @param phpRoutine $phpRoutine
      */
-    public function __construct(Starting $starting)
+    public function __construct(phpRoutine $phpRoutine)
     {
-        $this->starting = $starting;
+        $this->phpRoutine = $phpRoutine;
     }
 }

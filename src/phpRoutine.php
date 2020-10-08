@@ -15,7 +15,7 @@ use src\settings\SettingsList;
  * Class Starting
  * @package src
  */
-class Starting
+class phpRoutine
 {
     /**
      * @var ProcessManagerInterface
@@ -34,7 +34,7 @@ class Starting
     /**
      * @return $this
      */
-    public function parallelRun(): Starting
+    public function parallelRun(): self
     {
         $this->ProcessManager->parallel();
 
@@ -44,7 +44,7 @@ class Starting
     /**
      * @return $this
      */
-    public function oneAsyncProcessRun(): Starting
+    public function oneAsyncProcessRun(): self
     {
         $this->ProcessManager->single();
 
@@ -54,7 +54,7 @@ class Starting
     /**
      * @return $this
      */
-    public function multipleAsyncProcessesRun(): Starting
+    public function multipleAsyncProcessesRun(): self
     {
         $this->ProcessManager->multiple();
 
@@ -69,20 +69,21 @@ class Starting
         return $this->ProcessManager;
     }
 
+
     /**
      * @param SettingsList $settingsList
-     * @return Starting
+     * @return static
      */
-    public static function parallel(SettingsList $settingsList): Starting
+    public static function parallel(SettingsList $settingsList): self
     {
         new ParallelProcessesDecorator(
-            $staring =
-                new Starting(
+            $phpRoutine =
+                new self(
                     new ParallelProcessesManager($settingsList)
                 )
         );
 
-        return $staring;
+        return $phpRoutine;
     }
 
     /**
@@ -95,7 +96,7 @@ class Starting
         }
 
         new OneAsyncProcessDecorator(
-            new Starting(
+            new self(
                 new AsyncProcessManager($settingsList)
             )
         );
@@ -107,7 +108,7 @@ class Starting
     public static function multipleAsyncProcesses(SettingsList $settingsList): void
     {
         new MultipleAsyncProcessesDecorator(
-            new Starting(
+            new self(
                 new AsyncProcessManager($settingsList)
             )
         );

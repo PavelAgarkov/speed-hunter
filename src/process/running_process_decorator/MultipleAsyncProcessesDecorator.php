@@ -2,7 +2,7 @@
 
 namespace src\process\running_process_decorator;
 
-use src\Starting;
+use src\phpRoutine;
 
 /**
  * Class MultipleAsyncProcessesDecorator
@@ -12,11 +12,11 @@ final class MultipleAsyncProcessesDecorator extends Decorator
 {
     /**
      * MultipleAsyncProcessesDecorator constructor.
-     * @param Starting $starting
+     * @param phpRoutine $phpRoutine
      */
-    public function __construct(Starting $starting)
+    public function __construct(phpRoutine $phpRoutine)
     {
-        parent::__construct($starting);
+        parent::__construct($phpRoutine);
         $this->execute();
     }
 
@@ -25,6 +25,6 @@ final class MultipleAsyncProcessesDecorator extends Decorator
      */
     public function execute(): void
     {
-        $this->starting->multipleAsyncProcessesRun();
+        $this->phpRoutine->multipleAsyncProcessesRun();
     }
 }
