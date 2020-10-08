@@ -29,11 +29,6 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
     private array $processPipes = [];
 
     /**
-     * @var array
-     */
-    private array $readDataFromSubProc = [];
-
-    /**
      * ParallelProcessesManager constructor.
      * @param SettingsList $settingsList
      */

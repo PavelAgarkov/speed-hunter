@@ -17,7 +17,7 @@ $parallelPhpRoutines =
             new MultipleProcessesSettings(
                 "php7.4",
                 'jobs/job_1',
-                4
+                493
             ),
             new MultipleProcessesSettings(
                 "php7.4",

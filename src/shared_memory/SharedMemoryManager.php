@@ -35,7 +35,7 @@ class SharedMemoryManager
     (
         SharedMemory $sharedMemory,
         array $shSettings
-    )
+    ): ?string
     {
         return $sharedMemory->read(
             $shSettings["sharedMemoryResource"],
@@ -86,7 +86,7 @@ class SharedMemoryManager
     (
         SharedMemory $sharedMemory,
         $resource
-    )
+    ) : bool
     {
         return $sharedMemory->delete($resource);
     }

@@ -214,7 +214,15 @@ class ResourcePool
                 $sharedMemoryKey = rand(100, 9000000);
                 //флаг "n" говорит, что создается новый участок общей памяти и возвращает false если участок с таким ключом уже есть
                 // permission 0755
-                $sharedMemoryResource = $this->SharedMemory->open($sharedMemoryKey, "n", $memorySize);
+                $sharedMemoryResource =
+                    SharedMemoryManager::openShResource(
+                        $this->SharedMemory,
+                        array(
+                            "sharedMemoryKey" => $sharedMemoryKey,
+                            "openFlag" => "n",
+                            "shSize" => $memorySize
+                        )
+                    );
 
                 // если разделяемая память по данному ключу занята, то делаем новый ключ, иначе записываем в пул памяти
                 $this->addInResourcePool($sharedMemoryResource, $sharedMemoryKey, $workerName);
@@ -253,7 +261,6 @@ class ResourcePool
      */
     public function readAllDataFromResourcePool(): array
     {
-        $sharedMemory = $this->getSharedMemory();
         $this
             ->createNewResourcePool()
             ->mergedResourcePool();
@@ -261,16 +268,23 @@ class ResourcePool
         foreach ($this->mergedResourcePool as $workerName => $configations) {
             foreach ($configations as $key => $value) {
                 $memoryResource = $value[0];
-                $read = $sharedMemory->read($memoryResource, 0, shmop_size($memoryResource) - 0);
+                $read = SharedMemoryManager::readShResource(
+                    $this->SharedMemory,
+                    array(
+                        "sharedMemoryResource" => $memoryResource,
+                        "start" => 0,
+                        "size" => shmop_size($memoryResource) - 0
+                    )
+                );
 
                 $data = unserialize($read);
                 $data = $data === false ? null : $data;
 
-                $sharedMemory->setOutputElementByKey($workerName, $key, $data, $value);
+                $this->SharedMemory->setOutputElementByKey($workerName, $key, $data, $value);
             }
         }
 
-        return $sharedMemory->getData();
+        return $this->SharedMemory->getData();
     }
 
     /** Метод освобождает все ресурсы разделяемой памяти занятые во время выполнения
@@ -279,11 +293,14 @@ class ResourcePool
      */
     public function deleteAllDataFromResourcePool(): bool
     {
-        $sharedMemory = $this->getSharedMemory();
         foreach ($this->mergedResourcePool as $workerName => $configations) {
             foreach ($configations as $key => $value) {
                 $memoryResource = $value[0];
-                $delete = $sharedMemory->delete($memoryResource);
+                $delete = SharedMemoryManager::deleteSh(
+                    $this->SharedMemory,
+                    $memoryResource
+                );
+
                 if ($delete === true) {
                     unset($this->resourcePool[$workerName][$key]);
                 }
@@ -323,13 +340,12 @@ class ResourcePool
      */
     private function createNewResourcePool(): self
     {
-        $sharedMemory = $this->getSharedMemory();
         $newResourcePoll = [];
         foreach ($this->resourcePool as $workerName => $configations) {
             foreach ($configations as $key => $value) {
                 $poolConf = $this->resourcePoolСonfirations;
                 $open = SharedMemoryManager::openShResource(
-                    $sharedMemory,
+                    $this->SharedMemory,
                     array(
                         "sharedMemoryKey" => $value[1],
                         "openFlag" => "a",

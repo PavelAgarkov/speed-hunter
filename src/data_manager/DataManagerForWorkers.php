@@ -7,6 +7,7 @@ use RuntimeException;
 use src\process\object_value\WorkerProcess;
 use src\ResourcePool;
 use src\shared_memory\SharedMemory;
+use src\shared_memory\SharedMemoryManager;
 
 /** Класс реализует запись передаваемых в воркер данных в разделяемую
  *  память предназначенную для набора воркров.
@@ -42,9 +43,9 @@ class DataManagerForWorkers
      * @param SharedMemory $sharedMemory
      */
     public function __construct(
-        WorkerProcess &$workerSet,
+        WorkerProcess $workerSet,
         array $dataForWorkersSet,
-        SharedMemory &$sharedMemory
+        SharedMemory $sharedMemory
     ) {
         $this->workersSet = $workerSet;
         $this->dataForSet = $dataForWorkersSet;
@@ -126,7 +127,8 @@ class DataManagerForWorkers
 
         $counter = 0;
         foreach ($resourcePool as $memoryKey => $item) {
-            $this->SharedMemory->write(
+            SharedMemoryManager::writeIntoSh(
+                $this->SharedMemory,
                 $item[0],
                 $this->readyChunksOfDataForWorkers[$counter]
             );
@@ -142,7 +144,8 @@ class DataManagerForWorkers
     {
         $resourcePool = $resourcePool->getResourcePool()[$this->workersSet->getWorkerName()];
         foreach ($resourcePool as $memoryKey => $item) {
-            $this->SharedMemory->write(
+            SharedMemoryManager::writeIntoSh(
+                $this->SharedMemory,
                 $item[0],
                 $this->readyChunksOfDataForWorkers
             );

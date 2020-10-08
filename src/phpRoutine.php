@@ -12,7 +12,7 @@ use src\process\running_process_decorator\ParallelProcessesDecorator;
 use src\settings\SettingsList;
 
 /**
- * Class Starting
+ * Class phpRoutine
  * @package src
  */
 class phpRoutine
