@@ -24,44 +24,43 @@ class Job
      */
     private LaunchedJob $launchedJob;
 
-    /**
-     * @var string - тип серилизованных данных до записи в разделяемую память из воркера
-     */
-    private string $type;
 
+    /**
+     * @var array|array[]
+     */
+    private array $output = [
+        "read"      => [],
+        "fromJob"    => []
+    ];
 
     /**
      * Job constructor.
      * @param array $argv - аргументы из вызываемого процесса
-     * @param string $type - тип данных до сериализации и записи из воркера в раздеяемую память
      */
-    private function __construct(array $argv, string $type)
+    public function __construct(array $argv)
     {
         $this->launchedJob = new LaunchedJob(
             array(
-                "jobName" => (string)$argv[0],
-                "processNumber" => (int)$argv[1],
-                "serializeFlag" => (int)$argv[4]
+                "jobName" => (string)$argv[1],
+                "processNumber" => (int)$argv[2],
+                "serializeFlag" => (int)$argv[5]
             )
         );
 
         $this->sharedMemoryJob = new SharedMemoryJob(
             array(
-                "sharedMemoryKey" => (int)$argv[2],
-                "sharedMemorySize" => (int)$argv[3],
+                "sharedMemoryKey" => (int)$argv[3],
+                "sharedMemorySize" => (int)$argv[4],
                 "flagShOpen" => "w"
             )
         );
-
-        $this->type = $type;
     }
 
     /** Метод вызывает передаваемое замыкание
-     * @param callable $function - анонимная функция для выполнения внутри класса
      * @param string|null $read - прочитанные данные из памяти
      * @return array
      */
-    private function handler(callable $function, ?string $read): ?array
+    private function unserializer(?string $read): ?array
     {
         if ($read != "") {
             $unserialize = unserialize($read);
@@ -72,55 +71,31 @@ class Job
             $unserialize = null;
         };
 
-        $array = $function($this, $unserialize);
-
-        return $array;
+        return $unserialize;
     }
 
-    /** Интерфейсный метод для запуска Job
-     * @param array $argv - stdin
-     * @param callable $function - замыкание для выполнения
-     */
-    public static function runJob(array $argv, callable $function): void
+    public function runJob(): void
     {
-        $start = microtime(true);
+        $this->synchroniseRead();
 
-        $Job = new Job($argv, 'array');
-        $read = $Job->launchedJob->getSerializeFlag() == static::SERIALIZE_TRUE
-            ? $Job->sharedMemoryJob->getReadData() : "";
-
-        $data = $Job->handler($function, $read);
-
-        $Resolver = new JobSharedMemoryResolver($Job, $data);
+        $Resolver = new JobSharedMemoryResolver($this, $this->output);
         if (!$Resolver->check()) {
             $resolveSettings = $Resolver->reload();
             $Resolver->resolveSharedMemoryJob($resolveSettings);
         }
 
         SharedMemoryManager::writeIntoSh(
-            $Job->sharedMemoryJob->getSharedMemory(),
-            $Job->sharedMemoryJob->getSharedMemoryResource(),
-            $data
+            $this->sharedMemoryJob->getSharedMemory(),
+            $this->sharedMemoryJob->getSharedMemoryResource(),
+            $this->output
         );
-
-        $time = microtime(true) - $start;
     }
 
-    /**
-     * @param array $argv
-     * @param callable $function
-     */
-    public static function runSingleAsyncJob(array $argv, callable $function): void
+    public function runSingleAsyncJob(): void
     {
-        $Job = new Job($argv, 'array');
-        $read = $Job->launchedJob->getSerializeFlag() == static::SERIALIZE_TRUE
-            ? $Job->sharedMemoryJob->getReadData() : "";
-
-        $Job->handler($function, $read);
-
         SharedMemoryManager::deleteSh(
-            $Job->sharedMemoryJob->getSharedMemory(),
-            $Job->sharedMemoryJob->getSharedMemoryResource()
+            $this->sharedMemoryJob->getSharedMemory(),
+            $this->sharedMemoryJob->getSharedMemoryResource()
         );
     }
 
@@ -131,4 +106,38 @@ class Job
     {
         return $this->sharedMemoryJob;
     }
+
+    /**
+     * @return LaunchedJob
+     */
+    public function getLaunchedJob(): LaunchedJob
+    {
+        return $this->launchedJob;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOutput(): array
+    {
+        return $this->output;
+    }
+
+    /**
+     * @param string $key
+     * @param array $output
+     */
+    public function insertInOutput(string $key, array $output): void
+    {
+        $this->output[$key] = $output;
+    }
+
+    public function synchroniseRead(): void
+    {
+        $read = $this->launchedJob->getSerializeFlag() == static::SERIALIZE_TRUE
+            ? $this->sharedMemoryJob->getReadData() : "";
+
+        $this->output["read"] = $this->unserializer($read);
+    }
+
 }

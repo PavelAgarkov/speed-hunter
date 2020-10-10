@@ -55,7 +55,7 @@ class ParallelProcess extends Process
         }
 
         $proc = proc_open(
-            "{$phpPath} {$workerName}.php {$processNumber} {$numberMemoryKey} {$memorySize} {$unserializeFlag}",
+            "{$phpPath} {$workerName} {$processNumber} {$numberMemoryKey} {$memorySize} {$unserializeFlag}",
             $descriptors,
             $manager->getProcessPipes()
         );

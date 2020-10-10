@@ -33,7 +33,7 @@ class AsyncProcess extends Process
 
         proc_close(
             proc_open(
-                "{$phpPath} {$name}.php {$resourceKey} {$numberMemory} {$size} 1 --foo=1 &",
+                "{$phpPath} {$name} {$resourceKey} {$numberMemory} {$size} 1 --foo=1 &",
                 array(),
                 $foo
             )
@@ -55,7 +55,7 @@ class AsyncProcess extends Process
 
                 proc_close(
                     proc_open(
-                        "{$phpPath} {$name}.php {$resourceKey} {$numberMemoryKey} {$size} 1 --foo=1 &",
+                        "{$phpPath} {$name} {$resourceKey} {$numberMemoryKey} {$size} 1 --foo=1 &",
                         array(),
                         $foo
                     )

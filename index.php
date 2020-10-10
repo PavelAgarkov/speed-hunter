@@ -15,14 +15,14 @@ $parallelPhpRoutines =
     phpRoutine::parallel(
         new SettingsList(
             new MultipleProcessesSettings(
-                "php7.4",
-                'jobs/job_1',
-                493
+                "php7.4 routine.php",
+                "jobs\\\Job_1",
+                5
             ),
             new MultipleProcessesSettings(
-                "php7.4",
-                'jobs/job_2',
-                5,
+                "php7.4 routine.php",
+                "jobs\\\Job_2",
+                3,
                 array(
                     "flagPartitioning" => 0,
                     "dataToPartitioning" => $data2 =  ['commit', 'sin', 'cod', 'cos', 'tan']
@@ -30,9 +30,9 @@ $parallelPhpRoutines =
                 phpRoutine::weighData($data2)
             ),
             new MultipleProcessesSettings(
-                "php7.4",
-                'jobs/job_4',
-                2,
+                "php7.4 routine.php",
+                "jobs\\\Job_4",
+                3,
                 array(
                     "flagPartitioning" => 1,
                     "dataToPartitioning" => $data3 = ['commit', 'sin', 'cos']
@@ -48,9 +48,9 @@ print_r($output);
 phpRoutine::singleAsyncProcess(
     new SettingsList(
         new SingleProcessSettings(
-            "php7.4",
-            'jobs/async_1',
-            $data4 =array(1, 2, 3),
+            "php7.4 routine.php",
+            'jobs\\\Async_1',
+            $data4 = array(1, 2, 3),
             phpRoutine::weighData($data4)
         )
     )
@@ -59,8 +59,8 @@ phpRoutine::singleAsyncProcess(
 phpRoutine::multipleAsyncProcesses(
     new SettingsList(
         new MultipleProcessesSettings(
-            "php7.4",
-            'jobs/async_1',
+            "php7.4 routine.php",
+            'jobs\\\Async_1',
             3,
             array(
                 "flagPartitioning" => 1,
@@ -69,8 +69,8 @@ phpRoutine::multipleAsyncProcesses(
             phpRoutine::weighData($data5)
         ),
         new MultipleProcessesSettings(
-            "php7.4",
-            'jobs/async_2',
+            "php7.4 routine.php",
+            'jobs\\\Async_2',
             3,
             array(
                 "flagPartitioning" => 0,
