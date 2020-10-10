@@ -6,13 +6,13 @@ ini_set('display_startup_errors', 1);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use src\settings\value_object\MultipleProcessesSettings;
-use src\settings\SettingsList;
-use src\settings\value_object\SingleProcessSettings;
-use src\phpRoutine;
+use src\client\settings\value_object\MultipleProcessesSettings;
+use src\client\settings\SettingsList;
+use src\client\settings\value_object\SingleProcessSettings;
+use src\client\Client;
 
-$parallelPhpRoutines =
-    phpRoutine::parallel(
+$parallelClients =
+    Client::parallel(
         new SettingsList(
             new MultipleProcessesSettings(
                 "php7.4 routine.php",
@@ -22,12 +22,12 @@ $parallelPhpRoutines =
             new MultipleProcessesSettings(
                 "php7.4 routine.php",
                 "jobs\\\Job_2",
-                3,
+                5,
                 array(
                     "flagPartitioning" => 0,
                     "dataToPartitioning" => $data2 =  ['commit', 'sin', 'cod', 'cos', 'tan']
                 ),
-                phpRoutine::weighData($data2)
+                Client::weighData($data2)
             ),
             new MultipleProcessesSettings(
                 "php7.4 routine.php",
@@ -37,26 +37,26 @@ $parallelPhpRoutines =
                     "flagPartitioning" => 1,
                     "dataToPartitioning" => $data3 = ['commit', 'sin', 'cos']
                 ),
-                phpRoutine::weighData($data3)
+                Client::weighData($data3)
             )
         )
     );
 
-$output = $parallelPhpRoutines->getOutput();
+$output = $parallelClients->getOutput();
 print_r($output);
 
-phpRoutine::singleAsyncProcess(
+Client::singleAsyncProcess(
     new SettingsList(
         new SingleProcessSettings(
             "php7.4 routine.php",
             'jobs\\\Async_1',
             $data4 = array(1, 2, 3),
-            phpRoutine::weighData($data4)
+            Client::weighData($data4)
         )
     )
 );
 
-phpRoutine::multipleAsyncProcesses(
+Client::multipleAsyncProcesses(
     new SettingsList(
         new MultipleProcessesSettings(
             "php7.4 routine.php",
@@ -66,7 +66,7 @@ phpRoutine::multipleAsyncProcesses(
                 "flagPartitioning" => 1,
                 "dataToPartitioning" =>  $data5 = array(1, 2, 3)
             ),
-            phpRoutine::weighData($data5)
+            Client::weighData($data5)
         ),
         new MultipleProcessesSettings(
             "php7.4 routine.php",
@@ -76,7 +76,7 @@ phpRoutine::multipleAsyncProcesses(
                 "flagPartitioning" => 0,
                 "dataToPartitioning" => $data6 = array('Hi')
             ),
-            phpRoutine::weighData($data5)
+            Client::weighData($data5)
         )
     )
 );

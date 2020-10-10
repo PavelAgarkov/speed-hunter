@@ -2,8 +2,8 @@
 
 namespace jobs;
 
-use src\routine\RoutineInterface;
-use src\routine\RoutineTrait;
+use src\routine\php_routine\RoutineInterface;
+use src\routine\php_routine\RoutineTrait;
 
 class Async_1 implements RoutineInterface
 {

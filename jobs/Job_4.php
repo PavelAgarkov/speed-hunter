@@ -2,8 +2,8 @@
 
 namespace jobs;
 
-use src\routine\RoutineInterface;
-use src\routine\RoutineTrait;
+use src\routine\php_routine\RoutineInterface;
+use src\routine\php_routine\RoutineTrait;
 
 class Job_4 implements RoutineInterface
 {
