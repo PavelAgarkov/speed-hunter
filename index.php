@@ -11,7 +11,7 @@ use src\client\settings\SettingsList;
 use src\client\settings\value_object\SingleProcessSettings;
 use src\client\Client;
 
-$parallelClients =
+$parallelClient =
     Client::parallel(
         new SettingsList(
             new MultipleProcessesSettings(
@@ -42,7 +42,7 @@ $parallelClients =
         )
     );
 
-$output = $parallelClients->getOutput();
+$output = $parallelClient->getOutput();
 print_r($output);
 
 Client::singleAsyncProcess(

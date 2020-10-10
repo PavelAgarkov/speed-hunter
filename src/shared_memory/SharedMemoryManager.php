@@ -55,7 +55,7 @@ class SharedMemoryManager
         SharedMemory $sharedMemory,
         $resource,
         array $data
-    )
+    ): int
     {
         return $sharedMemory->write(
             $resource,

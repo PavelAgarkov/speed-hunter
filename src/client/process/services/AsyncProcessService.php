@@ -1,17 +1,18 @@
 <?php
 
-namespace src\client\process\process_manager;
+namespace src\client\process\services;
 
 use src\client\process\AsyncProcess;
-use src\client\process\process_manager\ProcessManagerInterface;
+use src\client\process\services\ProcessServiceInterface;
 use src\client\ResourcePool;
 use src\client\settings\SettingsList;
+use src\client\process\services\ProcessService;
 
 /**
  * Class AsyncProcessManager
  * @package src\process
  */
-class AsyncProcessManager extends ProcessManager implements ProcessManagerInterface
+class AsyncProcessService extends ProcessService implements ProcessServiceInterface
 {
     /**
      * AsyncProcessManager constructor.

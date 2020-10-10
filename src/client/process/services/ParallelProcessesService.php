@@ -1,17 +1,18 @@
 <?php
 
-namespace src\client\process\process_manager;
+namespace src\client\process\services;
 
 use src\client\process\ParallelProcess;
-use src\client\process\process_manager\ProcessManagerInterface;
+use src\client\process\services\ProcessServiceInterface;
 use src\client\ResourcePool;
 use src\client\settings\SettingsList;
+use src\client\process\services\ProcessService;
 
 /** Класс для управления параллельными php процессами взаимодействующими через разделяемую память unix.
  * Class ProcessesManager
  * @package src
  */
-class ParallelProcessesManager extends ProcessManager implements ProcessManagerInterface
+class ParallelProcessesService extends ProcessService implements ProcessServiceInterface
 {
     /**
      * @var array - записи о каналах связи.
@@ -40,9 +41,9 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
     /** Метод открывает цикл процессов, который передает управление воркерам.
      *  По окончанию выполнения последнего воркера цикл возвращает управление основному процессу.
      * @param ResourcePool $resourcePool
-     * @return ParallelProcessesManager
+     * @return ParallelProcessesService
      */
-    public function startProcessLoop(ResourcePool $resourcePool): ParallelProcessesManager
+    public function startProcessLoop(ResourcePool $resourcePool): ParallelProcessesService
     {
         $this->setResourcePool($resourcePool);
         $workerProcess = $resourcePool->getPoolOfWorkers();
@@ -72,9 +73,9 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
     }
 
     /** Метод закрывающий каналы и процессы, открытые для работы.
-     * @return ParallelProcessesManager
+     * @return ParallelProcessesService
      */
-    public function closeProcessLoop(): ParallelProcessesManager
+    public function closeProcessLoop(): ParallelProcessesService
     {
         foreach ($this->getResourcePool()->getResourcePool() as $workerName => $configurations) {
             foreach ($configurations as $resourceKey => $value) {
@@ -120,15 +121,6 @@ class ParallelProcessesManager extends ProcessManager implements ProcessManagerI
     public function getDataManagerForWorkers(): array
     {
         return $this->dataManagerForWorkers;
-    }
-
-    /**
-     * @param int $processNumber
-     * @return array
-     */
-    public function getPipes(int $processNumber): array
-    {
-        return $this->pipes[$processNumber];
     }
 
     /**

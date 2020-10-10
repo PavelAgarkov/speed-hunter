@@ -1,6 +1,6 @@
 <?php
 
-namespace src\client\process\process_manager;
+namespace src\client\process\services;
 
 use src\client\data_manager\DataManagerForWorkers;
 use src\client\ResourcePool;
@@ -10,7 +10,7 @@ use src\client\settings\SettingsList;
  * Class ProcessManager
  * @package src\process
  */
-class ProcessManager
+class ProcessService
 {
     /**
      * @var array - массив объектов DataManager для каждого набора WorkerProcess

@@ -1,18 +1,17 @@
 <?php
 
-namespace src\client\process\running_process_decorator;
+namespace src\client\process\decorators;
 
 use src\client\Client;
-use src\client\process\running_process_decorator\Decorator;
 
 /**
- * Class ParallelProcessesDecorator
+ * Class MultipleAsyncProcessesDecorator
  * @package src\process\running_process_decorator
  */
-final class ParallelProcessesDecorator extends Decorator
+final class MultipleAsyncProcessesDecorator extends Decorator
 {
     /**
-     * ParallelProcessesDecorator constructor.
+     * MultipleAsyncProcessesDecorator constructor.
      * @param Client $Client
      */
     public function __construct(Client $Client)
@@ -26,6 +25,6 @@ final class ParallelProcessesDecorator extends Decorator
      */
     public function execute(): void
     {
-        $this->Client->parallelRun();
+        $this->Client->multipleAsyncProcessesRun();
     }
 }

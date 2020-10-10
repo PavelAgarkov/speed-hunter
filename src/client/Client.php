@@ -3,12 +3,12 @@
 namespace src\client;
 
 use RuntimeException;
-use src\client\process\process_manager\AsyncProcessManager;
-use src\client\process\process_manager\ParallelProcessesManager;
-use src\client\process\process_manager\ProcessManagerInterface;
-use src\client\process\running_process_decorator\MultipleAsyncProcessesDecorator;
-use src\client\process\running_process_decorator\OneAsyncProcessDecorator;
-use src\client\process\running_process_decorator\ParallelProcessesDecorator;
+use src\client\process\services\AsyncProcessService;
+use src\client\process\services\ParallelProcessesService;
+use src\client\process\services\ProcessServiceInterface;
+use src\client\process\decorators\MultipleAsyncProcessesDecorator;
+use src\client\process\decorators\OneAsyncProcessDecorator;
+use src\client\process\decorators\ParallelProcessesDecorator;
 use src\client\settings\SettingsList;
 
 /**
@@ -18,17 +18,17 @@ use src\client\settings\SettingsList;
 class Client
 {
     /**
-     * @var ProcessManagerInterface
+     * @var ProcessServiceInterface
      */
-    private ProcessManagerInterface $ProcessManager;
+    private ProcessServiceInterface $ProcessService;
 
     /**
      * Starting constructor.
-     * @param ProcessManagerInterface $manager
+     * @param ProcessServiceInterface $service
      */
-    private function __construct(ProcessManagerInterface $manager)
+    private function __construct(ProcessServiceInterface $service)
     {
-        $this->ProcessManager = $manager;
+        $this->ProcessService = $service;
     }
 
     /**
@@ -36,7 +36,7 @@ class Client
      */
     public function parallelRun(): self
     {
-        $this->ProcessManager->parallel();
+        $this->ProcessService->parallel();
 
         return $this;
     }
@@ -46,7 +46,7 @@ class Client
      */
     public function oneAsyncProcessRun(): self
     {
-        $this->ProcessManager->single();
+        $this->ProcessService->single();
 
         return $this;
     }
@@ -56,19 +56,10 @@ class Client
      */
     public function multipleAsyncProcessesRun(): self
     {
-        $this->ProcessManager->multiple();
+        $this->ProcessService->multiple();
 
         return $this;
     }
-
-    /**
-     * @return ProcessManagerInterface
-     */
-    public function getProcessManager(): ProcessManagerInterface
-    {
-        return $this->ProcessManager;
-    }
-
 
     /**
      * @param SettingsList $settingsList
@@ -79,7 +70,7 @@ class Client
         new ParallelProcessesDecorator(
             $Client =
                 new self(
-                    new ParallelProcessesManager($settingsList)
+                    new ParallelProcessesService($settingsList)
                 )
         );
 
@@ -97,7 +88,7 @@ class Client
 
         new OneAsyncProcessDecorator(
             new self(
-                new AsyncProcessManager($settingsList)
+                new AsyncProcessService($settingsList)
             )
         );
     }
@@ -109,7 +100,7 @@ class Client
     {
         new MultipleAsyncProcessesDecorator(
             new self(
-                new AsyncProcessManager($settingsList)
+                new AsyncProcessService($settingsList)
             )
         );
     }
@@ -119,7 +110,7 @@ class Client
      */
     public function getOutput(): array
     {
-        return $this->getProcessManager()->getOutputData();
+        return $this->ProcessService->getOutputData();
     }
 
     public static function weighData(array $data): int

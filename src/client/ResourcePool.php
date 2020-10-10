@@ -7,8 +7,8 @@ use RuntimeException;
 use src\client\data_manager\DataManagerForWorkers;
 use src\client\data_manager\DataPartitioningStrategy;
 use src\client\data_manager\PutDataInJobSharedMemoryStrategy;
-use src\client\process\process_manager\AsyncProcessManager;
-use src\client\process\process_manager\ProcessManager;
+use src\client\process\services\AsyncProcessService;
+use src\client\process\services\ProcessService;
 use src\client\process\value_object\WorkerProcess;
 use src\client\settings\SettingsList;
 use src\shared_memory\SharedMemory;
@@ -76,16 +76,16 @@ class ResourcePool
     }
 
     /**
-     * @param AsyncProcessManager $manager
-     * @return AsyncProcessManager
+     * @param AsyncProcessService $service
+     * @return AsyncProcessService
      */
-    public function configurePoolForSingleProcess(AsyncProcessManager $manager): AsyncProcessManager
+    public function configurePoolForSingleProcess(AsyncProcessService $service): AsyncProcessService
     {
         $poolOfWorkers = [];
         $poolOfWorkers[$name = $this->settingsList->getFirst()->getJobName()] =
             new WorkerProcess($first = $this->settingsList->getFirst());
 
-        $manager->setDataManagerForWorkers(
+        $service->setDataManagerForWorkers(
             $name,
             $dataManager =
                 new DataManagerForWorkers(
@@ -102,22 +102,22 @@ class ResourcePool
         $partitioningStrategy->writeDadaForSingleAsyncProcess();
 
         $putStrategy = new PutDataInJobSharedMemoryStrategy(
-            $manager->getDataManagerForWorkers()[$name],
+            $service->getDataManagerForWorkers()[$name],
             $this
         );
         $putStrategy->putDataForSingleAsyncProcess();
 
-        return $manager;
+        return $service;
     }
 
     /**
-     * @param ProcessManager $manager
-     * @return ProcessManager
+     * @param ProcessService $service
+     * @return ProcessService
      * @throws \Exception
      */
     public function configureResourcePoolForParallelProcesses(
-        ProcessManager $manager
-    ): ProcessManager
+        ProcessService $service
+    ): ProcessService
     {
         $poolOfWorkers = [];
         foreach ($this->settingsList->getList() as $key => $configuration) {
@@ -128,7 +128,7 @@ class ResourcePool
             $emptyData = false;
             if (empty($dataPartitioning)) {
                 $emptyData = true;
-                $manager->setDataManagerForWorkers(
+                $service->setDataManagerForWorkers(
                     $name,
                     $dataManager =
                         new DataManagerForWorkers(
@@ -150,7 +150,7 @@ class ResourcePool
                     exit($e->getMessage());
                 }
 
-                $manager->setDataManagerForWorkers(
+                $service->setDataManagerForWorkers(
                     $name,
                     $dataManager =
                         new DataManagerForWorkers(
@@ -175,13 +175,13 @@ class ResourcePool
             if (isset($dataPartitioning) && !empty($dataPartitioning)) {
                 $name = $configuration->getJobName();
                 $strategy = new PutDataInJobSharedMemoryStrategy(
-                    $manager->getDataManagerForWorkers()[$name],
+                    $service->getDataManagerForWorkers()[$name],
                     $this
                 );
                 $strategy->putData();
             }
         }
-        return $manager;
+        return $service;
     }
 
     /**

@@ -2,7 +2,8 @@
 
 namespace src\client\process;
 
-use src\client\process\process_manager\ParallelProcessesManager;
+use src\client\process\services\ParallelProcessesManager;
+use src\client\process\services\ParallelProcessesService;
 use src\client\ResourcePool;
 
 /**
@@ -28,7 +29,7 @@ class ParallelProcess extends Process
      * @param int $numberMemoryKey
      * @param array $descriptors
      * @param int $memorySize
-     * @param ParallelProcessesManager $manager
+     * @param ParallelProcessesService $service
      */
     public function processOpen(
         string $phpPath,
@@ -37,16 +38,16 @@ class ParallelProcess extends Process
         int $numberMemoryKey,
         array $descriptors,
         int $memorySize,
-        ParallelProcessesManager &$manager
+        ParallelProcessesService &$service
     ): void
     {
 
         $unserializeFlag = 0;
         if (array_key_exists(
                 $workerName,
-                $manager->getDataManagerForWorkers()
+                $service->getDataManagerForWorkers()
             ) &&
-            (!empty($manager
+            (!empty($service
                 ->getSettingsList()
                 ->getSettingsObject($workerName)
                 ->getDataPartitioning())))
@@ -57,9 +58,9 @@ class ParallelProcess extends Process
         $proc = proc_open(
             "{$phpPath} {$workerName} {$processNumber} {$numberMemoryKey} {$memorySize} {$unserializeFlag}",
             $descriptors,
-            $manager->getProcessPipes()
+            $service->getProcessPipes()
         );
-        $manager->setProcesses($processNumber, $proc);
-        $manager->setPipes($processNumber, $manager->getProcessPipes());
+        $service->setProcesses($processNumber, $proc);
+        $service->setPipes($processNumber, $service->getProcessPipes());
     }
 }

@@ -29,7 +29,8 @@ class SharedMemory
         int $memoryKey,
         string $openFlag = "n",
         int $size = 0
-    ) {
+    )
+    {
         $sharedMemoryResource = shmop_open($memoryKey, $openFlag, 0755, $size);
         return $sharedMemoryResource;
     }
@@ -44,7 +45,8 @@ class SharedMemory
         $memoryResource,
         int $start = 0,
         int $size = 0
-    ): ?string {
+    ): ?string
+    {
         if (SharedMemory::isResource($memoryResource)) {
             $read = shmop_read($memoryResource, $start, $size);
             return $read;
@@ -125,7 +127,8 @@ class SharedMemory
         string $key,
         ?array $data,
         array $value
-    ): void {
+    ): void
+    {
         if ($data === null) {
             throw new RuntimeException(
                 "Shared memory node id ${value[1]} in process name ${workerName} less than necessary!"

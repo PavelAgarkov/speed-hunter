@@ -1,9 +1,8 @@
 <?php
 
-namespace src\client\process\running_process_decorator;
+namespace src\client\process\decorators;
 
 use src\client\Client;
-
 
 /**
  * Class Decorator
