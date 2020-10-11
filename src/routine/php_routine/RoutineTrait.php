@@ -29,4 +29,19 @@ trait RoutineTrait
     {
         return $this->Routine;
     }
+
+    public function beforeExecute(): self
+    {
+        return $this;
+    }
+
+    public function execute(): self
+    {
+        return $this;
+    }
+
+    public function afterExecute(): self
+    {
+        return $this;
+    }
 }

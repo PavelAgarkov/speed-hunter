@@ -15,5 +15,7 @@ interface RoutineInterface
     public function afterExecute(): self;
 
     public function setRoutine(Routine $Routine);
+
+    public function getRoutine(): Routine;
 }
 
