@@ -17,26 +17,18 @@ final class MultipleProcessesSettings extends Settings
 
     /**
      * MultipleAsyncProcessesSettings constructor.
-     * @param string $phpPath
-     * @param string $jobName
-     * @param int $numberJobs
-     * @param array $dataPartitioning
-     * @param int $shSizeForOneJob
+     * @param array $settings
      */
-    public function __construct(string $phpPath,
-                                string $jobName,
-                                int $numberJobs,
-                                array $dataPartitioning = [],
-                                int $shSizeForOneJob = 1)
+    public function __construct(array $settings)
     {
         parent::__construct(
-            $phpPath,
-            $jobName,
-            $shSizeForOneJob,
-            $numberJobs);
+            $settings["phpPath"],
+            $settings["jobName"],
+            $settings["shSizeForOneJob"] ?? 1,
+            $settings["numberJobs"]);
 
 
-        $this->dataPartitioning = $dataPartitioning;
+        $this->dataPartitioning = $settings["dataPartitioning"] ?? [];
     }
 
     /**

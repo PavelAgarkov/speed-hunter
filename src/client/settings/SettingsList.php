@@ -2,6 +2,8 @@
 
 namespace src\client\settings;
 
+use src\client\planned_routines\BaseRoutine;
+use src\client\settings\value_object\MultipleProcessesSettings;
 use src\client\settings\value_object\Settings;
 
 /**
@@ -22,14 +24,13 @@ final class SettingsList
 
     /**
      * SettingsList constructor.
-     * @param Settings ...$settings
      */
-    public function __construct(Settings ...$settings)
+    public function __construct()
     {
-        foreach ($settings as $key => $settingsObject) {
-            $this->list[$settingsObject->getJobName()] = $settingsObject;
-            $this->count++;
-        }
+//        foreach ($settings as $key => $settingsObject) {
+//            $this->list[$settingsObject->getJobName()] = $settingsObject;
+//            $this->count++;
+//        }
     }
 
     /**
@@ -71,5 +72,14 @@ final class SettingsList
     public function getLast(): Settings
     {
         return end($this->list);
+    }
+
+    public function set(string $key,
+                        MultipleProcessesSettings $settings): self
+    {
+        $this->list[$key] = $settings;
+        $this->count++;
+
+        return $this;
     }
 }

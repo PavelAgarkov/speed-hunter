@@ -10,19 +10,6 @@ use src\client\Client;
  */
 final class OneAsyncProcessDecorator extends Decorator
 {
-    /**
-     * OneAsyncProcessDecorator constructor.
-     * @param Client $Client
-     */
-    public function __construct(Client $Client)
-    {
-        parent::__construct($Client);
-        $this->execute();
-    }
-
-    /**
-     *
-     */
     public function execute(): void
     {
         $this->Client->oneAsyncProcessRun();

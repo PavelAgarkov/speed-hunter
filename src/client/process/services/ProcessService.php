@@ -5,6 +5,7 @@ namespace src\client\process\services;
 use src\client\data_manager\DataManagerForWorkers;
 use src\client\ResourcePool;
 use src\client\settings\SettingsList;
+use src\client\settings\value_object\Settings;
 
 /**
  * Class ProcessManager
@@ -18,9 +19,14 @@ class ProcessService
     protected array $dataManagerForWorkers;
 
     /**
-     * @var SettingsList
+     * @var SettingsList|null
      */
-    protected SettingsList $settingsList;
+    protected ?SettingsList $settingsList;
+
+    /**
+     * @var Settings|null
+     */
+    protected ?Settings $settings;
 
     /**
      * @var ResourcePool
@@ -29,11 +35,14 @@ class ProcessService
 
     /**
      * ProcessManager constructor.
-     * @param SettingsList $settingsList
+     * @param SettingsList|null $settingsList
+     * @param Settings|null $settings
      */
-    public function __construct(SettingsList $settingsList)
+    public function __construct(?SettingsList $settingsList,
+                                ?Settings $settings)
     {
         $this->settingsList = $settingsList;
+        $this->settings = $settings;
     }
 
     /**
@@ -56,10 +65,8 @@ class ProcessService
      * @param string $key
      * @param DataManagerForWorkers $dataManagerForWorkers
      */
-    public function setDataManagerForWorkers(
-        string $key,
-        DataManagerForWorkers $dataManagerForWorkers
-    ): void {
+    public function setDataManagerForWorkers(string $key,
+                                             DataManagerForWorkers $dataManagerForWorkers): void {
         $this->dataManagerForWorkers[$key] = $dataManagerForWorkers;
     }
 
@@ -77,5 +84,13 @@ class ProcessService
     public function getResourcePool(): ResourcePool
     {
         return $this->ResourcePool;
+    }
+
+    /**
+     * @return Settings|null
+     */
+    public function getSettings(): ?Settings
+    {
+        return $this->settings;
     }
 }

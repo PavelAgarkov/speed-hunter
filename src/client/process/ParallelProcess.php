@@ -2,9 +2,10 @@
 
 namespace src\client\process;
 
-use src\client\process\services\ParallelProcessesManager;
 use src\client\process\services\ParallelProcessesService;
 use src\client\ResourcePool;
+use src\client\settings\value_object\MultipleProcessesSettings;
+use src\client\settings\value_object\SingleProcessSettings;
 
 /**
  * Class ParallelProcess
@@ -31,28 +32,37 @@ class ParallelProcess extends Process
      * @param int $memorySize
      * @param ParallelProcessesService $service
      */
-    public function processOpen(
-        string $phpPath,
-        string $workerName,
-        int $processNumber,
-        int $numberMemoryKey,
-        array $descriptors,
-        int $memorySize,
-        ParallelProcessesService &$service
-    ): void
+    public function processOpen(string $phpPath,
+                                string $workerName,
+                                int $processNumber,
+                                int $numberMemoryKey,
+                                array $descriptors,
+                                int $memorySize,
+                                ParallelProcessesService &$service): void
     {
 
         $unserializeFlag = 0;
+
+        // переписать это
         if (array_key_exists(
-                $workerName,
-                $service->getDataManagerForWorkers()
-            ) &&
-            (!empty($service
-                ->getSettingsList()
-                ->getSettingsObject($workerName)
-                ->getDataPartitioning())))
-        {
-            $unserializeFlag = 1;
+            $workerName,
+            $service->getDataManagerForWorkers()
+        )) {
+
+            if ($this->getResourcePool()->getSettings() instanceof MultipleProcessesSettings) {
+                if (!empty($service
+                    ->getSettingsList()
+                    ->getSettingsObject($workerName)
+                    ->getDataPartitioning())) {
+                    $unserializeFlag = 1;
+                }
+            }
+
+            if ($this->getResourcePool()->getSettings() instanceof SingleProcessSettings) {
+                if (!empty($service->getSettings()->getData())) {
+                    $unserializeFlag = 1;
+                }
+            }
         }
 
         $proc = proc_open(

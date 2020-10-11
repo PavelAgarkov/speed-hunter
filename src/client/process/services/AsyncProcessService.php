@@ -7,6 +7,7 @@ use src\client\process\services\ProcessServiceInterface;
 use src\client\ResourcePool;
 use src\client\settings\SettingsList;
 use src\client\process\services\ProcessService;
+use src\client\settings\value_object\Settings;
 
 /**
  * Class AsyncProcessManager
@@ -16,18 +17,23 @@ class AsyncProcessService extends ProcessService implements ProcessServiceInterf
 {
     /**
      * AsyncProcessManager constructor.
-     * @param SettingsList $settingsList
+     * @param SettingsList|null $settingsList
+     * @param Settings|null $settings
      */
-    public function __construct(SettingsList $settingsList)
+    public function __construct(?SettingsList $settingsList,
+                                ?Settings $settings)
     {
-        parent::__construct($settingsList);
+        parent::__construct($settingsList, $settings);
     }
 
     public function single(): void
     {
         $process =
             new AsyncProcess(
-                new ResourcePool($this->getSettingsList())
+                new ResourcePool(
+                    null,
+                    $this->settings
+                )
             );
 
         $process->getResourcePool()
@@ -40,7 +46,10 @@ class AsyncProcessService extends ProcessService implements ProcessServiceInterf
     {
         $process =
             new AsyncProcess(
-                new ResourcePool($this->getSettingsList())
+                new ResourcePool(
+                    $this->getSettingsList(),
+                    $this->settings
+                )
             );
 
         $pool = $process->getResourcePool();

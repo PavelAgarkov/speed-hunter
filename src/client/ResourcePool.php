@@ -11,6 +11,7 @@ use src\client\process\services\AsyncProcessService;
 use src\client\process\services\ProcessService;
 use src\client\process\value_object\WorkerProcess;
 use src\client\settings\SettingsList;
+use src\client\settings\value_object\Settings;
 use src\shared_memory\SharedMemory;
 use src\shared_memory\SharedMemoryManager;
 
@@ -26,9 +27,14 @@ class ResourcePool
     private array $poolOfWorkers;
 
     /**
-     * @var SettingsList
+     * @var SettingsList|null ]
      */
-    protected SettingsList $settingsList;
+    protected ?SettingsList $settingsList;
+
+    /**
+     * @var Settings|null
+     */
+    protected ?Settings $settings;
 
     /**
      * @var SharedMemory
@@ -58,11 +64,14 @@ class ResourcePool
 
     /**
      * ResourcePool constructor.
-     * @param SettingsList $settingsList
+     * @param SettingsList|null $settingsList
+     * @param Settings|null $settings
      */
-    public function __construct(SettingsList $settingsList)
+    public function __construct(?SettingsList $settingsList,
+                                ?Settings $settings)
     {
         $this->settingsList = $settingsList;
+        $this->settings = $settings;
 
         $this->SharedMemory = new SharedMemory();
     }
@@ -76,14 +85,14 @@ class ResourcePool
     }
 
     /**
-     * @param AsyncProcessService $service
+     * @param ProcessService $service
      * @return AsyncProcessService
      */
-    public function configurePoolForSingleProcess(AsyncProcessService $service): AsyncProcessService
+    public function configurePoolForSingleProcess(ProcessService $service): ProcessService
     {
         $poolOfWorkers = [];
-        $poolOfWorkers[$name = $this->settingsList->getFirst()->getJobName()] =
-            new WorkerProcess($first = $this->settingsList->getFirst());
+        $poolOfWorkers[$name = $this->settings->getJobName()] =
+            new WorkerProcess($first = $this->settings);
 
         $service->setDataManagerForWorkers(
             $name,
@@ -195,7 +204,7 @@ class ResourcePool
     /** Метод создает набор участков разделяемой памяти и записываеи их в массив.
      * @param array $poolOfWorkers
      */
-    public function createResourcePool(array $poolOfWorkers)
+    public function createResourcePool(array $poolOfWorkers): void
     {
         foreach ($poolOfWorkers as $key => $worker) {
             $workerName = $worker->getWorkerName();
@@ -238,11 +247,9 @@ class ResourcePool
      * @param int $sharedMemoryKey - ключ разделяемой памяти.
      * @param string $workerName
      */
-    private function addInResourcePool(
-        $sharedMemoryResource,
-        int $sharedMemoryKey,
-        string $workerName
-    ): void
+    private function addInResourcePool($sharedMemoryResource,
+                                       int $sharedMemoryKey,
+                                       string $workerName): void
     {
         if ($sharedMemoryResource === false) {
             $sharedMemoryKey = rand(100, 9000000);
@@ -375,6 +382,14 @@ class ResourcePool
             }
         }
         $this->mergedResourcePool = $merged;
+    }
+
+    /**
+     * @return Settings|null
+     */
+    public function getSettings(): ?Settings
+    {
+        return $this->settings;
     }
 
 }

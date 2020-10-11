@@ -11,19 +11,6 @@ use src\client\process\decorators\Decorator;
  */
 final class ParallelProcessesDecorator extends Decorator
 {
-    /**
-     * ParallelProcessesDecorator constructor.
-     * @param Client $Client
-     */
-    public function __construct(Client $Client)
-    {
-        parent::__construct($Client);
-        $this->execute();
-    }
-
-    /**
-     *
-     */
     public function execute(): void
     {
         $this->Client->parallelRun();

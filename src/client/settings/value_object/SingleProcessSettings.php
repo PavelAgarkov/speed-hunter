@@ -17,24 +17,18 @@ final class SingleProcessSettings extends Settings
 
     /**
      * SingleProcessSettings constructor.
-     * @param string $phpPath
-     * @param string $jobName
-     * @param array $data
-     * @param int $shSizeForOneJob
+     * @param array $settings
      */
-    public function __construct(string $phpPath,
-                                string $jobName,
-                                array $data,
-                                int $shSizeForOneJob = 1)
+    public function __construct(array $settings)
     {
         parent::__construct(
-            $phpPath,
-            $jobName,
-            $shSizeForOneJob,
+            $settings["phpPath"],
+            $settings["jobName"],
+            $settings["shSizeForOneJob"],
             1
         );
 
-        $this->data = $data;
+        $this->data = $settings["data"];
     }
 
     /**

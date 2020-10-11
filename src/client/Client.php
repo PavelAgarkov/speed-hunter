@@ -2,14 +2,11 @@
 
 namespace src\client;
 
-use RuntimeException;
-use src\client\process\services\AsyncProcessService;
-use src\client\process\services\ParallelProcessesService;
+use src\client\planned_routines\multiple\AsyncRoutine;
+use src\client\planned_routines\multiple\ParallelRoutine;
+use src\client\planned_routines\single\AsyncSingleRoutine;
+use src\client\planned_routines\single\SingleRoutine;
 use src\client\process\services\ProcessServiceInterface;
-use src\client\process\decorators\MultipleAsyncProcessesDecorator;
-use src\client\process\decorators\OneAsyncProcessDecorator;
-use src\client\process\decorators\ParallelProcessesDecorator;
-use src\client\settings\SettingsList;
 
 /**
  * Class Client
@@ -26,7 +23,7 @@ class Client
      * Starting constructor.
      * @param ProcessServiceInterface $service
      */
-    private function __construct(ProcessServiceInterface $service)
+    public function __construct(ProcessServiceInterface $service)
     {
         $this->ProcessService = $service;
     }
@@ -44,7 +41,7 @@ class Client
     /**
      * @return $this
      */
-    public function oneAsyncProcessRun(): self
+    public function oneProcessRun(): self
     {
         $this->ProcessService->single();
 
@@ -62,47 +59,13 @@ class Client
     }
 
     /**
-     * @param SettingsList $settingsList
-     * @return static
+     * @return $this
      */
-    public static function parallel(SettingsList $settingsList): self
+    public function oneAsyncProcessRun(): self
     {
-        new ParallelProcessesDecorator(
-            $Client =
-                new self(
-                    new ParallelProcessesService($settingsList)
-                )
-        );
+        $this->ProcessService->single();
 
-        return $Client;
-    }
-
-    /**
-     * @param SettingsList $settingsList
-     */
-    public static function singleAsyncProcess(SettingsList $settingsList): void
-    {
-        if ($settingsList->getCount() > 1) {
-            throw new RuntimeException("SingleProcess can't start some times");
-        }
-
-        new OneAsyncProcessDecorator(
-            new self(
-                new AsyncProcessService($settingsList)
-            )
-        );
-    }
-
-    /**
-     * @param SettingsList $settingsList
-     */
-    public static function multipleAsyncProcesses(SettingsList $settingsList): void
-    {
-        new MultipleAsyncProcessesDecorator(
-            new self(
-                new AsyncProcessService($settingsList)
-            )
-        );
+        return $this;
     }
 
     /**
@@ -113,8 +76,44 @@ class Client
         return $this->ProcessService->getOutputData();
     }
 
+    /**
+     * @param array $data
+     * @return int
+     */
     public static function weighData(array $data): int
     {
         return (int)strlen(serialize($data));
+    }
+
+    /**
+     * @return ParallelRoutine
+     */
+    public static function getParallelRoutine(): ParallelRoutine
+    {
+        return new ParallelRoutine();
+    }
+
+    /**
+     * @return AsyncRoutine
+     */
+    public static function getAsyncRoutine(): AsyncRoutine
+    {
+        return new AsyncRoutine();
+    }
+
+    /**
+     * @return AsyncSingleRoutine
+     */
+    public static function getSingleAsyncRoutine(): AsyncSingleRoutine
+    {
+        return new AsyncSingleRoutine();
+    }
+
+    /**
+     * @return SingleRoutine
+     */
+    public static function getSingleRoutine(): SingleRoutine
+    {
+        return new SingleRoutine();
     }
 }

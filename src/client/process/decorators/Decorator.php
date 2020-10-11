@@ -22,5 +22,6 @@ abstract class Decorator
     public function __construct(Client $Client)
     {
         $this->Client = $Client;
+        $this->execute();
     }
 }

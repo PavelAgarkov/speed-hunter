@@ -7,6 +7,7 @@ use src\client\process\services\ProcessServiceInterface;
 use src\client\ResourcePool;
 use src\client\settings\SettingsList;
 use src\client\process\services\ProcessService;
+use src\client\settings\value_object\Settings;
 
 /** Класс для управления параллельными php процессами взаимодействующими через разделяемую память unix.
  * Class ProcessesManager
@@ -31,11 +32,13 @@ class ParallelProcessesService extends ProcessService implements ProcessServiceI
 
     /**
      * ParallelProcessesManager constructor.
-     * @param SettingsList $settingsList
+     * @param SettingsList|null $settingsList
+     * @param Settings|null $settings
      */
-    public function __construct(SettingsList $settingsList)
+    public function __construct(?SettingsList $settingsList,
+                                ?Settings $settings)
     {
-        parent::__construct($settingsList);
+        parent::__construct($settingsList, $settings);
     }
 
     /** Метод открывает цикл процессов, который передает управление воркерам.
@@ -127,7 +130,8 @@ class ParallelProcessesService extends ProcessService implements ProcessServiceI
      * @param int $processNumber
      * @param array $processPipes
      */
-    public function setPipes(int $processNumber, array $processPipes): void
+    public function setPipes(int $processNumber,
+                             array $processPipes): void
     {
         $this->pipes[$processNumber] = $processPipes;
     }
@@ -136,7 +140,8 @@ class ParallelProcessesService extends ProcessService implements ProcessServiceI
      * @param int $processNumber
      * @param $proc
      */
-    public function setProcesses(int $processNumber, $proc): void
+    public function setProcesses(int $processNumber,
+                                 $proc): void
     {
         $this->processes[$processNumber] = $proc;
     }
@@ -145,11 +150,32 @@ class ParallelProcessesService extends ProcessService implements ProcessServiceI
     {
         $process =
             new ParallelProcess(
-                new ResourcePool($this->getSettingsList())
+                new ResourcePool(
+                    $this->getSettingsList(),
+                    $this->settings
+                )
             );
 
         $pool = $process->getResourcePool();
         $pool->configureResourcePoolForParallelProcesses($this);
+
+        $this
+            ->startProcessLoop($pool)
+            ->closeProcessLoop()
+            ->clearResourcePool();
+    }
+
+    public function single(): void
+    {
+        $process =
+            new ParallelProcess(
+                new ResourcePool(
+                    null,
+                    $this->settings)
+            );
+
+        $pool = $process->getResourcePool();
+        $pool->configurePoolForSingleProcess($this);
 
         $this
             ->startProcessLoop($pool)

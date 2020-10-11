@@ -42,7 +42,7 @@ abstract class Settings
     {
         $this->phpPath = $phpPath;
         $this->jobName = $jobName;
-        $this->shSizeForOneJob = $shSizeForOneJob;
+        $this->shSizeForOneJob = $shSizeForOneJob ?? 1;
         $this->numberJobs = $numberJobs;
     }
 
