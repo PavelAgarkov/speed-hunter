@@ -30,10 +30,12 @@ class AsyncProcess extends Process
         $resourceKey = array_key_first($shResources);
         $numberMemory = current($shResources)[1];
         $size = $this->ResourcePool->getSharedMemory()->getSize(current($shResources)[0]);
+        $full = Process::FULL_COMMAND;
+        $cmd = "{$phpPath} {$name} {$full} singleAsync {$resourceKey} {$numberMemory} {$size} 1 --foo=1 &";
 
         proc_close(
             proc_open(
-                "{$phpPath} {$name} {$resourceKey} {$numberMemory} {$size} 1 --foo=1 &",
+                $cmd,
                 array(),
                 $foo
             )
@@ -53,9 +55,10 @@ class AsyncProcess extends Process
                 $numberMemoryKey = $value[1];
                 $size = $this->ResourcePool->getSharedMemory()->getSize(current($shResources)[0]);
 
+                $full = Process::FULL_COMMAND;
                 proc_close(
                     proc_open(
-                        "{$phpPath} {$name} {$resourceKey} {$numberMemoryKey} {$size} 1 --foo=1 &",
+                        "{$phpPath} {$name} {$full} multipleAsync {$resourceKey} {$numberMemoryKey} {$size} 1 --foo=1 &",
                         array(),
                         $foo
                     )

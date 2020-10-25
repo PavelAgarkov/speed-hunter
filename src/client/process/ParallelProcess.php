@@ -65,8 +65,9 @@ class ParallelProcess extends Process
             }
         }
 
+        $full = Process::FULL_COMMAND;
         $proc = proc_open(
-            "{$phpPath} {$workerName} {$processNumber} {$numberMemoryKey} {$memorySize} {$unserializeFlag}",
+            "{$phpPath} {$workerName} {$full} multiple {$processNumber} {$numberMemoryKey} {$memorySize} {$unserializeFlag}",
             $descriptors,
             $service->getProcessPipes()
         );

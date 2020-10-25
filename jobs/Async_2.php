@@ -17,11 +17,9 @@ class Async_2 implements RoutineInterface
 
         $id = posix_getpid();
         $fp = fopen("t{$id}.txt", "w");
-        $str = implode(',', $read);
+        $str = $id;
         fwrite($fp, " {$str} \r\n");
         fclose($fp);
-
-        $Job->runSingleAsyncJob();
 
         return $this;
     }

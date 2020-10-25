@@ -12,18 +12,26 @@ use src\shared_memory\SharedMemoryManager;
  */
 class Job
 {
-    const SERIALIZE_TRUE = 1;
+    private const SERIALIZE_TRUE = 1;
+
+    public const FULL_COMMAND = 1;
 
     /**
-     * @var SharedMemoryJob
+     * @var SharedMemoryJob|null
      */
-    private SharedMemoryJob $sharedMemoryJob;
+    private ?SharedMemoryJob $sharedMemoryJob;
 
     /**
      * @var LaunchedJob
      */
     private LaunchedJob $launchedJob;
 
+    /**
+     * @var int
+     */
+    private int $fullJob;
+
+    private string $type;
 
     /**
      * @var array|array[]
@@ -39,21 +47,35 @@ class Job
      */
     public function __construct(array $argv)
     {
-        $this->launchedJob = new LaunchedJob(
-            array(
-                "jobName" => (string)$argv[1],
-                "processNumber" => (int)$argv[2],
-                "serializeFlag" => (int)$argv[5]
-            )
-        );
+        $this->type = $argv[3];
+        $this->fullJob = $argv[2];
+        if($this->fullJob === static::FULL_COMMAND) {
+            $this->launchedJob = new LaunchedJob(
+                array(
+                    "jobName" => (string)$argv[1],
+                    "processNumber" => (int)$argv[4],
+                    "serializeFlag" => (int)$argv[7]
+                )
+            );
 
-        $this->sharedMemoryJob = new SharedMemoryJob(
-            array(
-                "sharedMemoryKey" => (int)$argv[3],
-                "sharedMemorySize" => (int)$argv[4],
-                "flagShOpen" => "w"
-            )
-        );
+            $this->sharedMemoryJob = new SharedMemoryJob(
+                array(
+                    "sharedMemoryKey" => (int)$argv[5],
+                    "sharedMemorySize" => (int)$argv[6],
+                    "flagShOpen" => "w"
+                )
+            );
+        } else {
+
+            $this->launchedJob = new LaunchedJob(
+                array(
+                    "jobName" => (string)$argv[1],
+                    "processNumber" => (int)$argv[4],
+                    "serializeFlag" => 0
+                )
+            );
+            $this->sharedMemoryJob = null;
+        }
     }
 
     /** Метод вызывает передаваемое замыкание
@@ -102,7 +124,7 @@ class Job
     /**
      * @return SharedMemoryJob
      */
-    public function getSharedMemoryJob(): SharedMemoryJob
+    public function getSharedMemoryJob(): ?SharedMemoryJob
     {
         return $this->sharedMemoryJob;
     }
@@ -140,4 +162,44 @@ class Job
         $this->output["read"] = $this->unserializer($read);
     }
 
+    /**
+     * @return int
+     */
+    public function getFullJob(): int
+    {
+        return $this->fullJob;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSingleAsync(): bool
+    {
+        if($this->type === "singleAsync") {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMultiple(): bool
+    {
+        if($this->type === "multiple") {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMultipleAsync(): bool
+    {
+        if($this->type === "multipleAsync") {
+            return true;
+        }
+        return false;
+    }
 }

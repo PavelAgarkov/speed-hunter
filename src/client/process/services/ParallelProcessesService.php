@@ -66,7 +66,9 @@ class ParallelProcessesService extends ProcessService implements ProcessServiceI
                         0 => ['pipe', 'r'],
                         1 => ['pipe', 'w'],
                     ],
-                    $process->getResourcePool()->getPoolOfWorkers()[$workerName]->getMemorySize(),
+                    $process->getResourcePool()
+                        ->getPoolOfWorkers()[$workerName]
+                        ->getMemorySize(),
                     $this
                 );
             }
@@ -88,7 +90,9 @@ class ParallelProcessesService extends ProcessService implements ProcessServiceI
             }
         }
 
-        $this->getResourcePool()->readAllDataFromResourcePool();
+        $this
+            ->getResourcePool()
+            ->readAllDataFromResourcePool();
 
         return $this;
     }
@@ -98,7 +102,9 @@ class ParallelProcessesService extends ProcessService implements ProcessServiceI
      */
     public function clearResourcePool(): bool
     {
-        return $this->getResourcePool()->deleteAllDataFromResourcePool();
+        return $this
+            ->getResourcePool()
+            ->deleteAllDataFromResourcePool();
     }
 
     /** Метод управляет получение выходных данных из разделяемой памяти по ключу(или всех).
@@ -107,7 +113,10 @@ class ParallelProcessesService extends ProcessService implements ProcessServiceI
      */
     public function getOutputData(string $workerName = null): array
     {
-        return $this->getResourcePool()->getSharedMemory()->getData($workerName);
+        return $this
+            ->getResourcePool()
+            ->getSharedMemory()
+            ->getData($workerName);
     }
 
     /**

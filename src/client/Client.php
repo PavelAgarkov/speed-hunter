@@ -88,7 +88,7 @@ class Client
     /**
      * @return ParallelRoutine
      */
-    public static function getParallelRoutine(): ParallelRoutine
+    public static function getParallelClient(): ParallelRoutine
     {
         return new ParallelRoutine();
     }
@@ -96,7 +96,7 @@ class Client
     /**
      * @return AsyncRoutine
      */
-    public static function getAsyncRoutine(): AsyncRoutine
+    public static function getAsyncClient(): AsyncRoutine
     {
         return new AsyncRoutine();
     }
@@ -104,7 +104,7 @@ class Client
     /**
      * @return AsyncSingleRoutine
      */
-    public static function getSingleAsyncRoutine(): AsyncSingleRoutine
+    public static function getSingleAsyncClient(): AsyncSingleRoutine
     {
         return new AsyncSingleRoutine();
     }
@@ -112,7 +112,7 @@ class Client
     /**
      * @return SingleRoutine
      */
-    public static function getSingleRoutine(): SingleRoutine
+    public static function getSingleClient(): SingleRoutine
     {
         return new SingleRoutine();
     }

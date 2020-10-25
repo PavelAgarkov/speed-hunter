@@ -8,25 +8,25 @@ require __DIR__ . '/vendor/autoload.php';
 
 use src\client\Client;
 
-Client::getSingleAsyncRoutine()
+Client::getSingleAsyncClient()
     ->indicateRoutine(
         [
             "phpPath" => "php7.4 routine.php",
             "jobName" => "jobs\\\Async_1",
-            "data" => $data4 = [1, 2, 3],
-            "shSizeForOneJob" => Client::weighData($data4)
+//            "data" => $data4 = [1, 2, 3],
+//            "shSizeForOneJob" => Client::weighData($data4)
         ]
     )
     ->run();
 
 $singleClient =
-    Client::getSingleRoutine()
+    Client::getSingleClient()
         ->indicateRoutine(
             [
                 "phpPath" => "php7.4 routine.php",
                 "jobName" => "jobs\\\Job_2",
-                "data" => $data2 = ['commit', 'sin', 'cod', 'cos', 'tan'],
-                "shSizeForOneJob" => Client::weighData($data2)
+//                "data" => $data2 = ['commit', 'sin', 'cod', 'cos', 'tan'],
+//                "shSizeForOneJob" => Client::weighData($data2)
             ]
         )
         ->run();
@@ -34,17 +34,17 @@ $singleClient =
 $output = $singleClient->getOutput();
 print_r($output);
 
-Client::getAsyncRoutine()
+Client::getAsyncClient()
     ->addRoutine(
         [
             "phpPath" => "php7.4 routine.php",
             "jobName" => "jobs\\\Async_1",
             "numberJobs" => 3,
-            "dataPartitioning" => [
-                "flagPartitioning" => 0,
-                "dataToPartitioning" => $data6 = array('Hi')
-            ],
-            "shSizeForOneJob" => Client::weighData($data6)
+//            "dataPartitioning" => [
+//                "flagPartitioning" => 0,
+//                "dataToPartitioning" => $data6 = array('Hi')
+//            ],
+//            "shSizeForOneJob" => Client::weighData($data6)
         ]
     )
     ->addRoutine(
@@ -62,7 +62,7 @@ Client::getAsyncRoutine()
     ->run();
 
 $parallelRoutine =
-    Client::getParallelRoutine()
+    Client::getParallelClient()
         ->addRoutine(
             [
                 "phpPath" => "php7.4 routine.php",
@@ -87,11 +87,11 @@ $parallelRoutine =
                 "phpPath" => "php7.4 routine.php",
                 "jobName" => "jobs\\\Job_4",
                 "numberJobs" => 5,
-                "dataPartitioning" => [
-                    "flagPartitioning" => 1,
-                    "dataToPartitioning" => $data7 = ['commit', 'sin', 'cod', 'cos', 'tan']
-                ],
-                "shSizeForOneJob" => Client::weighData($data7)
+//                "dataPartitioning" => [
+//                    "flagPartitioning" => 1,
+//                    "dataToPartitioning" => $data7 = ['commit', 'sin', 'cod', 'cos', 'tan']
+//                ],
+//                "shSizeForOneJob" => Client::weighData($data7)
             ]
         )
         ->run();
@@ -100,4 +100,3 @@ $output = $parallelRoutine->getOutput();
 print_r($output);
 
 echo "It's so funny";
-

@@ -2,6 +2,8 @@
 
 namespace src\client\settings\value_object;
 
+use MongoDB\Driver\ClientEncryption;
+use src\client\Client;
 use src\client\settings\value_object\Settings;
 
 /**
@@ -21,14 +23,20 @@ final class SingleProcessSettings extends Settings
      */
     public function __construct(array $settings)
     {
+        if(isset($settings["data"])) {
+            $this->data = $settings["data"];
+        }
+
+        if(!isset($settings["shSizeForOneJob"])) {
+            $settings["shSizeForOneJob"] = Client::weighData([]);
+        }
+
         parent::__construct(
             $settings["phpPath"],
             $settings["jobName"],
             $settings["shSizeForOneJob"],
             1
         );
-
-        $this->data = $settings["data"];
     }
 
     /**

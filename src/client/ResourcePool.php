@@ -181,7 +181,7 @@ class ResourcePool
         foreach ($this->settingsList->getList() as $key => $configuration) {
             $dataPartitioning = $configuration->getDataPartitioning();
 
-            if (isset($dataPartitioning) && !empty($dataPartitioning)) {
+            if (isset($dataPartitioning)) {
                 $name = $configuration->getJobName();
                 $strategy = new PutDataInJobSharedMemoryStrategy(
                     $service->getDataManagerForWorkers()[$name],
@@ -331,7 +331,7 @@ class ResourcePool
      */
     public function getResourceByJobName(string $name): array
     {
-        return $this->getResourcePool()[$name];
+        return $this->getResourcePool()[$name] ?? [];
     }
 
     /**

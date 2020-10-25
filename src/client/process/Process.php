@@ -10,6 +10,9 @@ use src\client\ResourcePool;
  */
 abstract class Process
 {
+    protected const FULL_COMMAND = 1;
+    protected const SHORTENED_COMMAND = 0;
+
     /**
      * @var ResourcePool
      */

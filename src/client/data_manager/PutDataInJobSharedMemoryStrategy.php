@@ -35,8 +35,14 @@ class PutDataInJobSharedMemoryStrategy
 
     public function putData(): void
     {
-        if ((int)$this->manager->getDataForSet()['flagPartitioning'] == 1) {
-            $this->manager->putDataIntoWorkerSharedMemory($this->resourcePool);
+        if(array_key_exists('flagPartitioning', $this->manager->getDataForSet())) {
+
+            if ((int)$this->manager->getDataForSet()['flagPartitioning'] == 1) {
+                $this->manager->putDataIntoWorkerSharedMemory($this->resourcePool);
+            } else {
+                $this->manager->putCommonDataIntoWorkers($this->resourcePool);
+            }
+
         } else {
             $this->manager->putCommonDataIntoWorkers($this->resourcePool);
         }

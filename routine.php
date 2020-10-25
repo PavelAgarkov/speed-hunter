@@ -23,8 +23,14 @@ $task = new $taskClass();
 if (!($task instanceof RoutineInterface)) {
 
     SharedMemoryManager::deleteSh(
-        $Routine->getJob()->getSharedMemoryJob()->getSharedMemory(),
-        $Routine->getJob()->getSharedMemoryJob()->getSharedMemoryResource()
+        $Routine
+            ->getJob()
+            ->getSharedMemoryJob()
+            ->getSharedMemory(),
+        $Routine
+            ->getJob()
+            ->getSharedMemoryJob()
+            ->getSharedMemoryResource()
     );
 
     exit("Class {$taskClass} can't will be create");
@@ -35,3 +41,5 @@ $task
     ->beforeExecute()
     ->execute()
     ->afterExecute();
+
+$Routine->clear();

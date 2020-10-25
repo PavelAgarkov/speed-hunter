@@ -2,6 +2,7 @@
 
 namespace src\client\settings\value_object;
 
+use src\client\Client;
 use src\client\settings\value_object\Settings;
 
 /**
@@ -21,6 +22,10 @@ final class MultipleProcessesSettings extends Settings
      */
     public function __construct(array $settings)
     {
+        if(!isset($settings["shSizeForOneJob"])) {
+            $settings["shSizeForOneJob"] = Client::weighData([]);
+        }
+
         parent::__construct(
             $settings["phpPath"],
             $settings["jobName"],

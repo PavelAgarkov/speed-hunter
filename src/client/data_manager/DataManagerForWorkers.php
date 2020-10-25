@@ -142,12 +142,17 @@ class DataManagerForWorkers
      */
     public function putCommonDataIntoWorkers(ResourcePool $resourcePool): void
     {
-        $resourcePool = $resourcePool->getResourcePool()[$this->workersSet->getWorkerName()];
+        $resourcePool = $resourcePool->getResourcePool();
+        if($resourcePool === []) {
+            return;
+        }
+
+        $resourcePool = $resourcePool[$this->workersSet->getWorkerName()];
         foreach ($resourcePool as $memoryKey => $item) {
             SharedMemoryManager::writeIntoSh(
                 $this->SharedMemory,
                 $item[0],
-                $this->readyChunksOfDataForWorkers
+                $this->readyChunksOfDataForWorkers ?? []
             );
         }
     }
