@@ -11,6 +11,9 @@ abstract class BaseValidator
      */
     protected Settings $settings;
 
+    /**
+     * @var array|string[][]
+     */
     protected array $commonRights =
         [
             "phpPath" => [

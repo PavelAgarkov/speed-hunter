@@ -25,13 +25,7 @@ final class SettingsList
     /**
      * SettingsList constructor.
      */
-    public function __construct()
-    {
-//        foreach ($settings as $key => $settingsObject) {
-//            $this->list[$settingsObject->getJobName()] = $settingsObject;
-//            $this->count++;
-//        }
-    }
+    public function __construct(){}
 
     /**
      * @return array
