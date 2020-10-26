@@ -2,6 +2,11 @@
 
 namespace src\client\settings\value_object;
 
+use src\client\settings\settings_validator\BaseValidator;
+use src\client\settings\settings_validator\BaseValidatorInterface;
+use src\client\settings\settings_validator\MultipleProcessesSettingsValidator;
+use src\client\settings\settings_validator\SingleProcessSettingsValidator;
+
 /**
  * Class Settings
  * @package src\settings
@@ -9,14 +14,14 @@ namespace src\client\settings\value_object;
 abstract class Settings
 {
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $phpPath;
+    protected ?string $phpPath;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $jobName;
+    protected ?string $jobName;
 
     /**
      * @var int
@@ -30,34 +35,38 @@ abstract class Settings
 
     /**
      * Settings constructor.
-     * @param string $phpPath
-     * @param string $jobName
-     * @param int $shSizeForOneJob
+     * @param string|null $phpPath
+     * @param string|null $jobName
+     * @param int|null $shSizeForOneJob
      * @param int $numberJobs
+     * @param BaseValidatorInterface $validator
      */
-    public function __construct(string $phpPath,
-                                string $jobName,
-                                int $shSizeForOneJob,
-                                int $numberJobs)
+    public function __construct(?string $phpPath,
+                                ?string $jobName,
+                                ?int $shSizeForOneJob,
+                                int $numberJobs,
+                                BaseValidatorInterface $validator)
     {
         $this->phpPath = $phpPath;
         $this->jobName = $jobName;
         $this->shSizeForOneJob = $shSizeForOneJob ?? 1;
         $this->numberJobs = $numberJobs;
+
+        $validator->validate();
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPhpPath(): string
+    public function getPhpPath(): ?string
     {
         return $this->phpPath;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getJobName(): string
+    public function getJobName(): ?string
     {
         return $this->jobName;
     }

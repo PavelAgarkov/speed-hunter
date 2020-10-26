@@ -13,8 +13,8 @@ Client::getSingleAsyncClient()
         [
             "phpPath" => "php7.4 routine.php",
             "jobName" => "jobs\\\Async_1",
-//            "data" => $data4 = [1, 2, 3],
-//            "shSizeForOneJob" => Client::weighData($data4)
+            "data" => $data4 = [1, 2, 3],
+            "shSizeForOneJob" => Client::weighData($data4)
         ]
     )
     ->run();
@@ -25,8 +25,8 @@ $singleClient =
             [
                 "phpPath" => "php7.4 routine.php",
                 "jobName" => "jobs\\\Job_2",
-//                "data" => $data2 = ['commit', 'sin', 'cod', 'cos', 'tan'],
-//                "shSizeForOneJob" => Client::weighData($data2)
+                "data" => $data2 = ['commit', 'sin', 'cod', 'cos', 'tan'],
+                "shSizeForOneJob" => Client::weighData($data2)
             ]
         )
         ->run();

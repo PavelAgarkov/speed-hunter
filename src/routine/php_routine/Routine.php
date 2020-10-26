@@ -34,8 +34,8 @@ class Routine
 
     public function clear(): void
     {
-        if($this->Job->getSharedMemoryJob() !== null &&
-            ($this->Job->isSingleAsync() || $this->Job->isMultipleAsync()))
+        if($this->Job->getSharedMemoryJob() !== null and
+            ($this->Job->isSingleAsync() or $this->Job->isMultipleAsync()))
         {
             $this->Job->runSingleAsyncJob();
         }

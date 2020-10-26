@@ -2,8 +2,9 @@
 
 namespace src\client\settings\value_object;
 
-use MongoDB\Driver\ClientEncryption;
 use src\client\Client;
+use src\client\settings\settings_validator\BaseValidatorInterface;
+use src\client\settings\settings_validator\SingleProcessSettingsValidator;
 use src\client\settings\value_object\Settings;
 
 /**
@@ -31,11 +32,14 @@ final class SingleProcessSettings extends Settings
             $settings["shSizeForOneJob"] = Client::weighData([]);
         }
 
+        $validator = new SingleProcessSettingsValidator($this);
+
         parent::__construct(
-            $settings["phpPath"],
-            $settings["jobName"],
-            $settings["shSizeForOneJob"],
-            1
+            $settings["phpPath"] ?? null,
+            $settings["jobName"] ?? null,
+            $settings["shSizeForOneJob"] ?? null,
+            1,
+            $validator
         );
     }
 

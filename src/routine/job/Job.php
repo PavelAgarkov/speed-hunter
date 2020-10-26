@@ -50,6 +50,7 @@ class Job
         $this->type = $argv[3];
         $this->fullJob = $argv[2];
         if($this->fullJob === static::FULL_COMMAND) {
+
             $this->launchedJob = new LaunchedJob(
                 array(
                     "jobName" => (string)$argv[1],
@@ -65,6 +66,7 @@ class Job
                     "flagShOpen" => "w"
                 )
             );
+
         } else {
 
             $this->launchedJob = new LaunchedJob(
@@ -75,6 +77,7 @@ class Job
                 )
             );
             $this->sharedMemoryJob = null;
+
         }
     }
 

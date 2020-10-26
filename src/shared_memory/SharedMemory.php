@@ -105,7 +105,7 @@ class SharedMemory
      */
     public function getData(string $workerName = null): array
     {
-        if ($workerName !== null && array_key_exists($workerName, $this->output)) {
+        if ($workerName !== null and array_key_exists($workerName, $this->output)) {
             return $this->output[$workerName];
         }
         return $this->output;

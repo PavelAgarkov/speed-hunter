@@ -148,10 +148,10 @@ class ResourcePool
                 );
             }
 
-            if (isset($dataPartitioning) && !$emptyData) {
+            if (isset($dataPartitioning) and !$emptyData) {
                 try {
-                    if (!isset($dataPartitioning["flagPartitioning"]) ||
-                        $dataPartitioning["flagPartitioning"] === null ||
+                    if (!isset($dataPartitioning["flagPartitioning"]) or
+                        $dataPartitioning["flagPartitioning"] === null or
                         count($dataPartitioning) == 1) {
                         throw new RuntimeException('The data separator flag for workers was not specified.');
                     }

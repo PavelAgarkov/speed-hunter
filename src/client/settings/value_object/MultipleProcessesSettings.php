@@ -3,6 +3,7 @@
 namespace src\client\settings\value_object;
 
 use src\client\Client;
+use src\client\settings\settings_validator\MultipleProcessesSettingsValidator;
 use src\client\settings\value_object\Settings;
 
 /**
@@ -26,14 +27,19 @@ final class MultipleProcessesSettings extends Settings
             $settings["shSizeForOneJob"] = Client::weighData([]);
         }
 
+        $validator = new MultipleProcessesSettingsValidator($this);
+
+        $this->dataPartitioning = $settings["dataPartitioning"] ?? [
+                "flagPartitioning" => 0,
+                "dataToPartitioning" => []
+            ];
+
         parent::__construct(
-            $settings["phpPath"],
-            $settings["jobName"],
+            $settings["phpPath"] ?? null,
+            $settings["jobName"] ?? null,
             $settings["shSizeForOneJob"] ?? 1,
-            $settings["numberJobs"]);
-
-
-        $this->dataPartitioning = $settings["dataPartitioning"] ?? [];
+            $settings["numberJobs"],
+            $validator);
     }
 
     /**
@@ -42,5 +48,21 @@ final class MultipleProcessesSettings extends Settings
     public function getDataPartitioning(): array
     {
         return $this->dataPartitioning;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFlagPartitioning(): int
+    {
+        return $this->dataPartitioning["flagPartitioning"];
+    }
+
+    /**
+     * @return array
+     */
+    public function getDataToPartitioning(): array
+    {
+        return $this->dataPartitioning["dataToPartitioning"];
     }
 }

@@ -36,7 +36,7 @@ final class WorkerProcess
      */
     public function __construct(Settings $settings)
     {
-        $this->phpPath = ($settings->getPhpPath() && $settings->getPhpPath() !== null)
+        $this->phpPath = ($settings->getPhpPath() and $settings->getPhpPath() !== null)
             ? $settings->getPhpPath()
             : 'php';
 
